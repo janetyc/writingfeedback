@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<header>Relation Task: Identify Relation between Two Sentences </header>
+<section>
+    <div class="definition">
+        <h4>Relation Catagories</h4>
+        <ul>
+            <li>Addition</li>
+            <li>Chronological/Process Order</li>
+            <li>Cause/Effect</li>
+            <li>Comparison and Contrast</li>
+            <li>Generalization and Example</li>
+        </ul>
+    </div>
+
+    <div class="example-area">
+        <div><i class="fa fa-newspaper-o" aria-hidden="true"></i><span class="block-title">Example</span></div>
+        <div>Title: Affective Computational Priming and Creativity</div>
+ 
+        <div>Paragraph:</div>
+        <div>Creative professionals, such as engineers, scientists, and designers, increasingly rely on technology to complete creative tasks at work. They use web browsers to conduct research and search for inspiration. They document projects on wikis in order to collaborate with others. They depend on graphic design software and word processors to design and create. In response, human-computer interaction (HCI) researchers have started building creativity support tools, or software to enhance creative performance [cited]</div>
+    </div>
+    <hr>
+    <div class="problem-area">
+        <div><i class="fa fa-question-circle" aria-hidden="true"></i><span class="block-title">Please Identify Topic Sentence in the Paragraph</span></div>
+        <div class="problem">
+            <div>Title:</div>
+            <div>Paragraph:</div>
+            <div id="working-area"></div>
+        </div>
+    </div>
+    <div class="answer-area">
+
+    <div class="submit"></div>
+    </div>
+</section>
+{% endblock %}
