@@ -90,6 +90,7 @@ body {
     color: white;
 }
 
+
 /* ==============
     MOBILE: Menu
    ============== */
@@ -150,7 +151,7 @@ nav a:hover {
    Author's custom styles
    ========================================================================== */
 nav{
-    height: 10px;
+    height: auto;
 }
 .example-area{
     -webkit-box-shadow: 0 0 5px #888;
@@ -197,6 +198,9 @@ nav{
     margin-top: 5px;
     /*border: 1px solid #ff00ff;*/
     
+}
+.center-area{
+    padding-top: 30px;
 }
 /* ==========================================================================
    Media Queries
@@ -279,6 +283,11 @@ nav{
         float: right;
         width: 28%;
     }
+
+    .center-area{
+        width: 75%;
+        margin-left: 10%;
+    }
 }
 
 @media only screen and (min-width: 1140px) {
@@ -290,6 +299,11 @@ nav{
     .wrapper {
         width: 1026px; /* 1140px - 10% for margins */
         margin: 0 auto;
+    }
+
+    .center-area{
+        width: 70%;
+        margin-left: 15%;
     }
 }
 
