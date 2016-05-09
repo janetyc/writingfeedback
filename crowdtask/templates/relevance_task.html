@@ -6,24 +6,84 @@
     </div>-->
 
     <div class="example-area">
-        <div><i class="fa fa-newspaper-o" aria-hidden="true"></i><span class="block-title">Example</span></div>
+        <div><i class="newspaper icon"></i><span class="block-title">Example</span></div>
         <div>Title: Affective Computational Priming and Creativity</div>
  
         <div>Paragraph:</div>
-        <div>Creative professionals, such as engineers, scientists, and designers, increasingly rely on technology to complete creative tasks at work. They use web browsers to conduct research and search for inspiration. They document projects on wikis in order to collaborate with others. They depend on graphic design software and word processors to design and create. In response, human-computer interaction (HCI) researchers have started building creativity support tools, or software to enhance creative performance [cited]</div>
+        <div><span class="highlight">Creative professionals, such as engineers, scientists, and designers, increasingly rely on technology to complete creative tasks at work.</span> They use <span class="relevance">web browsers</span> to conduct research and search for inspiration. They document projects on <span class="relevance">wikis</span> in order to collaborate with others. They depend on <span class="relevance">graphic design software</span> and <span class="relevance">word processors</span> to design and create. In response, human-computer interaction (HCI) researchers have started building <span class="relevance">creativity support tools</span>, or software to enhance creative performance [cited].</div>
     </div>
     <hr>
     <div class="problem-area">
-        <div><i class="fa fa-question-circle" aria-hidden="true"></i><span class="block-title">Please Highlight the Relevant Area Between Topic Sentence and the Other Sentence</span></div>
+        <div><i class="help circle icon"></i><span class="block-title">Please Highlight the Relevant Area Between Topic Sentence and the Other Sentence</span></div>
         <div class="problem">
-            <div>Title:</div>
+            <div>Title: {{ data.title }}</div>
             <div>Paragraph:</div>
-            <div id="working-area"></div>
+            <div id="working-area">
+                {% for sentence in data.content.strip().split(".") %}
+                    {% if sentence %}
+                        {% if (loop.index-1) in data.topic_sentence %}
+                            <span class="highlight">{{ sentence }}.</span>
+                        {% else %}
+                            {% for word in sentence.split(" ") %}
+                                {% if word %}
+                                <span class="word">{{word}}</span>
+                                {% endif %}    
+                            {% endfor %}
+                            .
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </div>
         </div>
     </div>
     <div class="answer-area">
-
-    <div class="submit"></div>
+        <div class="submit-area">
+            <div>
+                <div class="ui checkbox">
+                    <input type="checkbox" name="example">
+                    <label>No relevance area corresponding to the topic sentence</label>
+                </div>
+            </div>
+            <div id="submit" class="ui button green">Submit</div>
+        </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(function() {
+        var worker="tester";
+
+        //highlight selection
+        $('.word').click(function(){
+            $(this).toggleClass('relevance');
+        });
+        
+
+        //submit answer to server
+        $("#submitAnswer").click(function(event){
+            $.ajax({
+                type: "GET",
+                url: "/add_answer",
+
+                data: { "task_type": "relevance",
+                      "created_user": worker,
+                      "relevance_word_ids": [],
+                      "paragraph_id": "abc"
+                },
+
+                dataType: 'json', 
+
+                success: function(data) {
+                //window.location = "/success";
+                
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert("Error");    
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

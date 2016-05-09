@@ -3,7 +3,7 @@
 <header>Task: Identify Topic Sentence</header>
 <section>
     <div class="definition">
-        <h4><i class="fa fa-info-circle" aria-hidden="true"></i><span class="block-title">What is a topic sentence?</span></h4>
+        <h4><i class="info circle icon"></i><span class="block-title">What is a topic sentence?</span></h4>
         <ul>
         <li>A topic sentence is a sentence that captures the meaning of the entire paragraph or group of sentences.</li>
         <li>It is composed of two parts: (a) the topic itself and (b) the controlling idea.</li>
@@ -11,24 +11,75 @@
     </div>
 
     <div class="example-area">
-        <div><i class="fa fa-newspaper-o" aria-hidden="true"></i><span class="block-title">Example</span></div>
+        <div><i class="newspaper icon"></i><span class="block-title">Example</span></div>
         <div>Title: Affective Computational Priming and Creativity</div>
  
         <div>Paragraph:</div>
-        <div class="content">Creative professionals, such as engineers, scientists, and designers, increasingly rely on technology to complete creative tasks at work. They use web browsers to conduct research and search for inspiration. They document projects on wikis in order to collaborate with others. They depend on graphic design software and word processors to design and create. In response, human-computer interaction (HCI) researchers have started building creativity support tools, or software to enhance creative performance [cited]</div>
+        <div class="content"><span class="highlight">Creative professionals, such as engineers, scientists, and designers, increasingly rely on technology to complete creative tasks at work.</span> They use web browsers to conduct research and search for inspiration. They document projects on wikis in order to collaborate with others. They depend on graphic design software and word processors to design and create. In response, human-computer interaction (HCI) researchers have started building creativity support tools, or software to enhance creative performance [cited]</div>
     </div>
     <hr>
     <div class="problem-area">
-        <div><i class="fa fa-question-circle" aria-hidden="true"></i><span class="block-title">Please Identify Topic Sentence in the Paragraph</span></div>
+        <div><i class="help circle icon"></i><span class="block-title">Please Identify Topic Sentence in the Paragraph</span></div>
         <div class="problem">
-            <div>Title:</div>
+            <div>Title: {{ data.title }}</div>
             <div>Paragraph:</div>
-            <div id="working-area" class="content">{{ data.content }}</div>
+            <div id="working-area" class="content">
+                {% for sentence in data.content.strip().split(".") %}
+                    {% if sentence %}
+                        <span class="sentence">{{ sentence }}.</span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="submit-area">
+                <div>
+                    <div class="ui checkbox">
+                    <input type="checkbox" name="example">
+                    <label>No topic sentenice</label>
+                    </div>
+                </div>
+                <div id="submit" class="ui button green">Submit</div>
+            </div>
         </div>
     </div>
-    <div class="answer-area">
-
-    <div class="submit"></div>
-    </div>
+    
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(function() {
+        var worker="tester";
+
+        //highlight selection
+        $('.sentence').click(function(){
+            $(this).toggleClass('highlight');
+        });
+
+
+        //submit answer to server
+        $("#submitAnswer").click(function(event){
+            $.ajax({
+                type: "GET",
+                url: "/add_answer",
+
+                data: { "task_type": "topic",
+                      "created_user": worker,
+                      "topic_sentence_ids": [],
+                      "paragraph_id": "abc"
+                },
+
+                dataType: 'json', 
+
+                success: function(data) {
+                //window.location = "/success";
+                
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert("Error");    
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}
