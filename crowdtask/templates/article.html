@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<span><a href="{{ url_for('views.show_all')}}">All Articles</a> > Article {{ data.id }}</span>
+<header>{{data.title}}</header>
+<section>
+    {% for paragraph in data.paragraphs %}
+        <p>{{ paragraph[1] }}</p>
+    {% endfor %}
+</section>
+{% endblock %}

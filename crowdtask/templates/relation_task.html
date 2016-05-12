@@ -5,11 +5,14 @@
     <div class="definition">
         <h4>Relation Catagories</h4>
         <ul>
-            <li>Addition</li>
-            <li>Chronological/Process Order</li>
-            <li>Cause/Effect</li>
-            <li>Comparison and Contrast</li>
-            <li>Generalization and Example</li>
+            <li><b>Addition:</b> add another idea or more information</li>
+            <li><b>Sequential Order:</b> describes the sequence order how things work</li>
+            <li><b>Compare:</b> discusses similarities among ideas, theories, concepts, objects, or persons.</li>
+            <li><b>Contrast:</b> discusses differences among ideas, theories, concepts, objects, or persons.</li>
+            <li><b>Cause:</b> describes why things happen</li>
+            <li><b>Effect:</b> describes what happens as a result</li>
+            <li><b>Generalization:</b> provides a condensed review of an idea or summary/conclude several ideas (specific to general)</li>
+            <li><b>Specification:</b> provides examples or information that clarify a broad, general statement or explain a concept. (general to specific)</li>
         </ul>
     </div>
 
@@ -23,7 +26,7 @@
         <b>Relation Category</b>
         <div>S1: Creative professionals, such as engineers, scientists, and designers, increasingly rely on technology to complete creative tasks at work.</div>
         <div>S2: They use web browsers to conduct research and search for inspiration. They document projects on wikis in order to collaborate with others.</div>
-        <div class="classification"><i class="write icon"></i>What's relation from S1 to S2? <span style="font-weight: bold;  text-decoration: underline; margin-left: 5px;">Generalization and Example</span></div>
+        <div class="classification"><i class="write icon"></i>What's relation from S1 to S2? <span class="word-box">Specification</span></div>
     </div>
     <hr>
     <div class="problem-area">
@@ -32,50 +35,71 @@
             <div>Title: {{ data.title }}</div>
             <div>Paragraph:</div>
             <div id="working-area">
-                {% for sentence in data.content_list %}
-                    {% if sentence %}
-                        {% if (loop.index-1) in data.pair_ids %}
-                            <span class="pair">{{ sentence }}.</span>
-                        {% else %}
-                            {{ sentence }}.
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-            </div>
-
-            <hr/>
-            <b>Relation Category</b>
-            <div>S1: {{ data.content_list[data.pair_ids[0]] }}</div>
-            <div>S2: {{ data.content_list[data.pair_ids[1]] }}</div>
-
-            <div class="classification"><i class="write icon"></i>What's relation from S1 to S2? 
-
-            <div class="ui dropdown dropdown-menu">
-            <div class="text">Relation Categories</div><i class="dropdown icon"></i>
-            <div class="menu">
-                <div class="item">Addition</div>
-                <div class="item">Chronological/Process Order</div>
-                <div class="item">Cause/Effect
-                    <i class="dropdown icon"></i>
-                    <div class="menu">
-                        <div class="item">Cause</div>
-                        <div class="item">Effect</div>
+                {% for paragraph_idx in data.paragraphs %}
+                <div class="problem-relation">
+                    <div class="paragraph" id="paragraph_{{paragraph_idx}}">
+                        {% for sentence in data.paragraphs[paragraph_idx] %}
+                            <span class="sentence">{{ sentence }}.</span>
+                                <!--{% if (loop.index-1) in data.pair_ids %}
+                                    <span class="pair sentence">{{ sentence }}.</span>
+                                {% else %}
+                                    <span class="sentence">{{ sentence }}.</span>
+                                {% endif %}-->
+                            
+                        {% endfor %}
                     </div>
-                </div>
 
-                <div class="item">Comparison and Contrast
-                    <i class="dropdown icon"></i>
-                    <div class="menu">
-                        <div class="item">Comparison</div>
-                        <div class="item">Contrast</div>
+                    <div><button class="ui button" id="finishedButton">I've finished the reading.</button>
+                    <div class="relation-area" id="relationArea">
+                        <b>Relation Category</b>
+                        {% for s_index in range(0,data.paragraphs[paragraph_idx]|length) %}
+                            <div id="sentence_{{s_index}}">S{{s_index}}: {{ data.paragraphs[paragraph_idx][s_index] }}</div>
+                        {% endfor %}
+                        
+                        <b><i class="write icon"></i>Please answer the following questions:</b>
+                        <ol>
+                        {% for s_index in range(data.paragraphs[paragraph_idx]|length-1) %}
+                            <li>
+                                <div class="classification">What's relation from S{{s_index}} to S{{s_index+1}}? 
+                                <div class="ui dropdown dropdown-menu relation" id="relation_{{ "%s-%s" % (s_index,s_index+1) }}">
+                                <div class="text">Relation Categories</div><i class="dropdown icon"></i>
+                                <div class="menu">
+                                    <div class="item">Addition</div>
+                                    <div class="item">Sequential Order</div>
+                                    <div class="item">Cause/Effect
+                                        <i class="dropdown icon"></i>
+                                        <div class="menu">
+                                            <div class="item">Cause</div>
+                                            <div class="item">Effect</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="item">Comparison and Contrast
+                                        <i class="dropdown icon"></i>
+                                        <div class="menu">
+                                            <div class="item">Comparison</div>
+                                            <div class="item">Contrast</div>
+                                        </div>
+                                    </div>
+                                    <div class="item">Generalization and Specification
+                                        <i class="dropdown icon"></i>
+                                        <div class="menu">
+                                            <div class="item">Generalization</div>
+                                            <div class="item">Specification</div>
+                                        </div>
+                                    </div>
+                                    <div class="item">Others</div>
+                                    <div class="item">None</div>
+                                </div>
+                                </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                        </ol>
                     </div>
+                    
+                    {% endfor %}
                 </div>
-                <div class="item">Generalization and Example</div>
-                <div class="item">Other</div>
-
-            </div>
-            </div>
-
             </div>
         </div>
         
@@ -83,13 +107,62 @@
     
     <div class="answer-area">
         <div class="submit-area">
-            <div id="submit" class="ui button green">Submit</div>
+            <div id="submitAnswer" class="ui button green">Submit</div>
         </div>
     </div>
 </section>
 {% endblock %}
 {% block extra_js %}
 <script>
-$('.ui.dropdown').dropdown();
+    $(function() {
+        //need to change to real worker id
+        var worker="tester";
+
+        //enable dropdown menu
+        $('.ui.dropdown').dropdown();
+        $('#relationArea').hide();
+        $('#finishedButton').click(function(){
+            $('#relationArea').show();
+            $('#finishedButton').hide();
+        });
+
+
+        //submit answer to server
+        $("#submitAnswer").click(function(event){
+
+            // retrieve all relevance area
+            var relationArr = new Array();
+            $("#working-area .relation").each(function(i){
+                var relation_type = $(this).find(".text").text();
+                var relation_id = this.id.split("_");
+                var paragraph_id = $(this).closest('.problem-relation').find('.paragraph').attr('id').split("_");
+                relationArr.push(paragraph_id[1]+":"+relation_id[1]+":"+relation_type);
+            });
+
+            var resultRelation = ""
+            resultRelation = relationArr.join("|");
+            console.log(resultRelation);
+
+            $.ajax({
+                type: "GET",
+                url: "/api/add_relation",
+
+                data: {
+                    "article_id": {{ data.article_id }},
+                    "created_user": worker,
+                    "paragraph_relation": resultRelation
+                },
+
+                dataType: 'json', 
+
+                success: function(data) {
+                    window.location = "/success";
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert("Error");    
+                }
+            });
+        });
+    });
 </script>
 {% endblock%}

@@ -24,10 +24,18 @@
             <div>Title: {{ data.title }}</div>
             <div>Paragraph:</div>
             <div id="working-area" class="content">
-                {% for sentence in data.content.strip().split(".") %}
-                    {% if sentence %}
-                        <span class="sentence">{{ sentence }}.</span>
+                {% for paragraph in data.content %}
+                    {% if data.paragraph_idx %}
+                    <p class="paragraph" id="paragraph_{{data.paragraph_idx}}">
+                    {% else %}
+                    <p class="paragraph" id="paragraph_{{loop.index-1}}">
                     {% endif %}
+                    {% for sentence in paragraph.split(".") %}
+                        {% if sentence %}
+                        <span class="sentence highlight-sentence" id="sentence_{{loop.index-1}}">{{ sentence }}.</span>
+                        {% endif %}
+                    {% endfor %}
+                    </p>
                 {% endfor %}
             </div>
 
@@ -38,7 +46,7 @@
                     <label>No topic sentenice</label>
                     </div>
                 </div>
-                <div id="submit" class="ui button green">Submit</div>
+                <div id="submitAnswer" class="ui button green">Submit</div>
             </div>
         </div>
     </div>
@@ -59,21 +67,30 @@
 
         //submit answer to server
         $("#submitAnswer").click(function(event){
+            var resultArr = new Array();
+            $("#working-area .highlight").each(function(i){
+                var sentence_id = this.id.split("_");
+                var paragraph_id = $(this).parent().attr('id').split("_");
+                resultArr.push(paragraph_id[1]+":"+sentence_id[1]);
+            });
+
+            var result = "";
+            result = resultArr.join("|");
+
             $.ajax({
                 type: "GET",
-                url: "/add_answer",
+                url: "/api/add_topic",
 
-                data: { "task_type": "topic",
-                      "created_user": worker,
-                      "topic_sentence_ids": [],
-                      "paragraph_id": "abc"
+                data: {
+                    "article_id": {{ data.article_id }},
+                    "created_user": worker,
+                    "paragraph_topic": result,
                 },
 
                 dataType: 'json', 
 
                 success: function(data) {
-                //window.location = "/success";
-                
+                    window.location = "/success";
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert("Error");    

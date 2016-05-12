@@ -19,19 +19,22 @@
             <div>Title: {{ data.title }}</div>
             <div>Paragraph:</div>
             <div id="working-area">
-                {% for sentence in data.content.strip().split(".") %}
-                    {% if sentence %}
-                        {% if (loop.index-1) in data.topic_sentence %}
-                            <span class="highlight">{{ sentence }}.</span>
+                {% for i in range(data.paragraphs|length) %}
+                    <p class="paragraph" id="paragraph_{{i}}">
+                    {% for j in range(data.paragraphs[i]|length) %}
+                        <span id="sentence_{{j}}" class="sentence">
+                        {% if data.topic_sentence[i][j] > 2 %}
+                            <span class="highlight topic_sentence">{{ data.paragraphs[i][j] }}.</span>
                         {% else %}
-                            {% for word in sentence.split(" ") %}
+                            {% for word in data.paragraphs[i][j].strip().split(" ") %}
                                 {% if word %}
-                                <span class="word">{{word}}</span>
+                                    <span class="word" id="word_{{loop.index-1}}">{{word}}</span>
                                 {% endif %}    
                             {% endfor %}
                             .
                         {% endif %}
-                    {% endif %}
+                        </span>
+                    {% endfor %}
                 {% endfor %}
             </div>
         </div>
@@ -44,7 +47,7 @@
                     <label>No relevance area corresponding to the topic sentence</label>
                 </div>
             </div>
-            <div id="submit" class="ui button green">Submit</div>
+            <div id="submitAnswer" class="ui button green">Submit</div>
         </div>
     </div>
 </section>
@@ -53,6 +56,7 @@
 {% block extra_js %}
 <script>
     $(function() {
+        //need to change to real worker id
         var worker="tester";
 
         //highlight selection
@@ -63,21 +67,49 @@
 
         //submit answer to server
         $("#submitAnswer").click(function(event){
+
+            // retrieve all relevance area
+            var relevanceArr = new Array();
+            $("#working-area .relevance").each(function(i){
+                var word_id = this.id.split("_");
+                var sentence_id = $(this).closest('.sentence').attr('id').split("_");
+                var paragraph_id = $(this).closest('.paragraph').attr('id').split("_");
+
+                relevanceArr.push(paragraph_id[1]+":"+sentence_id[1]+"-"+word_id[1]);
+            });
+
+            // retrieve all topic sentences
+            var topicArray = new Array();
+            $('.topic_sentence').each(function(j){
+                var sentence_id = $(this).closest('.sentence').attr('id').split("_");
+                var paragraph_id = $(this).closest('.paragraph').attr('id').split("_");
+                topicArray.push(paragraph_id[1]+":"+sentence_id[1]); 
+            });
+
+
+            var resultRelevance = "";
+            resultRelevance = relevanceArr.join("|");
+            console.log(resultRelevance);
+
+            var resultTopic = "";
+            resultTopic = topicArray.join("|");
+            console.log(resultTopic);
+
             $.ajax({
                 type: "GET",
-                url: "/add_answer",
+                url: "/api/add_relevance",
 
-                data: { "task_type": "relevance",
-                      "created_user": worker,
-                      "relevance_word_ids": [],
-                      "paragraph_id": "abc"
+                data: {
+                    "article_id": {{ data.article_id }},
+                    "created_user": worker,
+                    "paragraph_relevance": resultRelevance,
+                    "paragraph_topic": resultTopic
                 },
 
                 dataType: 'json', 
 
                 success: function(data) {
-                //window.location = "/success";
-                
+                    window.location = "/success";
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert("Error");    

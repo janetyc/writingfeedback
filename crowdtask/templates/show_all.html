@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<header>Show All Articles</header>
+<section>
+    <ul>
+    {% for article in data %}
+    <li><a href="{{ url_for('views.show_article', article_id=article.article_id)}}">{{article.title}}</a></li>
+    {% endfor %}
+    </ul>
+</section>
+{% endblock %}
