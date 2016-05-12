@@ -6,3 +6,6 @@ virtualenv==15.0.1
 virtualenv-clone==0.2.6
 virtualenvwrapper==4.7.1
 Werkzeug==0.11.9
+Flask-Migrate==1.8.0
+Flask-Script==2.0.5
+Flask-SQLAlchemy==2.1
