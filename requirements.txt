@@ -9,3 +9,4 @@ Werkzeug==0.11.9
 Flask-Migrate==1.8.0
 Flask-Script==2.0.5
 Flask-SQLAlchemy==2.1
+psycopg2==2.6.1
