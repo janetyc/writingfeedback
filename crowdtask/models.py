@@ -4,11 +4,11 @@ class Article(db.Model):
     __tablename__ = 'article'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    title = db.Column(db.String(80))
-    content = db.Column(db.String(500))
-    #authors = db.Column(db.String(150))
-    #keywords = db.Column(db.String(80))
-    #source = db.Column(db.String(80))
+    title = db.Column(db.Text())
+    content = db.Column(db.Text())
+    #authors = db.Column(db.Text())
+    #keywords = db.Column(db.Text())
+    #source = db.Column(db.Text())
     #year = db.Column(db.Integer)
 
     #def __init__(self, title, content, authors="", keywords="", source="", year=-1):
@@ -32,7 +32,7 @@ class Paragraph(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     article_id = db.Column(db.Integer)
     paragraph_idx = db.Column(db.Integer) # index of paragraph in the article
-    content = db.Column(db.String(200))
+    content = db.Column(db.Text())
 
     def __init__(self, article_id, paragraph_idx, content):
         self.article_id = article_id
@@ -47,9 +47,9 @@ class Task(db.Model):
     __tablename__ = 'task'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    task_type = db.Column(db.String(80))
-    created_user = db.Column(db.String(80))
-    output = db.Column(db.String(80))
+    task_type = db.Column(db.Text())
+    created_user = db.Column(db.Text())
+    output = db.Column(db.Text())
 
     def __init__(self, created_user, task_type):
         self.created_user = created_user
@@ -63,10 +63,10 @@ class Topic(db.Model):
     __tablename__ = 'topic'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    created_user = db.Column(db.String(80))
+    created_user = db.Column(db.Text())
     article_id = db.Column(db.Integer)
     paragraph_idx = db.Column(db.Integer)
-    topic_sentence_ids = db.Column(db.String(100))
+    topic_sentence_ids = db.Column(db.Text())
 
     def __init__(self, created_user, article_id, paragraph_idx, topic_sentence_ids):
         self.created_user = created_user
@@ -81,12 +81,12 @@ class Topic(db.Model):
 class Relation(db.Model):
     __tablename__ = 'relation'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    created_user = db.Column(db.String(80))
+    created_user = db.Column(db.Text())
     article_id = db.Column(db.Integer)
     paragraph_idx = db.Column(db.Integer)
-    sentence_pair = db.Column(db.String(120)) #two neighboring sentences
-    relation_type = db.Column(db.String(100))
-    others = db.Column(db.String(100))
+    sentence_pair = db.Column(db.Text()) #two neighboring sentences
+    relation_type = db.Column(db.Text())
+    others = db.Column(db.Text())
 
     def __init__(self, created_user, article_id, paragraph_idx, sentence_pair, relation_type, others):
         self.created_user = created_user
@@ -107,11 +107,11 @@ class Relation(db.Model):
 class Relevance(db.Model):
     __tablename__ = 'relevance'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    created_user = db.Column(db.String(80))
+    created_user = db.Column(db.Text())
     article_id = db.Column(db.Integer)
     paragraph_idx = db.Column(db.Integer)
-    topic_sentence_idx = db.Column(db.String(100))
-    relevance_ids = db.Column(db.String(100))
+    topic_sentence_idx = db.Column(db.Text())
+    relevance_ids = db.Column(db.Text())
 
     def __init__(self, created_user, article_id, paragraph_idx, topic_sentence_idx, relevance_ids):
         self.created_user = created_user
@@ -136,11 +136,11 @@ class Structure(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     article_id = db.Column(db.Integer)
     paragraph_idx = db.Column(db.Integer)
-    topic = db.Column(db.String(200))
-    relevance = db.Column(db.String(200))
-    relation = db.Column(db.String(200))
-    others = db.Column(db.String(200))
-    task_history = db.Column(db.String(300))
+    topic = db.Column(db.Text())
+    relevance = db.Column(db.Text())
+    relation = db.Column(db.Text())
+    others = db.Column(db.Text())
+    task_history = db.Column(db.Text())
 
     def __init__(self, article_id, paragraph_idx, topic, relevance, relation, others, task_history):
         self.article_id = article_id

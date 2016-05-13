@@ -37,9 +37,11 @@ def import_articles(directory, filename):
     all_files = [file for file in listdir(directory) if isfile(join(directory, file))]
 
     for file in all_files:
+        if file == ".DS_Store":
+            continue
         print "Read Article: %s/%s ..." % (directory, file)
         r = open("%s/%s" % (directory, file), "r")
-        content = r.read().decode('utf_8')
+        content = r.read().decode('utf-8')
         all_match = re_data.findall(content)
         data = dict(all_match)
 

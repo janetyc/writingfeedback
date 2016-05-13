@@ -10,7 +10,7 @@ def index():
 
 @views.route('/topic/<int:article_id>', methods=('GET','POST'))
 def topic_task(article_id):
-    paragraph_idx = request.args.get('paragraph_idx')
+    paragraph_idx = request.args.get('paragraph_idx',u'0')
     article = DBQuery().get_article_by_id(article_id)
     if article:
         paragraphs = {}
@@ -42,19 +42,29 @@ def topic_task(article_id):
 
 @views.route('/relevance/<int:article_id>', methods=('GET','POST'))
 def relevance_task(article_id):
-    paragraph_idx = request.args.get('paragraph_idx')
+    paragraph_idx = request.args.get('paragraph_idx',u'0')
     article = DBQuery().get_article_by_id(article_id)
 
     if article:
-        paragraphs = article.content.strip().split("<BR>")
+        paragraph_map = {}
+        for i, paragraph in enumerate(article.content.split("<BR>")):
+            if paragraph:
+                paragraph_map[i] = paragraph
+
+        # set one paragraph (should modify, solved it temporary)
+        paragraphs = {}
+        paragraph_idx = int(paragraph_idx)
+        if paragraph_idx < len(paragraph_map):
+            paragraphs[paragraph_idx] = paragraph_map[paragraph_idx]
+
         topics = DBQuery().get_topics_by_article_id(article_id)
-        
         topic_map = {}
         for topic in topics:
             if not topic.paragraph_idx in topic_map:
                 topic_map[topic.paragraph_idx] = []
 
             topic_map[topic.paragraph_idx].extend([int(i) for i in topic.topic_sentence_ids.split(",")])
+
 
         count_list = []
         sentences_list = []
@@ -102,7 +112,7 @@ def relation_task(article_id):
                 sentence_list = paragraph.split(".")
                 paragraph_map[i] = sentence_list[:-1]
         
-
+        # set one paragraph (should modify, solved it temporary)
         paragraph_idx = int(paragraph_idx)
         if paragraph_idx < len(paragraph_map):
             paragraphs[paragraph_idx] = paragraph_map[paragraph_idx]
