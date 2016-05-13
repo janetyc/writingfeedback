@@ -47,13 +47,20 @@ class Task(db.Model):
     __tablename__ = 'task'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    task_type = db.Column(db.Text())
     created_user = db.Column(db.Text())
-    output = db.Column(db.Text())
+    task_type = db.Column(db.Text())
+    problem = db.Column(db.Text()) #article_id|paragraph_idx
+    answer = db.Column(db.Text()) #list of output_ids (e.g. relation_id, topic_id, relevance_id)
+    verified_string = db.Column(db.Text())
+    status = db.Column(db.Integer)
 
-    def __init__(self, created_user, task_type):
+    def __init__(self, created_user, task_type, problem, answer, verified_string, status):
         self.created_user = created_user
         self.task_type = task_type
+        self.problem = problem
+        self.answer = answer
+        self.verified_string = verified_string
+        self.status = status
 
     def __repr__(self):
         return '<Task %r>' % self.created_user

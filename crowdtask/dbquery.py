@@ -19,8 +19,10 @@ class DBQuery(object):
         return paragraph.id
 
     #crowd task
-    def add_task(self):
-
+    def add_task(self, created_user, article_id, paragraph_idx, pair_ids, relation_type, others):
+        task = Task(created_user, article_id, paragraph_idx, pair_ids, relation_type, others)
+        db.session.add(task)
+        db.session.commit()
         return ""
 
     def add_topic(self, created_user, article_id, paragraph_id, topic_sentence_ids):
