@@ -19,10 +19,11 @@ def topic_task(article_id):
                 paragraphs[i] = paragraph
 
         content = paragraphs.values()
-        if paragraph_idx:
-            paragraph_idx = int(paragraph_idx)
-            if paragraph_idx and ( paragraph_idx < len(paragraphs.values()) ):
-                content = [paragraphs[paragraph_idx]]
+        
+        #if paragraph_idx:
+        #    paragraph_idx = int(paragraph_idx)
+        #    if paragraph_idx and ( paragraph_idx < len(paragraphs.values()) ):
+        #        content = [paragraphs[paragraph_idx]]
 
         data = {
             'article_id': article_id,

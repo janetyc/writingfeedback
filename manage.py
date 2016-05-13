@@ -16,7 +16,8 @@ from flask_migrate import Migrate, MigrateCommand
 
 re_data = re.compile(r'(.*?): (.*?)\n')
 
-app = create_app(os.getenv('ENV'))
+env = os.getenv('ENV')
+app = create_app(env)
 migrate = Migrate(app, db)
 
 manager = Manager(app)
@@ -52,6 +53,7 @@ def import_articles(directory, filename):
         #check whether article is exist
         article = DBQuery().get_article_by_title(article_title)
         if article:
+            print "file exist!"
             shutil.move('%s/%s' % (directory, file), 'data-in-db')
             continue
 
@@ -62,6 +64,9 @@ def import_articles(directory, filename):
             paragraph = paragraph.strip()
             paragraph_id = DBQuery().add_paragraph(article_id, idx, paragraph)
             print "insert article %s - paragraph %s to the database ..." % (article_title, idx)
+
+        print "move article to data-in-db folder ..."
+        shutil.move('%s/%s' % (directory, file), 'data-in-db')
 
 if __name__ == '__main__':
     manager.run()
