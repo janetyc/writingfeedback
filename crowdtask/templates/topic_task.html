@@ -57,7 +57,8 @@
 {% block extra_js %}
 <script>
     $(function() {
-        var worker="tester";
+        var worker = "{{ data.worker_id }}";
+
 
         //highlight selection
         $('.sentence').click(function(){

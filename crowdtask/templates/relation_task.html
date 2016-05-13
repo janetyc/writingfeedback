@@ -115,9 +115,8 @@
 {% block extra_js %}
 <script>
     $(function() {
-        //need to change to real worker id
-        var worker="tester";
-
+        var worker = "{{ data.worker_id }}";
+        
         //enable dropdown menu
         $('.ui.dropdown').dropdown();
         $('#relationArea').hide();

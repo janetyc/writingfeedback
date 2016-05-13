@@ -10,8 +10,10 @@ def index():
 
 @views.route('/topic/<int:article_id>', methods=('GET','POST'))
 def topic_task(article_id):
+    worker_id = request.args.get('worker_id', u'tester')
     paragraph_idx = request.args.get('paragraph_idx',u'0')
     article = DBQuery().get_article_by_id(article_id)
+    
     if article:
         paragraphs = {}
         for i, paragraph in enumerate(article.content.split("<BR>")):
@@ -26,6 +28,7 @@ def topic_task(article_id):
         #        content = [paragraphs[paragraph_idx]]
 
         data = {
+            'worker_id': worker_id,
             'article_id': article_id,
             'title': article.title,
             'content': content,
@@ -33,6 +36,7 @@ def topic_task(article_id):
         }
     else:
         data = {
+            'worker_id': worker_id,
             'article_id': article_id,
             'title': "",
             'content': [],
@@ -43,6 +47,7 @@ def topic_task(article_id):
 
 @views.route('/relevance/<int:article_id>', methods=('GET','POST'))
 def relevance_task(article_id):
+    worker_id = request.args.get('worker_id',u'tester')
     paragraph_idx = request.args.get('paragraph_idx',u'0')
     article = DBQuery().get_article_by_id(article_id)
 
@@ -86,6 +91,7 @@ def relevance_task(article_id):
         #print sentences_list
 
         data = {
+            'worker_id': worker_id,
             'article_id': article_id,
             'title': article.title,
             'paragraphs': sentences_list,
@@ -93,6 +99,7 @@ def relevance_task(article_id):
         }
     else:
         data = {
+            'worker_id': worker_id,
             'article_id': article_id,
             'title': [],
             'paragraphs': [],
@@ -102,6 +109,7 @@ def relevance_task(article_id):
     
 @views.route('/relation/<int:article_id>', methods=('GET','POST'))
 def relation_task(article_id):
+    worker_id = request.args.get('worker_id',u'tester')
     paragraph_idx = request.args.get('paragraph_idx', u'0')
     article = DBQuery().get_article_by_id(article_id)
 
@@ -119,6 +127,7 @@ def relation_task(article_id):
             paragraphs[paragraph_idx] = paragraph_map[paragraph_idx]
             
         data = {
+            'worker_id': worker_id,
             'article_id': article_id,
             'title': article.title,
             'paragraphs': paragraphs,
@@ -128,6 +137,7 @@ def relation_task(article_id):
 
     else:
         data = {
+            'worker_id': worker_id,
             'article_id': article_id,
             'title': "",
             'paragraphs': [],
