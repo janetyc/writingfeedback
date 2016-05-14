@@ -117,12 +117,21 @@
     $(function() {
         var worker = "{{ data.worker_id }}";
 
+        //disable submit button
+        $('#submitAnswer').addClass("disabled");
+
         //enable dropdown menu
         $('.ui.dropdown').dropdown();
         $('#relationArea').hide();
         $('#finishedButton').click(function(){
             $('#relationArea').show();
             $('#finishedButton').hide();
+        });
+
+        $('#working-area .relation').click(function(){
+            var allValues = $('#working-area .relation .text').map(function () { return $(this).text(); });
+            if($.inArray("Relation Categories", allValues) == -1) $('#submitAnswer').removeClass("disabled");
+            else $('#submitAnswer').addClass("disabled");
         });
 
 

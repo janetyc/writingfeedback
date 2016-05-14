@@ -41,7 +41,7 @@
 
             <div class="submit-area">
                 <div>
-                    <div class="ui checkbox">
+                    <div class="ui checkbox" id="checkEmpty">
                     <input type="checkbox" name="example">
                     <label>No topic sentenice</label>
                     </div>
@@ -59,15 +59,35 @@
     $(function() {
         var worker = "{{ data.worker_id }}";
 
+        //disable submit button
+        $('#submitAnswer').addClass("disabled");
 
         //highlight selection
         $('.sentence').click(function(){
             $(this).toggleClass('highlight');
+            
+            
+            if($('#working-area .highlight').length){
+                $('#submitAnswer').removeClass("disabled");
+                $('#checkEmpty input').removeAttr("checked");
+                $('#checkEmpty input').attr("disabled", true);
+            }
+            else{
+                $('#checkEmpty input').removeAttr("checked");
+                $('#checkEmpty input').removeAttr("disabled");
+                $('#submitAnswer').addClass("disabled");
+            }
+        });
+
+        $('#checkEmpty').click(function(){
+            if($('#checkEmpty input').is(':checked')) $('#submitAnswer').removeClass("disabled");
+            else $('#submitAnswer').addClass("disabled");
         });
 
 
         //submit answer to server
         $("#submitAnswer").click(function(event){
+
             var resultArr = new Array();
             $("#working-area .highlight").each(function(i){
                 var sentence_id = this.id.split("_");

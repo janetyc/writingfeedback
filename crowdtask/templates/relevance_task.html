@@ -42,7 +42,7 @@
     <div class="answer-area">
         <div class="submit-area">
             <div>
-                <div class="ui checkbox">
+                <div class="ui checkbox" id="checkEmpty">
                     <input type="checkbox" name="example">
                     <label>No relevance area corresponding to the topic sentence</label>
                 </div>
@@ -58,11 +58,30 @@
     $(function() {
         var worker = "{{ data.worker_id }}";
 
+        //disable submit button
+        $('#submitAnswer').addClass("disabled");
+
         //highlight selection
         $('.word').click(function(){
             $(this).toggleClass('relevance');
+
+            if($('#working-area .relevance').length){
+                $('#submitAnswer').removeClass("disabled");
+                $('#checkEmpty input').removeAttr("checked");
+                $('#checkEmpty input').attr("disabled", true);
+            }
+            else{
+                $('#checkEmpty input').removeAttr("checked");
+                $('#checkEmpty input').removeAttr("disabled");
+                $('#submitAnswer').addClass("disabled");
+            }
         });
         
+        $('#checkEmpty').click(function(){
+            if($('#checkEmpty input').is(':checked')) $('#submitAnswer').removeClass("disabled");
+            else $('#submitAnswer').addClass("disabled");
+        });
+
 
         //submit answer to server
         $("#submitAnswer").click(function(event){
