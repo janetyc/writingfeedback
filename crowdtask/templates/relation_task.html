@@ -116,7 +116,7 @@
 <script>
     $(function() {
         var worker = "{{ data.worker_id }}";
-        
+
         //enable dropdown menu
         $('.ui.dropdown').dropdown();
         $('#relationArea').hide();
@@ -149,13 +149,14 @@
                 data: {
                     "article_id": {{ data.article_id }},
                     "created_user": worker,
-                    "paragraph_relation": resultRelation
+                    "paragraph_relation": resultRelation,
+                    "verified_string": "{{ data.verified_string }}"
                 },
 
                 dataType: 'json', 
 
                 success: function(data) {
-                    window.location = "/success";
+                    window.location = "/success?verified_string={{ data.verified_string }}";
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert("Error");    

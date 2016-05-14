@@ -1,17 +1,15 @@
-import random
-import string
 from flask import Blueprint, Flask, request, render_template, redirect, url_for, jsonify
 from crowdtask.dbquery import DBQuery
 from enum import TaskType, RelationType, Status
 
 api = Blueprint('api', __name__, template_folder='templates')
 
-
 @api.route('/api/add_topic', methods=('GET','POST'))
 def add_topic():
     article_id = request.args.get('article_id')
     created_user = request.args.get('created_user', u'tester')
     paragraph_topic = request.args.get('paragraph_topic')
+    verified_string = request.args.get('verified_string')
 
     paragraph_topic_map={}
 
@@ -31,9 +29,7 @@ def add_topic():
         topic_id = DBQuery().add_topic(created_user, article_id, paragraph_idx, topic_sentence_ids)
         topic_list.append(str(topic_id))
 
-    verified_string = generate_verified_str(6)
     DBQuery().add_task(created_user, TaskType.TOPIC, problem, "|".join(topic_list), verified_string, Status.REVIEW)
-
     return jsonify(success=1, data=topic_list)
 
 # require implement
@@ -43,6 +39,7 @@ def add_relevance():
     article_id = request.args.get('article_id')
     paragraph_relevance = request.args.get('paragraph_relevance')
     paragraph_topic = request.args.get('paragraph_topic')
+    verified_string = request.args.get('verified_string')
     #print "relevance: %s" % paragraph_relevance
     #print "topic: %s" % paragraph_topic
 
@@ -78,17 +75,17 @@ def add_relevance():
         relevance_id = DBQuery().add_relevance(created_user, int(article_id), int(paragraph_idx), topic_ids, relevance_ids_str)
         relevance_list.append(str(relevance_id))
 
-    verified_string = generate_verified_str(6)
     DBQuery().add_task(created_user, TaskType.RELEVANCE, problem, "|".join(relevance_list), verified_string, Status.REVIEW)
 
     return jsonify(success=1, data=relevance_list)
 
-# require implement
+
 @api.route('/api/add_relation', methods=('GET','POST'))
 def add_relation():
     created_user = request.args.get('created_user', u'tester')
     article_id = request.args.get('article_id')
     paragraph_relation = request.args.get('paragraph_relation')
+    verified_string = request.args.get('verified_string')
 
     problem = ""
     relation_list = []
@@ -103,11 +100,6 @@ def add_relation():
         relation_id = DBQuery().add_relation(created_user, int(article_id), int(paragraph_idx), pair_ids, relation_type, "")
         relation_list.append(str(relation_id))
 
-    verified_string = generate_verified_str(6)
     DBQuery().add_task(created_user, TaskType.RELATION, problem, "|".join(relation_list), verified_string, Status.REVIEW)
 
     return jsonify(success=1, data=relation_list)
-
-
-def generate_verified_str(number):
-    return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(number))

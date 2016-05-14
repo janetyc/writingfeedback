@@ -240,10 +240,6 @@ nav{
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
 }
-#working-area{
-    
-    
-}
 
 .block-title{
     margin-left: 3px;
@@ -261,6 +257,16 @@ nav{
 }
 .center-area{
     padding-top: 30px;
+}
+
+.verified-code{
+    font-weight: bold;
+    color: #0000fd;
+    font-size: 1.2em;
+}
+
+.success-area p{
+    font-size: 1.2em;
 }
 /* ==========================================================================
    Media Queries

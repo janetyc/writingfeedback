@@ -1,3 +1,5 @@
+import random
+import string
 from flask import Blueprint, Flask, request, render_template, redirect, url_for, jsonify
 from crowdtask.dbquery import DBQuery
 
@@ -13,7 +15,8 @@ def topic_task(article_id):
     worker_id = request.args.get('worker_id', u'tester')
     paragraph_idx = request.args.get('paragraph_idx',u'0')
     article = DBQuery().get_article_by_id(article_id)
-    
+    verified_string = generate_verified_str(6)
+
     if article:
         paragraphs = {}
         for i, paragraph in enumerate(article.content.split("<BR>")):
@@ -32,7 +35,8 @@ def topic_task(article_id):
             'article_id': article_id,
             'title': article.title,
             'content': content,
-            'paragraph_idx': paragraph_idx
+            'paragraph_idx': paragraph_idx,
+            'verified_string': verified_string
         }
     else:
         data = {
@@ -40,7 +44,8 @@ def topic_task(article_id):
             'article_id': article_id,
             'title': "",
             'content': [],
-            'paragraph_idx': ""
+            'paragraph_idx': "",
+            'verified_string': verified_string
         }
     
     return render_template('topic_task.html', data=data)
@@ -50,6 +55,7 @@ def relevance_task(article_id):
     worker_id = request.args.get('worker_id',u'tester')
     paragraph_idx = request.args.get('paragraph_idx',u'0')
     article = DBQuery().get_article_by_id(article_id)
+    verified_string = generate_verified_str(6)
 
     if article:
         paragraph_map = {}
@@ -95,7 +101,8 @@ def relevance_task(article_id):
             'article_id': article_id,
             'title': article.title,
             'paragraphs': sentences_list,
-            'topic_sentence': count_list
+            'topic_sentence': count_list,
+            'verified_string': verified_string
         }
     else:
         data = {
@@ -103,7 +110,8 @@ def relevance_task(article_id):
             'article_id': article_id,
             'title': [],
             'paragraphs': [],
-            'topic_sentence': []
+            'topic_sentence': [],
+            'verified_string': verified_string
         }
     return render_template('relevance_task.html', data=data)
     
@@ -112,6 +120,7 @@ def relation_task(article_id):
     worker_id = request.args.get('worker_id',u'tester')
     paragraph_idx = request.args.get('paragraph_idx', u'0')
     article = DBQuery().get_article_by_id(article_id)
+    verified_string = generate_verified_str(6)
 
     if article:
         paragraph_map = {}
@@ -131,7 +140,8 @@ def relation_task(article_id):
             'article_id': article_id,
             'title': article.title,
             'paragraphs': paragraphs,
-            'paragraph_idx': paragraph_idx
+            'paragraph_idx': paragraph_idx,
+            'verified_string': verified_string
         }
 
 
@@ -141,7 +151,8 @@ def relation_task(article_id):
             'article_id': article_id,
             'title': "",
             'paragraphs': [],
-            'paragraph_idx': paragraph_idx
+            'paragraph_idx': paragraph_idx,
+            'verified_string': verified_string
         }
 
     return render_template('relation_task.html', data=data)
@@ -183,7 +194,14 @@ def show_article(article_id):
 
 @views.route('/success')
 def success():
-    return render_template('success.html')
+    verified_string = request.args.get('verified_string')
+    if not verified_string:
+        data = {}
+    else:
+        data = {
+            "verified_string": verified_string
+        }
+    return render_template('success.html', data=data)
 
 # error page
 @views.app_errorhandler(404)
@@ -193,3 +211,8 @@ def page_not_found(e):
 @views.app_errorhandler(400)
 def bad_request(e):
     return render_template('400.html'), 400
+
+
+def generate_verified_str(number):
+    return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(number))
+

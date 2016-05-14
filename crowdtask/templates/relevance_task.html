@@ -102,13 +102,14 @@
                     "article_id": {{ data.article_id }},
                     "created_user": worker,
                     "paragraph_relevance": resultRelevance,
-                    "paragraph_topic": resultTopic
+                    "paragraph_topic": resultTopic,
+                    "verified_string": "{{ data.verified_string }}"
                 },
 
                 dataType: 'json', 
 
                 success: function(data) {
-                    window.location = "/success";
+                    window.location = "/success?verified_string={{ data.verified_string }}";
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert("Error");    
