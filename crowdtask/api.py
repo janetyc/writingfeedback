@@ -29,6 +29,7 @@ def add_topic():
         topic_id = DBQuery().add_topic(created_user, article_id, paragraph_idx, topic_sentence_ids)
         topic_list.append(str(topic_id))
 
+    problem = problem[1:]
     DBQuery().add_task(created_user, TaskType.TOPIC, problem, "|".join(topic_list), verified_string, Status.REVIEW)
     return jsonify(success=1, data=topic_list)
 
@@ -75,6 +76,7 @@ def add_relevance():
         relevance_id = DBQuery().add_relevance(created_user, int(article_id), int(paragraph_idx), topic_ids, relevance_ids_str)
         relevance_list.append(str(relevance_id))
 
+    problem = problem[1:]
     DBQuery().add_task(created_user, TaskType.RELEVANCE, problem, "|".join(relevance_list), verified_string, Status.REVIEW)
 
     return jsonify(success=1, data=relevance_list)
@@ -100,6 +102,7 @@ def add_relation():
         relation_id = DBQuery().add_relation(created_user, int(article_id), int(paragraph_idx), pair_ids, relation_type, "")
         relation_list.append(str(relation_id))
 
+    problem = problem[1:]
     DBQuery().add_task(created_user, TaskType.RELATION, problem, "|".join(relation_list), verified_string, Status.REVIEW)
 
     return jsonify(success=1, data=relation_list)
