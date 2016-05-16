@@ -1,3 +1,4 @@
+from datetime import datetime
 from crowdtask import db
 
 class Article(db.Model):
@@ -6,6 +7,7 @@ class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.Text())
     content = db.Column(db.Text())
+    created_time = db.Column(db.DateTime())
     #authors = db.Column(db.Text())
     #keywords = db.Column(db.Text())
     #source = db.Column(db.Text())
@@ -22,6 +24,7 @@ class Article(db.Model):
     def __init__(self, title, content):
         self.title = title
         self.content = content
+        self.created_time = datetime.utcnow()
 
     def __repr__(self):
         return '<Article %r>' % self.title
@@ -33,11 +36,13 @@ class Paragraph(db.Model):
     article_id = db.Column(db.Integer)
     paragraph_idx = db.Column(db.Integer) # index of paragraph in the article
     content = db.Column(db.Text())
+    created_time = db.Column(db.DateTime())
 
     def __init__(self, article_id, paragraph_idx, content):
         self.article_id = article_id
         self.paragraph_idx = paragraph_idx
         self.content = content
+        self.created_time = datetime.utcnow()
 
     def __repr__(self):
         return '<Paragraph %r>' % self.id
@@ -53,6 +58,8 @@ class Task(db.Model):
     answer = db.Column(db.Text()) #list of output_ids (e.g. relation_id, topic_id, relevance_id)
     verified_string = db.Column(db.Text())
     status = db.Column(db.Integer)
+    created_time = db.Column(db.DateTime())
+    submited_time = db.Column(db.DateTime())
 
     def __init__(self, created_user, task_type, problem, answer, verified_string, status):
         self.created_user = created_user
@@ -61,6 +68,7 @@ class Task(db.Model):
         self.answer = answer
         self.verified_string = verified_string
         self.status = status
+        self.created_time = datetime.utcnow()
 
     def __repr__(self):
         return '<Task %r>' % self.created_user
@@ -74,12 +82,14 @@ class Topic(db.Model):
     article_id = db.Column(db.Integer)
     paragraph_idx = db.Column(db.Integer)
     topic_sentence_ids = db.Column(db.Text())
+    created_time = db.Column(db.DateTime())
 
     def __init__(self, created_user, article_id, paragraph_idx, topic_sentence_ids):
         self.created_user = created_user
         self.article_id = article_id
         self.paragraph_idx = paragraph_idx
         self.topic_sentence_ids = topic_sentence_ids
+        self.created_time = datetime.utcnow()
 
     def __repr__(self):
         return '<Topic %r>' % self.created_user
@@ -94,6 +104,7 @@ class Relation(db.Model):
     sentence_pair = db.Column(db.Text()) #two neighboring sentences
     relation_type = db.Column(db.Text())
     others = db.Column(db.Text())
+    created_time = db.Column(db.DateTime())
 
     def __init__(self, created_user, article_id, paragraph_idx, sentence_pair, relation_type, others):
         self.created_user = created_user
@@ -102,6 +113,7 @@ class Relation(db.Model):
         self.sentence_pair = sentence_pair
         self.relation_type = relation_type
         self.others = others
+        self.created_time = datetime.utcnow()
 
     def __repr__(self):
         return '<Relation %r>' % self.created_user
@@ -119,6 +131,7 @@ class Relevance(db.Model):
     paragraph_idx = db.Column(db.Integer)
     topic_sentence_idx = db.Column(db.Text())
     relevance_ids = db.Column(db.Text())
+    created_time = db.Column(db.DateTime())
 
     def __init__(self, created_user, article_id, paragraph_idx, topic_sentence_idx, relevance_ids):
         self.created_user = created_user
@@ -126,6 +139,7 @@ class Relevance(db.Model):
         self.paragraph_idx = paragraph_idx
         self.topic_sentence_idx = topic_sentence_idx
         self.relevance_ids = relevance_ids
+        self.created_time = datetime.utcnow()
 
     def __repr__(self):
         return '<Relevance %r>' % self.created_user
