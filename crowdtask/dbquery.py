@@ -19,11 +19,14 @@ class DBQuery(object):
         return paragraph.id
 
     #crowd task
-    def add_task(self, created_user, article_id, paragraph_idx, pair_ids, relation_type, others):
-        task = Task(created_user, article_id, paragraph_idx, pair_ids, relation_type, others)
+    def add_task(self, created_user, task_type, problem, answer, 
+                 verified_string, status, assignmentId, hitId):
+
+        task = Task(created_user, task_type, problem, answer, 
+                    verified_string, status, assignmentId, hitId)
         db.session.add(task)
         db.session.commit()
-        return ""
+        return task.id
 
     def add_topic(self, created_user, article_id, paragraph_id, topic_sentence_ids):
         topic = Topic(created_user, article_id, paragraph_id, topic_sentence_ids)
@@ -32,21 +35,37 @@ class DBQuery(object):
 
         return topic.id
 
-    def add_relation(self, created_user, article_id, paragraph_idx, sentence_pair, relation_type, others):
-        relation = Relation(created_user, article_id, paragraph_idx, sentence_pair, relation_type, others)
+    def add_relation(self, created_user, article_id, paragraph_idx, 
+                     sentence_pair, relation_type, others):
+        relation = Relation(created_user, article_id, paragraph_idx, 
+                            sentence_pair, relation_type, others)
         db.session.add(relation)
         db.session.commit()
 
         return relation.id
 
-    def add_relevance(self, created_user, article_id, paragraph_idx, topic_sentence_idx, relevance_ids):
-        relevance = Relevance(created_user, article_id, paragraph_idx, topic_sentence_idx, relevance_ids)
+    def add_relevance(self, created_user, article_id, paragraph_idx, 
+                      topic_sentence_idx, relevance_ids):
+        relevance = Relevance(created_user, article_id, paragraph_idx, 
+                              topic_sentence_idx, relevance_ids)
         db.session.add(relevance)
         db.session.commit()
 
         return relevance.id
 
+    #update status
+    def update_task_status_by_worker_assignment_id(self, workerId, assignmentId, status):
+        task = Task.query.filter_by(assignmentId=assignmentId, 
+                                    created_user=workerId).update({"status": status})
+        db.session.commit()
+
+        return task
+
     #get data from database
+    def get_task_by_worker_assignment_id(self, workerId ,assignmentId):
+        task = Task.query.filter_by(assignmentId=assignmentId, created_user=workerId).first()
+        return task
+
     def get_article_by_id(self, article_id):
         article = Article.query.filter_by(id=article_id).first()
         return article

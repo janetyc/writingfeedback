@@ -20,9 +20,11 @@ def create_app(env):
     #should put after app
     from crowdtask.views import views
     from crowdtask.api import api
+    from crowdtask.task_views import task_views
     
     app.register_blueprint(views)
     app.register_blueprint(api)
+    app.register_blueprint(task_views)
 
     db.init_app(app)
 

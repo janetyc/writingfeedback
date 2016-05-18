@@ -151,6 +151,10 @@ body {
     padding: 5px;
 }
 
+.paragraph{
+    line-height: 2em;
+}
+
 /* ==============
     MOBILE: Menu
    ============== */

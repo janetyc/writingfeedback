@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+    <body>
+        {% if assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE" %}
+        <p>you haven't accept this mturk</p>
+        {% else %}
+		<script>
+			function openwindow() {
+				
+				url = "/welcome?{{param|urlencode|safe}}";
+				
+				
+                popup = window.open(url,'Popup','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=no,width='+screen.availWidth+',height='+screen.availHeight+'');
+				
+				popup.onunload = function() { location.reload(true) }
+			}
+		</script>
+		<h1>Thank you for accepting this HIT!</h1>
+		<p>By clicking the following URL link, you will be taken to the experiment,
+				including several questions. After completing all the tasks, we will bring you back to the mturk page</p>
+
+		<p>
+		Please disable pop-up blockers before continuing.
+		</p>
+		<p><a href="#" onClick="openwindow()">"Click here to start.</a></p>
+
+        {% endif %}
+	</body>
+</html>
+

@@ -1,4 +1,3 @@
-# -*- coding: utf_8 -*-
 import os
 import re
 import shutil

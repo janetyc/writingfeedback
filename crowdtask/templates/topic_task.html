@@ -38,8 +38,8 @@
                     </p>
                 {% endfor %}
             </div>
-
-            <div class="submit-area">
+            <div>preview_flag: {{ data.preview_flag }}</div>
+            <div class="submit-area" id="submitTask">
                 <div>
                     <div class="ui checkbox" id="checkEmpty">
                     <input type="checkbox" name="example">
@@ -57,7 +57,15 @@
 {% block extra_js %}
 <script>
     $(function() {
-        var worker = "{{ data.worker_id }}";
+        var worker_id = "{{ data.worker_id }}";
+        var assignmentId = "{{ data.assignmentId }}"
+
+        //preview
+        var preview_flag = "{{ data.preview_flag }}";
+        if (preview_flag != ""){
+            $("#submitTask").css("display", "none");
+        }
+
 
         //disable submit button
         $('#submitAnswer').addClass("disabled");
@@ -104,15 +112,26 @@
 
                 data: {
                     "article_id": {{ data.article_id }},
-                    "created_user": worker,
+                    "workerId": worker_id,
                     "paragraph_topic": result,
-                    "verified_string": "{{ data.verified_string }}"
+                    "verified_string": "{{ data.verified_string }}",
+                    "assignmentId": "{{ data.assignmentId }}",
+                    "hitId": "{{ data.hitId }}"
                 },
 
                 dataType: 'json', 
 
                 success: function(data) {
-                    window.location = "/success?verified_string={{ data.verified_string }}";
+                    if(data['success'] == 1){
+                        if(assignmentId==""){
+                            window.location = "/success?verified_string={{data.verified_string}}";
+                        }
+                        else{
+                            window.location = "/closepopup?hitId={{ data.hitId }}&assignmentId={{ data.assignmentId}}&workerId={{data.worker_id}}&verified_string={{data.verified_string}}";
+                        }
+                    }else{
+                        window.location = "/success";
+                    }
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert("Error");    

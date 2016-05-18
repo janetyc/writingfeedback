@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Error</title>
+	</head>
+<body >
+    {% if errornum == 1010 %}
+    	<h2> 
+    	    <p>Sorry, our records indicate that you have already completed (or attempted to complete) this hit before.<p>
+    	    <p>Because this is a experiment, participants can only complete this hit for limited times.</p>
+    	    <p>Please release the hit so that someone else can perform the experiment.</p>
+            <p>Thank you!</p>
+    	</h2>        
+    {% else %}
+    	<h2> 
+    	    <p>Sorry, there was an unexpected error in our processing of your hit.<p> 
+    	    <p>Please email <a href="janetyc@gmail.com">janetyc@gmail.com</a><br/>
+    	    and send the following information:</p>
+    	</h2>
+	    <p>
+	        <h4>
+	        Error: #{{ errornum }}<br>
+	        {% if hitid %} HitI: #{{ hitid }}<br> {% endif %}
+	        {% if assignid %}AssignId: #{{ assignid }}<br> {% endif %}
+	        {% if workerid %} WorkerId: #{{ workerid }}<br> {% endif %}
+	        </h4>
+	    </p>
+	    <h2>
+	    <p>Our sincere apologies!</p>
+	    </h2>
+    {% endif %}
+
+</body>
+</html>

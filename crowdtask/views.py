@@ -10,14 +10,27 @@ views = Blueprint('views', __name__, template_folder='templates')
 def index():
     return render_template('index.html')
 
-@views.route('/topic/<int:article_id>', methods=('GET','POST'))
-def topic_task(article_id):
-    worker_id = request.args.get('worker_id', u'tester')
+@views.route('/topic', methods=('GET','POST'))
+def topic_task():
+
+    worker_id = request.args.get('workerId', u'tester')
     paragraph_idx = request.args.get('paragraph_idx',u'0')
-    article = DBQuery().get_article_by_id(article_id)
+    preview_flag = request.args.get('preview_flag')
+    
+    article_id = None
+    article = None
+    
+    if request.args.has_key('article_id'):
+        article_id = request.args.get('article_id')
+        article = DBQuery().get_article_by_id(article_id)
+
+    #mturk stuff
+    assignmentId = request.args.get('assignmentId', u'')
+    hitId = request.args.get('hitId', u'')
+
     verified_string = generate_verified_str(6)
 
-    if article:
+    if article and preview_flag != "1":
         paragraphs = {}
         for i, paragraph in enumerate(article.content.split("<BR>")):
             if paragraph:
@@ -36,16 +49,23 @@ def topic_task(article_id):
             'title': article.title,
             'content': content,
             'paragraph_idx': paragraph_idx,
-            'verified_string': verified_string
+            'verified_string': verified_string,
+            'hitId': hitId,
+            'assignmentId': assignmentId
         }
     else:
+        sample_article = "Gold, a precious metal, is prized for two important characteristics. First of all, gold has a lustrous beauty that is resistant to corrosion. Therefore, it is suitable for jewelry, coins, and ornamental purposes. Gold never needs to be polished and will remain beautiful forever. For example, a Macedonian coin remains as untarnished today as the day it was made 25 centuries ago. Another important characteristic of gold is its usefulness to industry and science. For many years, it has been used in hundreds of industrial applications, such as photography and dentistry. The most recent use of gold is in astronauts' suits. Astronauts wear gold-plated heat shields for protection when they go outside spaceships in space. In conclusion, gold is treasured not only for its beauty but also for its utility."
+        sample_article = sample_article
         data = {
             'worker_id': worker_id,
             'article_id': article_id,
-            'title': "",
-            'content': [],
+            'title': "Gold",
+            'content': [sample_article],
             'paragraph_idx': "",
-            'verified_string': verified_string
+            'verified_string': verified_string,
+            'preview_flag': preview_flag,
+            'hitId': hitId,
+            'assignmentId': assignmentId
         }
     
     return render_template('topic_task.html', data=data)
@@ -91,10 +111,6 @@ def relevance_task(article_id):
             else:
                 count_list.append([0]*par_length)
 
-
-        #print topic_map
-        #print count_list
-        #print sentences_list
 
         data = {
             'worker_id': worker_id,
@@ -202,6 +218,7 @@ def success():
             "verified_string": verified_string
         }
     return render_template('success.html', data=data)
+
 
 # error page
 @views.app_errorhandler(404)

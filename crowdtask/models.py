@@ -61,7 +61,11 @@ class Task(db.Model):
     created_time = db.Column(db.DateTime())
     submited_time = db.Column(db.DateTime())
 
-    def __init__(self, created_user, task_type, problem, answer, verified_string, status):
+    hitId = db.Column(db.Text())
+    assignmentId = db.Column(db.Text())
+
+    
+    def __init__(self, created_user, task_type, problem, answer, verified_string, status, assignmentId, hitId):
         self.created_user = created_user
         self.task_type = task_type
         self.problem = problem
@@ -69,6 +73,9 @@ class Task(db.Model):
         self.verified_string = verified_string
         self.status = status
         self.created_time = datetime.utcnow()
+        self.submited_time = datetime.utcnow()
+        self.assignmentId = assignmentId
+        self.hitId = hitId
 
     def __repr__(self):
         return '<Task %r>' % self.created_user

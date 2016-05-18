@@ -1,0 +1,12 @@
+[AWS Access]
+aws_access_key_id: [AWS_ACCESS_KEY_ID]
+aws_secret_access_key: [AWS_SECRET_ACCESS_KEY]
+
+[HIT Configuration]
+; These are settings pertaining to how the HIT is to be set up.
+using_sandbox: false
+
+
+[Server]
+hostname : https://writingfeedback.herokuapp.com/
+;hostname : https://0.0.0.0:5000

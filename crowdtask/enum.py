@@ -11,4 +11,4 @@ TaskType = enum(
 RelationType = enum(
     ADDITION="Addition", SEQUENTIAL_ORDER="Sequential Order", COMPARE="Compare", CONTRAST="Contrast", CAUSE="Cause", EFFECT="Effect", GENERATION="Generalization", SPECIFICATION="Specification", OTHERS="Others")
 
-Status = enum(REVIEW=1, ACCEPT=2, REJECT=3)
+Status = enum(WORKING=0, FINISH=1, ACCEPT=2, REJECT=3)
