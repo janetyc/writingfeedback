@@ -41,7 +41,9 @@ def add_topic():
 
     #add task
     problem = problem[1:]
-    DBQuery().add_task(created_user=created_user, task_type=TaskType.TOPIC, problem=problem, answer="|".join(topic_list), verified_string=verified_string, status=Status.WORKING, assignmentId=assignmentId, hitId=hitId)
+    DBQuery().add_task(created_user=created_user, task_type=TaskType.TOPIC, problem=problem, 
+                        answer="|".join(topic_list), verified_string=verified_string, 
+                        status=Status.WORKING, assignmentId=assignmentId, hitId=hitId)
     return jsonify(success=1, data=topic_list)
 
 # require implement
@@ -52,8 +54,9 @@ def add_relevance():
     paragraph_relevance = request.args.get('paragraph_relevance')
     paragraph_topic = request.args.get('paragraph_topic')
     verified_string = request.args.get('verified_string')
-    #print "relevance: %s" % paragraph_relevance
-    #print "topic: %s" % paragraph_topic
+    assignmentId = request.args.get('assignmentId')
+    hitId = request.args.get('hitId')
+
 
     topic_map = {}
     for item in paragraph_topic.split("|"):
@@ -88,7 +91,10 @@ def add_relevance():
         relevance_list.append(str(relevance_id))
 
     problem = problem[1:]
-    DBQuery().add_task(created_user, TaskType.RELEVANCE, problem, "|".join(relevance_list), verified_string, Status.WORKING)
+
+    DBQuery().add_task(created_user=created_user, task_type=TaskType.RELEVANCE, problem=problem, 
+                        answer="|".join(relevance_list), verified_string=verified_string, status=Status.WORKING, 
+                        assignmentId=assignmentId, hitId=hitId)
 
     return jsonify(success=1, data=relevance_list)
 
@@ -99,6 +105,8 @@ def add_relation():
     article_id = request.args.get('article_id')
     paragraph_relation = request.args.get('paragraph_relation')
     verified_string = request.args.get('verified_string')
+    assignmentId = request.args.get('assignmentId')
+    hitId = request.args.get('hitId')
 
     problem = ""
     relation_list = []
@@ -114,6 +122,10 @@ def add_relation():
         relation_list.append(str(relation_id))
 
     problem = problem[1:]
-    DBQuery().add_task(created_user, TaskType.RELATION, problem, "|".join(relation_list), verified_string, Status.WORKING)
+
+
+    DBQuery().add_task(created_user=created_user, task_type=TaskType.RELATION, problem=problem, 
+                        answer="|".join(relation_list), verified_string=verified_string, 
+                        status=Status.WORKING, assignmentId=assignmentId, hitId=hitId)
 
     return jsonify(success=1, data=relation_list)

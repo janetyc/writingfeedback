@@ -40,6 +40,12 @@
         </div>
     </div>
     <div class="answer-area">
+        <div class="ui segment" id="loading-image">
+            <div class="ui active loader">
+                <div class="ui indeterminate large loader"></div>
+            </div>
+            <p></p>
+        </div>
         <div class="submit-area">
             <div>
                 <div class="ui checkbox" id="checkEmpty">
@@ -57,6 +63,9 @@
 <script>
     $(function() {
         var worker = "{{ data.worker_id }}";
+
+        //hide loader
+        $('#loading-image').hide();
 
         //disable submit button
         $('#submitAnswer').addClass("disabled");
@@ -129,6 +138,12 @@
 
                 success: function(data) {
                     window.location = "/success?verified_string={{ data.verified_string }}";
+                },
+                beforeSend: function(){
+                    $('#loading-image').show();
+                },
+                complete: function(){
+                    $('#loading-image').hide();
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert("Error");    

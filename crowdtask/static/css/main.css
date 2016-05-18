@@ -155,6 +155,20 @@ body {
     line-height: 2em;
 }
 
+#loading-image{
+    z-index: 1000;
+    position: fixed;
+    left: 45%;
+    top: 45%;
+    
+    background-color : transparent;
+    border: none;
+
+    outline: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
 /* ==============
     MOBILE: Menu
    ============== */

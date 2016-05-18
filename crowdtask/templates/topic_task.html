@@ -38,7 +38,12 @@
                     </p>
                 {% endfor %}
             </div>
-            <div>preview_flag: {{ data.preview_flag }}</div>
+            <div class="ui segment" id="loading-image">
+                <div class="ui active loader">
+                    <div class="ui indeterminate large loader"></div>
+                </div>
+                <p></p>
+            </div>
             <div class="submit-area" id="submitTask">
                 <div>
                     <div class="ui checkbox" id="checkEmpty">
@@ -66,6 +71,8 @@
             $("#submitTask").css("display", "none");
         }
 
+        //hide loading image
+        $('#loading-image').hide();
 
         //disable submit button
         $('#submitAnswer').addClass("disabled");
@@ -120,7 +127,12 @@
                 },
 
                 dataType: 'json', 
-
+                beforeSend: function(){
+                    $('#loading-image').show();
+                },
+                complete: function(){
+                    $('#loading-image').hide();
+                },
                 success: function(data) {
                     if(data['success'] == 1){
                         if(assignmentId==""){
