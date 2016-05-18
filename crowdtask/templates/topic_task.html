@@ -111,7 +111,7 @@
                 url: "/api/add_topic",
 
                 data: {
-                    "article_id": {{ data.article_id }},
+                    "article_id": "{{ data.article_id }}",
                     "workerId": worker_id,
                     "paragraph_topic": result,
                     "verified_string": "{{ data.verified_string }}",
