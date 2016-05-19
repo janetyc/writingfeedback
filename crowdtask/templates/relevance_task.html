@@ -19,22 +19,20 @@
             <div>Title: {{ data.title }}</div>
             <div>Paragraph:</div>
             <div id="working-area">
-                {% for i in range(data.paragraphs|length) %}
-                    <p class="paragraph" id="paragraph_{{i}}">
-                    {% for j in range(data.paragraphs[i]|length) %}
-                        <span id="sentence_{{j}}" class="sentence">
-                        {% if data.topic_sentence[i][j] > 2 %}
-                            <span class="highlight topic_sentence">{{ data.paragraphs[i][j] }}.</span>
-                        {% else %}
-                            {% for word in data.paragraphs[i][j].strip().split(" ") %}
-                                {% if word %}
-                                    <span class="word" id="word_{{loop.index-1}}">{{word}}</span>
-                                {% endif %}    
-                            {% endfor %}
-                            .
-                        {% endif %}
-                        </span>
-                    {% endfor %}
+                <p class="paragraph" id="paragraph_{{ data.paragraph_idx }}">
+                {% for sentence_idx in range(data.sentence_list|length) %}
+                    <span id="sentence_{{sentence_idx}}" class="sentence">
+                    {% if data.topic_sentence[sentence_idx] > 0 %}
+                        <span class="highlight topic_sentence">{{ data.sentence_list[sentence_idx] }}.</span>
+                    {% else %}
+                        {% for word in data.sentence_list[sentence_idx].strip().split(" ") %}
+                            {% if word %}
+                                <span class="word" id="word_{{loop.index-1}}">{{word}}</span>
+                            {% endif %}    
+                        {% endfor %}
+                        .
+                    {% endif %}
+                    </span>
                 {% endfor %}
             </div>
         </div>
@@ -46,7 +44,7 @@
             </div>
             <p></p>
         </div>
-        <div class="submit-area">
+        <div class="submit-area" id="submitTask">
             <div>
                 <div class="ui checkbox" id="checkEmpty">
                     <input type="checkbox" name="example">
@@ -62,7 +60,14 @@
 {% block extra_js %}
 <script>
     $(function() {
-        var worker = "{{ data.worker_id }}";
+        var worker_id = "{{ data.worker_id }}";
+        var assignmentId = "{{ data.assignment_id }}"
+
+        //preview
+        var preview_flag = "{{ data.preview_flag }}";
+        if (preview_flag != ""){
+            $("#submitTask").css("display", "none");
+        }
 
         //hide loader
         $('#loading-image').hide();
@@ -127,17 +132,28 @@
                 url: "/api/add_relevance",
 
                 data: {
-                    "article_id": {{ data.article_id }},
-                    "created_user": worker,
+                    "article_id": "{{ data.article_id }}",
+                    "worker_id": worker_id,
                     "paragraph_relevance": resultRelevance,
                     "paragraph_topic": resultTopic,
-                    "verified_string": "{{ data.verified_string }}"
+                    "verified_string": "{{ data.verified_string }}",
+                    "assignment_id": "{{ data.assignment_id }}",
+                    "hit_id": "{{ data.hit_id }}"
                 },
 
                 dataType: 'json', 
 
                 success: function(data) {
-                    window.location = "/success?verified_string={{ data.verified_string }}";
+                    if(data['success'] == 1){
+                        if(assignmentId==""){
+                            window.location = "/success?verified_string={{data.verified_string}}";
+                        }
+                        else{
+                            window.location = "/closepopup?hitId={{ data.hit_id }}&assignmentId={{ data.assignment_id}}&workerId={{data.worker_id}}&verified_string={{data.verified_string}}";
+                        }
+                    }else{
+                        window.location = "/success";
+                    }
                 },
                 beforeSend: function(){
                     $('#loading-image').show();

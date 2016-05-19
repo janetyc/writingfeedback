@@ -67,86 +67,147 @@ def mturkroute():
     if not (request.args.has_key('hitId') and request.args.has_key('assignmentId')):
         raise ExperimentError('hit_assign_worker_id_not_set_in_mturk')
 
-    if not (request.args.has_key('taskType')):
+    if not (request.args.has_key('task_type')):
         raise ExperimentError('task_not_existed')
 
     if not(request.args.has_key('using_sandbox')):
         raise ExperimentError('improper_inputs')
 
-    hitId = request.args['hitId']
-    assignmentId = request.args['assignmentId']
+    hit_id = request.args['hitId']
+    assignment_id = request.args['assignmentId']
     using_sandbox = request.args['using_sandbox']
+    task_type = request.args['task_type']
 
     if(using_sandbox == "True" or using_sandbox == "true"):
         using_sandbox = True
     else:
         using_sandbox = False
 
-    workerId = None
+    worker_id = None
     status = None
     is_hit_accepted = False
 
     if request.args.has_key('workerId'):
         is_hit_accepted = True
-        workerId = request.args['workerId']
-
-    taskType = request.args.get('taskType', TaskType.TOPIC)
+        worker_id = request.args['workerId']
 
     #get task by workerId and assignmentId to check if have already finished
-    task = DBQuery().get_task_by_worker_assignment_id(workerId ,assignmentId)
+    task = DBQuery().get_task_by_worker_assignment_id(worker_id ,assignment_id)
 
     if not task:
         if not is_hit_accepted:
             #preview_mode, add preview_flat
-            #cannot use redirect, should include directly
+            content = sample_article
+            paragraph_idx = "0"
 
-            data = {
-                'worker_id': workerId,
-                'article_id': "",
-                'title': "Gold",
-                'content': [sample_article],
-                'paragraph_idx': "",
-                'verified_string': "",
-                'preview_flag': "1",
-                'hitId': hitId,
-                'assignmentId': assignmentId
-            }
-            return render_template('topic_task.html', data=data)
-            
+            if(task_type == TaskType.TOPIC):
+                data = {
+                    'worker_id': worker_id,
+                    'article_id': "",
+                    'title': "Gold",
+                    'content': [content],
+                    'verified_string': "",
+                    'preview_flag': "1",
+                    'hit_id': hit_id,
+                    'assignment_id': assignment_id
+                }
+                return render_template('topic_task.html', data=data)
+            elif(task_type == TaskType.RELEVANCE):
+                paragraph_idx = int(paragraph_idx)
+                content = sample_article
+
+                topic_map = {}
+                topic_sentence_ids = "0"
+                topic_map[paragraph_idx] = [int(i) for i in topic_sentence_ids.split(",")]
+        
+                count_list = []
+                sentence_list = []
+        
+                sentence_list = content.split(".")
+                sentence_list = sentence_list[:-1]
+                par_length = len(sentence_list)
+        
+                if paragraph_idx in topic_map:
+                    count_list = [topic_map[paragraph_idx].count(j) for j in range(par_length)]
+                else:
+                    count_list = [0]*par_length
+
+                data = {
+                    'worker_id': worker_id,
+                    'article_id': "",
+                    'title': "Gold",
+                    'paragraph_idx': paragraph_idx,
+                    'sentence_list': sentence_list,
+                    'topic_sentence': count_list,
+                    'verified_string': "",
+                    'preview_flag': "1",
+                    'hit_id': hit_id,
+                    'assignment_id': assignment_id
+                }
+
+                return render_template('relevance_task.html', data=data)
+            elif(task_type == TaskType.RELATION):
+
+                sentence_list = content.split(".")
+                sentence_list = sentence_list[:-1]
+
+                data = {
+                    'worker_id': worker_id,
+                    'article_id': "",
+                    'title': "Gold",
+                    'sentence_list': sentence_list,
+                    'paragraph_idx': paragraph_idx,
+                    'verified_string': "",
+                    'preview_flag': "1",
+                    'hit_id': hit_id,
+                    'assignment_id': assignment_id
+                }
+                return render_template('relation_task.html', data=data)
+
         else:
-            return render_template('mturkindex.html', assignmentId=assignmentId, param=request.args.to_dict())
+            return render_template('mturkindex.html', param=request.args.to_dict())
     else:
-        return render_template('complete.html', hitId=hitId, assignmentId=assignmentId,
-            workerId=workerId, using_sandbox=using_sandbox)
+        data = {
+            'hit_id': hit_id,
+            'assignment_id': assignment_id,
+            'worker_id': worker_id,
+            'using_sandbox': using_sandbox
+        }
+        return render_template('complete.html', data=data)
 
 
 @task_views.route('/welcome', methods=["GET", "POST"])
 def welcome():
     if not (request.args.has_key('hitId') and request.args.has_key('workerId') 
-        and request.args.has_key('assignmentId') and request.args.has_key('taskType')):
+        and request.args.has_key('assignmentId') and request.args.has_key('task_type')):
         raise ExperimentError('hit_assign_worker_id_not_set_in_mturk')
 
-    hitId = request.args['hitId']
-    assignmentId = request.args['assignmentId']
-    taskType = request.args['taskType']
-    
-    if(taskType == TaskType.TOPIC):
-        article_id = request.args.get('article_id')
+    #hit_id = request.args['hitId']
+    #assignment_id = request.args['assignmentId']
+    task_type = request.args['task_type']
+    #article_id = request.args.get('article_id',u'0')
+
+    if(task_type == TaskType.TOPIC):
         return redirect(
             url_for('views.topic_task', **request.args.to_dict()))
+
+    elif(task_type == TaskType.RELEVANCE):
+        return redirect(
+            url_for('views.relevance_task', **request.args.to_dict()))
+    elif(task_type == TaskType.RELATION):
+        return redirect(
+            url_for('views.relation_task', **request.args.to_dict()))
     else:
         raise ExperimentError('task_not_existed')
 
 @task_views.route('/closepopup', methods=["GET", "POST"])
 def closepopup():
-    #update status
-    print request.args
-
-    workerId = request.args.get('workerId',u'')
-    hitId = request.args.get('hitId',u'')
-    assignmentId = request.args.get('assignmentId',u'')
+    worker_id = request.args.get('workerId',u'')
+    hit_id = request.args.get('hitId',u'')
+    assignment_id = request.args.get('assignmentId',u'')
     
-    DBQuery().update_task_status_by_worker_assignment_id(workerId, assignmentId, Status.FINISH)
+    #update status
+    DBQuery().update_task_status_by_worker_assignment_id(worker_id, assignment_id, Status.FINISH)
     return render_template("closepopup.html")
 
 @task_views.errorhandler(ExperimentError)

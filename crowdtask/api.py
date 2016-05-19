@@ -7,18 +7,18 @@ api = Blueprint('api', __name__, template_folder='templates')
 @api.route('/api/add_topic', methods=('GET','POST'))
 def add_topic():
     article_id = request.args.get('article_id')
-    created_user = request.args.get('workerId', u'tester')
+    worker_id = request.args.get('worker_id', u'tester')
     paragraph_topic = request.args.get('paragraph_topic')
     verified_string = request.args.get('verified_string')
-    assignmentId = request.args.get('assignmentId')
-    hitId = request.args.get('hitId')
+
+    assignment_id = request.args.get('assignment_id')
+    hit_id = request.args.get('hit_id')
 
     #print "add topic ---"
     #print created_user
     #print assignmentId
     #print hitId
     #print "---"
-
 
     paragraph_topic_map={}
 
@@ -35,27 +35,28 @@ def add_topic():
         topic_sentence_ids = ",".join(paragraph_topic_map[paragraph_idx])
         problem = "%s|%s|%s" % (problem, article_id, paragraph_idx)
 
-        topic_id = DBQuery().add_topic(created_user, article_id, paragraph_idx, topic_sentence_ids)
+        topic_id = DBQuery().add_topic(worker_id, article_id, paragraph_idx, topic_sentence_ids)
         topic_list.append(str(topic_id))
 
 
     #add task
     problem = problem[1:]
-    DBQuery().add_task(created_user=created_user, task_type=TaskType.TOPIC, problem=problem, 
+    DBQuery().add_task(created_user=worker_id, task_type=TaskType.TOPIC, problem=problem, 
                         answer="|".join(topic_list), verified_string=verified_string, 
-                        status=Status.WORKING, assignmentId=assignmentId, hitId=hitId)
+                        status=Status.WORKING, assignmentId=assignment_id, hitId=hit_id)
     return jsonify(success=1, data=topic_list)
 
 # require implement
 @api.route('/api/add_relevance', methods=('GET','POST'))
 def add_relevance():
-    created_user = request.args.get('created_user', u'tester')
+    worker_id = request.args.get('worker_id', u'tester')
     article_id = request.args.get('article_id')
     paragraph_relevance = request.args.get('paragraph_relevance')
     paragraph_topic = request.args.get('paragraph_topic')
     verified_string = request.args.get('verified_string')
-    assignmentId = request.args.get('assignmentId')
-    hitId = request.args.get('hitId')
+
+    assignment_id = request.args.get('assignment_id')
+    hit_id = request.args.get('hit_id')
 
 
     topic_map = {}
@@ -87,26 +88,27 @@ def add_relevance():
         relevance_ids_str = ",".join(relevance_map[paragraph_idx])
         problem = "%s|%s|%s" % (problem, article_id, paragraph_idx)
 
-        relevance_id = DBQuery().add_relevance(created_user, int(article_id), int(paragraph_idx), topic_ids, relevance_ids_str)
+        relevance_id = DBQuery().add_relevance(worker_id, int(article_id), int(paragraph_idx), topic_ids, relevance_ids_str)
         relevance_list.append(str(relevance_id))
 
     problem = problem[1:]
 
-    DBQuery().add_task(created_user=created_user, task_type=TaskType.RELEVANCE, problem=problem, 
+    DBQuery().add_task(created_user=worker_id, task_type=TaskType.RELEVANCE, problem=problem, 
                         answer="|".join(relevance_list), verified_string=verified_string, status=Status.WORKING, 
-                        assignmentId=assignmentId, hitId=hitId)
+                        assignmentId=assignment_id, hitId=hit_id)
 
     return jsonify(success=1, data=relevance_list)
 
 
 @api.route('/api/add_relation', methods=('GET', 'POST'))
 def add_relation():
-    created_user = request.args.get('created_user', u'tester')
+    worker_id = request.args.get('worker_id', u'tester')
     article_id = request.args.get('article_id')
     paragraph_relation = request.args.get('paragraph_relation')
     verified_string = request.args.get('verified_string')
-    assignmentId = request.args.get('assignmentId')
-    hitId = request.args.get('hitId')
+
+    assignment_id = request.args.get('assignment_id')
+    hit_id = request.args.get('hit_id')
 
     problem = ""
     relation_list = []
@@ -118,14 +120,14 @@ def add_relation():
 
         problem = "%s|%s|%s" % (problem, article_id, paragraph_idx)
 
-        relation_id = DBQuery().add_relation(created_user, int(article_id), int(paragraph_idx), pair_ids, relation_type, "")
+        relation_id = DBQuery().add_relation(worker_id, int(article_id), int(paragraph_idx), pair_ids, relation_type, "")
         relation_list.append(str(relation_id))
 
     problem = problem[1:]
 
 
-    DBQuery().add_task(created_user=created_user, task_type=TaskType.RELATION, problem=problem, 
+    DBQuery().add_task(created_user=worker_id, task_type=TaskType.RELATION, problem=problem, 
                         answer="|".join(relation_list), verified_string=verified_string, 
-                        status=Status.WORKING, assignmentId=assignmentId, hitId=hitId)
+                        status=Status.WORKING, assignmentId=assignment_id, hitId=hit_id)
 
     return jsonify(success=1, data=relation_list)

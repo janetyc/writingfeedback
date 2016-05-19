@@ -4,7 +4,7 @@ from flask import Blueprint, Flask, request, render_template, redirect, url_for,
 from crowdtask.dbquery import DBQuery
 
 views = Blueprint('views', __name__, template_folder='templates')
-
+sample_article = "Gold, a precious metal, is prized for two important characteristics. First of all, gold has a lustrous beauty that is resistant to corrosion. Therefore, it is suitable for jewelry, coins, and ornamental purposes. Gold never needs to be polished and will remain beautiful forever. For example, a Macedonian coin remains as untarnished today as the day it was made 25 centuries ago. Another important characteristic of gold is its usefulness to industry and science. For many years, it has been used in hundreds of industrial applications, such as photography and dentistry. The most recent use of gold is in astronauts' suits. Astronauts wear gold-plated heat shields for protection when they go outside spaceships in space. In conclusion, gold is treasured not only for its beauty but also for its utility."
 
 @views.route('/')
 def index():
@@ -25,8 +25,8 @@ def topic_task():
         article = DBQuery().get_article_by_id(article_id)
 
     #mturk stuff
-    assignmentId = request.args.get('assignmentId', u'')
-    hitId = request.args.get('hitId', u'')
+    assignment_id = request.args.get('assignmentId', u'')
+    hit_id = request.args.get('hitId', u'')
 
     verified_string = generate_verified_str(6)
 
@@ -50,12 +50,10 @@ def topic_task():
             'content': content,
             'paragraph_idx': paragraph_idx,
             'verified_string': verified_string,
-            'hitId': hitId,
-            'assignmentId': assignmentId
+            'hit_id': hit_id,
+            'assignment_id': assignment_id
         }
     else:
-        sample_article = "Gold, a precious metal, is prized for two important characteristics. First of all, gold has a lustrous beauty that is resistant to corrosion. Therefore, it is suitable for jewelry, coins, and ornamental purposes. Gold never needs to be polished and will remain beautiful forever. For example, a Macedonian coin remains as untarnished today as the day it was made 25 centuries ago. Another important characteristic of gold is its usefulness to industry and science. For many years, it has been used in hundreds of industrial applications, such as photography and dentistry. The most recent use of gold is in astronauts' suits. Astronauts wear gold-plated heat shields for protection when they go outside spaceships in space. In conclusion, gold is treasured not only for its beauty but also for its utility."
-        sample_article = sample_article
         data = {
             'worker_id': worker_id,
             'article_id': article_id,
@@ -64,17 +62,27 @@ def topic_task():
             'paragraph_idx': "",
             'verified_string': verified_string,
             'preview_flag': preview_flag,
-            'hitId': hitId,
-            'assignmentId': assignmentId
+            'hit_id': hit_id,
+            'assignment_id': assignment_id
         }
     
     return render_template('topic_task.html', data=data)
 
-@views.route('/relevance/<int:article_id>', methods=('GET','POST'))
-def relevance_task(article_id):
-    worker_id = request.args.get('worker_id',u'tester')
+@views.route('/relevance', methods=('GET','POST'))
+def relevance_task():
+    worker_id = request.args.get('workerId',u'tester')
     paragraph_idx = request.args.get('paragraph_idx',u'0')
-    article = DBQuery().get_article_by_id(article_id)
+
+    article_id = None
+    article = None
+    if request.args.has_key('article_id'):
+        article_id = request.args.get('article_id')
+        article = DBQuery().get_article_by_id(article_id)
+
+    #mturk stuff
+    assignment_id = request.args.get('assignmentId', u'')
+    hit_id = request.args.get('hitId', u'')
+
     verified_string = generate_verified_str(6)
 
     if article:
@@ -84,91 +92,147 @@ def relevance_task(article_id):
                 paragraph_map[i] = paragraph
 
         # set one paragraph (should modify, solved it temporary)
-        paragraphs = {}
         paragraph_idx = int(paragraph_idx)
-        if paragraph_idx < len(paragraph_map):
-            paragraphs[paragraph_idx] = paragraph_map[paragraph_idx]
+        
+        if paragraph_idx >= len(paragraph_map):
+            paragraph_idx = 0
 
+
+        # need to modify
         topics = DBQuery().get_topics_by_article_id(article_id)
         topic_map = {}
-        for topic in topics:
-            if not topic.paragraph_idx in topic_map:
-                topic_map[topic.paragraph_idx] = []
+        if topics:
+            for topic in topics:
+                if not topic.paragraph_idx in topic_map:
+                    topic_map[topic.paragraph_idx] = []
 
-            topic_map[topic.paragraph_idx].extend([int(i) for i in topic.topic_sentence_ids.split(",")])
-
+                topic_map[topic.paragraph_idx].extend([int(i) for i in topic.topic_sentence_ids.split(",")])
+        else:
+            topic_map[paragraph_idx] = ""
 
         count_list = []
         sentences_list = []
 
-        for i in range(len(paragraphs)):
-            lines = paragraphs[i].split(".")
-            lines = lines[:-1]
-            par_length = len(lines)
-            sentences_list.append(lines)
-            if i in topic_map:
-                count_list.append([topic_map[i].count(j) for j in range(par_length)])
-            else:
-                count_list.append([0]*par_length)
+        content = paragraph_map[paragraph_idx]
+        sentence_list = content.split(".")
+        sentence_list = sentence_list[:-1]
+        par_length = len(sentence_list)
 
+        
+        if paragraph_idx in topic_map:
+            count_list = [topic_map[paragraph_idx].count(j) for j in range(par_length)]
+        else:
+            count_list = [0]*par_length        
 
         data = {
             'worker_id': worker_id,
             'article_id': article_id,
             'title': article.title,
-            'paragraphs': sentences_list,
+            'paragraph_idx': paragraph_idx,
+            'sentence_list': sentence_list,
             'topic_sentence': count_list,
-            'verified_string': verified_string
+            'verified_string': verified_string,
+            'hit_id': hit_id,
+            'assignment_id': assignment_id
         }
     else:
+        #sample
+        paragraph_idx = int(paragraph_idx)
+        
+        topic_map = {}
+        topic_sentence_ids = "0"
+        topic_map[paragraph_idx] = [int(i) for i in topic_sentence_ids.split(",")]
+        
+        count_list = []
+        sentence_list = []
+        
+        content = sample_article
+        sentence_list = content.split(".")
+        sentence_list = sentence_list[:-1]
+        par_length = len(sentence_list)
+        
+        if paragraph_idx in topic_map:
+            count_list = [topic_map[paragraph_idx].count(j) for j in range(par_length)]
+        else:
+            count_list = [0]*par_length
+
         data = {
             'worker_id': worker_id,
             'article_id': article_id,
-            'title': [],
-            'paragraphs': [],
-            'topic_sentence': [],
-            'verified_string': verified_string
+            'title': "Gold",
+            'paragraph_idx': paragraph_idx,
+            'sentence_list': sentence_list,
+            'topic_sentence': count_list,
+            'verified_string': "",
+            'preview_flag': "1",
+            'hit_id': hit_id,
+            'assignment_id': assignment_id
         }
+
     return render_template('relevance_task.html', data=data)
     
-@views.route('/relation/<int:article_id>', methods=('GET','POST'))
-def relation_task(article_id):
-    worker_id = request.args.get('worker_id',u'tester')
+@views.route('/relation', methods=('GET','POST'))
+def relation_task():
+    worker_id = request.args.get('workerId',u'tester')
     paragraph_idx = request.args.get('paragraph_idx', u'0')
-    article = DBQuery().get_article_by_id(article_id)
+
+    article_id = None
+    article = None
+    if request.args.has_key('article_id'):
+        article_id = request.args.get('article_id')
+        article = DBQuery().get_article_by_id(article_id)
+
+    #mturk stuff
+    assignment_id = request.args.get('assignmentId', u'')
+    hit_id = request.args.get('hitId', u'')
+
     verified_string = generate_verified_str(6)
 
     if article:
+
         paragraph_map = {}
-        paragraphs = {}
         for i, paragraph in enumerate(article.content.split("<BR>")):
             if paragraph:
-                sentence_list = paragraph.split(".")
-                paragraph_map[i] = sentence_list[:-1]
-        
+                paragraph_map[i] = paragraph
+
         # set one paragraph (should modify, solved it temporary)
         paragraph_idx = int(paragraph_idx)
-        if paragraph_idx < len(paragraph_map):
-            paragraphs[paragraph_idx] = paragraph_map[paragraph_idx]
+        if paragraph_idx >= len(paragraph_map):
+            paragraph_idx = 0
+
+        content = paragraph_map[paragraph_idx]
+        sentence_list = content.split(".")
+        sentence_list = sentence_list[:-1]
+
             
         data = {
             'worker_id': worker_id,
             'article_id': article_id,
             'title': article.title,
-            'paragraphs': paragraphs,
-            'paragraph_idx': paragraph_idx,
-            'verified_string': verified_string
+            'sentence_list': sentence_list,
+            'paragraph_idx': paragraph_idx, #diff from topic
+            'verified_string': verified_string,
+            'hit_id': hit_id,
+            'assignment_id': assignment_id
         }
 
-
     else:
+        paragraph_idx = int(paragraph_idx)
+
+        content = sample_article
+        sentence_list = content.split(".")
+        sentence_list = sentence_list[:-1]
+
         data = {
             'worker_id': worker_id,
-            'article_id': article_id,
-            'title': "",
-            'paragraphs': [],
-            'paragraph_idx': paragraph_idx,
-            'verified_string': verified_string
+            'article_id': "",
+            'title': "Gold",
+            'sentence_list': sentence_list,
+            'paragraph_idx': paragraph_idx, #diff from topic
+            'verified_string': verified_string,
+            'preview_flag': "1",
+            'hit_id': hit_id,
+            'assignment_id': assignment_id
         }
 
     return render_template('relation_task.html', data=data)

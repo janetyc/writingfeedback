@@ -35,30 +35,28 @@
             <div>Title: {{ data.title }}</div>
             <div>Paragraph:</div>
             <div id="working-area">
-                {% for paragraph_idx in data.paragraphs %}
                 <div class="problem-relation">
-                    <div class="paragraph" id="paragraph_{{paragraph_idx}}">
-                        {% for sentence in data.paragraphs[paragraph_idx] %}
-                            <span class="sentence">{{ sentence }}.</span>
-                                <!--{% if (loop.index-1) in data.pair_ids %}
-                                    <span class="pair sentence">{{ sentence }}.</span>
-                                {% else %}
+                    <div class="paragraph" id="paragraph_{{data.paragraph_idx}}">
+                        {% for sentence in data.sentence_list %}
+                        <span class="sentence">{{ sentence }}.</span>
+                        <!--{% if (loop.index-1) in data.pair_ids %}
+                                <span class="pair sentence">{{ sentence }}.</span>
+                            {% else %}
                                     <span class="sentence">{{ sentence }}.</span>
-                                {% endif %}-->
-                            
+                            {% endif %}-->
                         {% endfor %}
                     </div>
 
                     <div><button class="ui button" id="finishedButton">I've finished the reading.</button>
                     <div class="relation-area" id="relationArea">
                         <b>Relation Category</b>
-                        {% for s_index in range(0,data.paragraphs[paragraph_idx]|length) %}
-                            <div id="sentence_{{s_index}}">S{{s_index}}: {{ data.paragraphs[paragraph_idx][s_index] }}</div>
+                        {% for s_index in range(0, data.sentence_list|length) %}
+                            <div id="sentence_{{s_index}}">S{{s_index}}: {{ data.sentence_list[s_index] }}.</div>
                         {% endfor %}
                         
                         <b><i class="write icon"></i>Please answer the following questions:</b>
                         <ol>
-                        {% for s_index in range(data.paragraphs[paragraph_idx]|length-1) %}
+                        {% for s_index in range(data.sentence_list|length-1) %}
                             <li>
                                 <div class="classification">What's relation from S{{s_index}} to S{{s_index+1}}? 
                                 <div class="ui dropdown dropdown-menu relation" id="relation_{{ "%s-%s" % (s_index,s_index+1) }}">
@@ -97,8 +95,6 @@
                         {% endfor %}
                         </ol>
                     </div>
-                    
-                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -111,7 +107,7 @@
         <p></p>
     </div>
     <div class="answer-area">
-        <div class="submit-area">
+        <div class="submit-area" id="submitTask">
             <div id="submitAnswer" class="ui button green">Submit</div>
         </div>
     </div>
@@ -120,7 +116,15 @@
 {% block extra_js %}
 <script>
     $(function() {
-        var worker = "{{ data.worker_id }}";
+        var worker_id = "{{ data.worker_id }}";
+        var assignmentId = "{{ data.assignment_id }}"
+
+        //preview
+        var preview_flag = "{{ data.preview_flag }}";
+        if (preview_flag != ""){
+            $("#submitTask").css("display", "none");
+        }
+
 
         $('#loading-image').hide();
 
@@ -163,16 +167,27 @@
                 url: "/api/add_relation",
 
                 data: {
-                    "article_id": {{ data.article_id }},
-                    "created_user": worker,
+                    "article_id": "{{ data.article_id }}",
+                    "worker_id": worker_id,
                     "paragraph_relation": resultRelation,
-                    "verified_string": "{{ data.verified_string }}"
+                    "verified_string": "{{ data.verified_string }}",
+                    "assignment_id": "{{ data.assignment_id }}",
+                    "hit_id": "{{ data.hit_id }}"
                 },
 
                 dataType: 'json', 
 
                 success: function(data) {
-                    window.location = "/success?verified_string={{ data.verified_string }}";
+                    if(data['success'] == 1){
+                        if(assignmentId==""){
+                            window.location = "/success?verified_string={{data.verified_string}}";
+                        }
+                        else{
+                            window.location = "/closepopup?hitId={{ data.hit_id }}&assignmentId={{ data.assignment_id}}&workerId={{data.worker_id}}&verified_string={{data.verified_string}}";
+                        }
+                    }else{
+                        window.location = "/success";
+                    }
                 },
                 beforeSend: function(){
                     $('#loading-image').show();

@@ -63,7 +63,7 @@
 <script>
     $(function() {
         var worker_id = "{{ data.worker_id }}";
-        var assignmentId = "{{ data.assignmentId }}"
+        var assignmentId = "{{ data.assignment_id }}"
 
         //preview
         var preview_flag = "{{ data.preview_flag }}";
@@ -119,11 +119,11 @@
 
                 data: {
                     "article_id": "{{ data.article_id }}",
-                    "workerId": worker_id,
+                    "worker_id": worker_id,
                     "paragraph_topic": result,
                     "verified_string": "{{ data.verified_string }}",
-                    "assignmentId": "{{ data.assignmentId }}",
-                    "hitId": "{{ data.hitId }}"
+                    "assignment_id": "{{ data.assignment_id }}",
+                    "hit_id": "{{ data.hit_id }}"
                 },
 
                 dataType: 'json', 
@@ -139,7 +139,7 @@
                             window.location = "/success?verified_string={{data.verified_string}}";
                         }
                         else{
-                            window.location = "/closepopup?hitId={{ data.hitId }}&assignmentId={{ data.assignmentId}}&workerId={{data.worker_id}}&verified_string={{data.verified_string}}";
+                            window.location = "/closepopup?hitId={{ data.hit_id }}&assignmentId={{ data.assignment_id}}&workerId={{data.worker_id}}&verified_string={{data.verified_string}}";
                         }
                     }else{
                         window.location = "/success";
