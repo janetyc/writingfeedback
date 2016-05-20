@@ -78,8 +78,9 @@ class DBQuery(object):
         paragraph = Paragraph.query.filter_by(id=paragraph_id).first()
         return paragraph
 
-    def get_topics_by_paragraph_id(self, paragraph_id):
-        return ""
+    def get_topics_by_article_paragraph_id(self, article_id, paragraph_idx):
+        topics = Topic.query.filter_by(article_id=article_id, paragraph_idx=paragraph_idx)
+        return topics
 
     def get_topics_by_article_id(self, article_id):
         topics = Topic.query.filter_by(article_id=article_id)

@@ -22,7 +22,7 @@
                 <p class="paragraph" id="paragraph_{{ data.paragraph_idx }}">
                 {% for sentence_idx in range(data.sentence_list|length) %}
                     <span id="sentence_{{sentence_idx}}" class="sentence">
-                    {% if data.topic_sentence[sentence_idx] > 0 %}
+                    {% if not (data.topic_sentence is none) and (sentence_idx == data.topic_sentence_idx) %}
                         <span class="highlight topic_sentence">{{ data.sentence_list[sentence_idx] }}.</span>
                     {% else %}
                         {% for word in data.sentence_list[sentence_idx].strip().split(" ") %}
@@ -61,7 +61,12 @@
 <script>
     $(function() {
         var worker_id = "{{ data.worker_id }}";
-        var assignmentId = "{{ data.assignment_id }}"
+        var assignment_id = "{{ data.assignment_id }}"
+        var hit_id = "{{ data.hit_id }}"
+
+        if(assignment_id != "" && hit_id !=""){
+            $("#navBar").css("display", "none");
+        }
 
         //preview
         var preview_flag = "{{ data.preview_flag }}";
@@ -145,7 +150,7 @@
 
                 success: function(data) {
                     if(data['success'] == 1){
-                        if(assignmentId==""){
+                        if(assignment_id==""){
                             window.location = "/success?verified_string={{data.verified_string}}";
                         }
                         else{

@@ -13,12 +13,14 @@ def index():
 @views.route('/topic', methods=('GET','POST'))
 def topic_task():
 
-    worker_id = request.args.get('workerId', u'tester')
-    paragraph_idx = request.args.get('paragraph_idx',u'0')
-    preview_flag = request.args.get('preview_flag')
-    
+    paragraph_idx = None
     article_id = None
     article = None
+
+    worker_id = request.args.get('workerId', u'tester')
+    paragraph_idx = request.args.get('paragraph_idx')
+    preview_flag = request.args.get('preview_flag')
+
     
     if request.args.has_key('article_id'):
         article_id = request.args.get('article_id')
@@ -70,11 +72,14 @@ def topic_task():
 
 @views.route('/relevance', methods=('GET','POST'))
 def relevance_task():
-    worker_id = request.args.get('workerId',u'tester')
-    paragraph_idx = request.args.get('paragraph_idx',u'0')
-
     article_id = None
     article = None
+    paragraph_idx = None
+
+    worker_id = request.args.get('workerId',u'tester')
+    paragraph_idx = request.args.get('paragraph_idx')
+
+    
     if request.args.has_key('article_id'):
         article_id = request.args.get('article_id')
         article = DBQuery().get_article_by_id(article_id)
@@ -85,59 +90,61 @@ def relevance_task():
 
     verified_string = generate_verified_str(6)
 
-    if article:
+    if article and paragraph_idx:
         paragraph_map = {}
         for i, paragraph in enumerate(article.content.split("<BR>")):
             if paragraph:
                 paragraph_map[i] = paragraph
 
-        # set one paragraph (should modify, solved it temporary)
         paragraph_idx = int(paragraph_idx)
-        
         if paragraph_idx >= len(paragraph_map):
             paragraph_idx = 0
 
 
-        # need to modify
-        topics = DBQuery().get_topics_by_article_id(article_id)
-        topic_map = {}
-        if topics:
-            for topic in topics:
-                if not topic.paragraph_idx in topic_map:
-                    topic_map[topic.paragraph_idx] = []
-
-                topic_map[topic.paragraph_idx].extend([int(i) for i in topic.topic_sentence_ids.split(",")])
-        else:
-            topic_map[paragraph_idx] = ""
-
-        count_list = []
-        sentences_list = []
-
+        #convert paragraph content to sentence list
         content = paragraph_map[paragraph_idx]
         sentence_list = content.split(".")
         sentence_list = sentence_list[:-1]
         par_length = len(sentence_list)
 
+        #if no input, retrieve database
+        topic_sentence_idx = None
+        if not request.args.has_key('topic_sentence_idx'):
+            topics = DBQuery().get_topics_by_article_paragraph_id(article_id, paragraph_idx)
+            topic_map = []
+            for topic in topics:
+                topic_map.extend([int(i) for i in topic.topic_sentence_ids.split(",")])
         
-        if paragraph_idx in topic_map:
-            count_list = [topic_map[paragraph_idx].count(j) for j in range(par_length)]
-        else:
-            count_list = [0]*par_length        
+            count_list = [topic_map.count(j) for j in range(par_length)]
 
+            #filter - only keep the max value, and clear up the remaining value
+            topic_sentence = [0]*par_length
+            
+
+            if max(count_list) >= 3:
+                topic_sentence[count_list.index(max(count_list))] = count_list[count_list.index(max(count_list))]
+                topic_sentence_idx = count_list.index(max(count_list))
+        else:
+            if request.args.get('topic_sentence_idx').isdigit():
+                topic_sentence_idx = int(request.args.get('topic_sentence_idx'))            
+        
         data = {
             'worker_id': worker_id,
             'article_id': article_id,
             'title': article.title,
             'paragraph_idx': paragraph_idx,
             'sentence_list': sentence_list,
-            'topic_sentence': count_list,
+            #'topic_sentence': topic_sentence,
             'verified_string': verified_string,
             'hit_id': hit_id,
-            'assignment_id': assignment_id
+            'assignment_id': assignment_id,
+
+            #not use yet
+            'topic_sentence_idx': topic_sentence_idx
         }
     else:
         #sample
-        paragraph_idx = int(paragraph_idx)
+        paragraph_idx = 0
         
         topic_map = {}
         topic_sentence_ids = "0"
@@ -284,6 +291,9 @@ def success():
     return render_template('success.html', data=data)
 
 
+def generate_verified_str(number):
+    return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(number))
+
 # error page
 @views.app_errorhandler(404)
 def page_not_found(e):
@@ -292,8 +302,3 @@ def page_not_found(e):
 @views.app_errorhandler(400)
 def bad_request(e):
     return render_template('400.html'), 400
-
-
-def generate_verified_str(number):
-    return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(number))
-

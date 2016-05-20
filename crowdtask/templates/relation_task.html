@@ -117,7 +117,13 @@
 <script>
     $(function() {
         var worker_id = "{{ data.worker_id }}";
-        var assignmentId = "{{ data.assignment_id }}"
+        var assignment_id = "{{ data.assignment_id }}"
+        var hit_id = "{{ data.hit_id }}"
+
+        if(assignment_id != "" && hit_id !=""){
+            $("#navBar").css("display", "none");
+        }
+
 
         //preview
         var preview_flag = "{{ data.preview_flag }}";
@@ -171,15 +177,15 @@
                     "worker_id": worker_id,
                     "paragraph_relation": resultRelation,
                     "verified_string": "{{ data.verified_string }}",
-                    "assignment_id": "{{ data.assignment_id }}",
-                    "hit_id": "{{ data.hit_id }}"
+                    "assignment_id": assignment_id,
+                    "hit_id": hid_id
                 },
 
                 dataType: 'json', 
 
                 success: function(data) {
                     if(data['success'] == 1){
-                        if(assignmentId==""){
+                        if(assignment_id==""){
                             window.location = "/success?verified_string={{data.verified_string}}";
                         }
                         else{

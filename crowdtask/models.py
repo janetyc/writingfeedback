@@ -153,8 +153,8 @@ class Relevance(db.Model):
 
 
 ''' Store the structure of a paragraph (aggregate results from accepted task)
-    - topic: #sentence_2,sentence_3
-    - relevance: sentence_2:relevance_1,relevance_2|sentence_1:relevance_1
+    - topic: #sentence_2-weight,sentence_3-weight
+    - relevance: sentence_2:relevance_1-weight,relevance_2-weight|sentence_1:relevance_1-weight
     - relation: sentence_1,sentence_2:relation_type
     - others: worker_defined
     - task_history: task_id1,task_id2,task_id3

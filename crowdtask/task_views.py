@@ -1,48 +1,13 @@
 from flask import Blueprint, Flask, request, render_template, redirect, url_for, jsonify
 from enum import TaskType, Status
 from crowdtask.dbquery import DBQuery
+from experiment_errors import ExperimentError
 
 task_views = Blueprint('task_views', __name__, template_folder='templates')
 
 #preview sample
 sample_article = "Gold, a precious metal, is prized for two important characteristics. First of all, gold has a lustrous beauty that is resistant to corrosion. Therefore, it is suitable for jewelry, coins, and ornamental purposes. Gold never needs to be polished and will remain beautiful forever. For example, a Macedonian coin remains as untarnished today as the day it was made 25 centuries ago. Another important characteristic of gold is its usefulness to industry and science. For many years, it has been used in hundreds of industrial applications, such as photography and dentistry. The most recent use of gold is in astronauts' suits. Astronauts wear gold-plated heat shields for protection when they go outside spaceships in space. In conclusion, gold is treasured not only for its beauty but also for its utility."
 
-experiment_errors = dict(
-    status_incorrectly_set=1000,
-    hit_assign_worker_id_not_set_in_mturk=1001,
-    hit_assign_worker_id_not_set_in_consent=1002,
-    hit_assign_worker_id_not_set_in_exp=1003,
-    hit_assign_appears_in_database_more_than_once=1004,
-    already_started_exp=1008,
-    already_started_exp_mturk=1009,
-    already_did_exp_hit=1010,
-    tried_to_quit=1011,
-    intermediate_save=1012,
-    improper_inputs=1013,
-    page_not_found=404,
-    in_debug=2005,
-    task_not_existed=1014,
-    unknown_error=9999
-)
-
-class ExperimentError(Exception):
-
-    """
-    Error class for experimental errors, such as subject not being found in
-    the database.
-    """
-
-    def __init__(self, value):
-        self.value = value
-        self.errornum = experiment_errors[self.value]
-
-    def __str__(self):
-        return repr(self.value)
-
-    def error_page(self, request):
-        return render_template('error.html',
-                               errornum=self.errornum,
-                               **request.args)
 
 '''@task_views.route('/mturk_success')
 def mturk_success():
@@ -209,6 +174,7 @@ def closepopup():
     #update status
     DBQuery().update_task_status_by_worker_assignment_id(worker_id, assignment_id, Status.FINISH)
     return render_template("closepopup.html")
+
 
 @task_views.errorhandler(ExperimentError)
 def handleExpError(e):

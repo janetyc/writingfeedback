@@ -2,6 +2,7 @@
 {% block content %}
 <header>Task: Identify Topic Sentence</header>
 <section>
+
     <div class="definition">
         <h4><i class="info circle icon"></i><span class="block-title">What is a topic sentence?</span></h4>
         <ul>
@@ -63,7 +64,12 @@
 <script>
     $(function() {
         var worker_id = "{{ data.worker_id }}";
-        var assignmentId = "{{ data.assignment_id }}"
+        var assignment_id = "{{ data.assignment_id }}"
+        var hit_id = "{{ data.hit_id }}"
+
+        if(assignment_id != "" && hit_id !=""){
+            $("#navBar").css("display", "none");
+        }
 
         //preview
         var preview_flag = "{{ data.preview_flag }}";
@@ -135,7 +141,7 @@
                 },
                 success: function(data) {
                     if(data['success'] == 1){
-                        if(assignmentId==""){
+                        if(assignment_id==""){
                             window.location = "/success?verified_string={{data.verified_string}}";
                         }
                         else{
