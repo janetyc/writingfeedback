@@ -55,15 +55,24 @@ frame_height = 500 # the height of the iframe holding the external hit
 
 def create_topic_hit(article_id, task_type=TaskType.TOPIC):
     URL = '%s/mturk?task_type=%s&article_id=%s&using_sandbox=%s' % (HOST_SERVER, task_type, article_id, str.lower(str(SANDBOX)))
+
     create_hit(task_type, URL)
 
 
-def create_relevance_hit(article_id, paragraph_idx, task_type=TaskType.RELEVANCE):
+def create_relevance_hit(article_id, paragraph_idx, task_type=TaskType.RELEVANCE, **kwargs):
     URL = '%s/mturk?task_type=%s&article_id=%s&paragraph_idx=%s&using_sandbox=%s' % (HOST_SERVER, task_type, article_id, paragraph_idx, str.lower(str(SANDBOX)))
+
+    if "topic_sentence_idx" in kwargs:
+        URL += "&topic_sentence_idx=%s" % kwargs["topic_sentence_idx"]
+
+    print URL
+    
     create_hit(task_type, URL)
 
-def create_relation_hit(article_id, paragraph_idx, task_type=TaskType.RELATION):
+def create_relation_hit(article_id, paragraph_idx, task_type=TaskType.RELATION, **kwargs):
     URL = '%s/mturk?task_type=%s&article_id=%s&paragraph_idx=%s&using_sandbox=%s' % (HOST_SERVER, task_type, article_id, paragraph_idx, str.lower(str(SANDBOX)))
+    print URL
+
     create_hit(task_type, URL)
 
 def create_hit(task_type, URL):
@@ -106,6 +115,6 @@ def create_hit(task_type, URL):
 
 if __name__ == "__main__":
     #topic_hit = create_topic_hit(article_id="1")
-    #relevance_hit = create_relevance_hit(article_id="1", paragraph_idx="2")
-    relation_hit = create_relation_hit(article_id="3", paragraph_idx="2")
+    relevance_hit = create_relevance_hit(article_id="2", paragraph_idx="2", topic_sentence_idx="1")
+    #relation_hit = create_relation_hit(article_id="3", paragraph_idx="2")
     
