@@ -15,8 +15,7 @@ from flask_migrate import Migrate, MigrateCommand
 
 re_data = re.compile(r'(.*?): (.*?)\n')
 
-env = os.getenv('ENV')
-app = create_app(env)
+app = create_app()
 migrate = Migrate(app, db)
 
 manager = Manager(app)
