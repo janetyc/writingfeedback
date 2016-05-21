@@ -152,6 +152,28 @@ class Relevance(db.Model):
         return '<Relevance %r>' % self.created_user
 
 
+
+class Workflow(db.Model):
+    __tablename__ = 'workflow'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    created_time = db.Column(db.DateTime())
+    finished_time = db.Column(db.DateTime())
+    workflow_type = db.Column(db.Text())
+    topic_hit_ids = db.Column(db.Text())
+    relevance_hit_ids = db.Column(db.Text())
+    relation_hit_ids = db.Column(db.Text())
+
+    def __init__(self, workflow_type):
+        self.workflow_type = workflow_type
+        self.topic_hit_ids = ""
+        self.relevance_hit_ids = ""
+        self.relation_hit_ids = ""
+        self.created_time = datetime.utcnow()
+
+    def __repr__(self):
+        return '<Workflow %r>' % self.id
+
+
 ''' Store the structure of a paragraph (aggregate results from accepted task)
     - topic: #sentence_2-weight,sentence_3-weight
     - relevance: sentence_2:relevance_1-weight,relevance_2-weight|sentence_1:relevance_1-weight

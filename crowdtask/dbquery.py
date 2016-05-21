@@ -1,5 +1,7 @@
 from crowdtask.models import Task, Article, Paragraph, Topic, Relation, Relevance
-from crowdtask import create_app, db
+from crowdtask.models import Workflow, Structure
+from crowdtask import db
+from enum import TaskType
 
 class DBQuery(object):
 
@@ -53,6 +55,43 @@ class DBQuery(object):
 
         return relevance.id
 
+    def add_workflow(self, workflow_type):
+        workflow = Workflow(workflow_type)
+        db.session.add(workflow)
+        db.session.commit()
+
+        return workflow.id
+
+    def add_hit_id_to_workflow(self, workflow_id, task_type, hit_id):
+        workflow = self.get_workflow_by_id(workflow_id)
+        if workflow is None:
+            return None
+
+        hit_ids = []
+        updated_workflow = Workflow.query.filter_by(id=workflow_id)
+        if task_type == TaskType.TOPIC:
+            if workflow.topic_hit_ids != "":
+                hit_ids = workflow.topic_hit_ids.split(',')
+
+            hit_ids.append(hit_id)
+            updated_workflow.update({"topic_hit_ids": ",".join(hit_ids)})
+        elif task_type == TaskType.RELEVANCE:
+            if workflow.relevance_hit_ids != "":
+                hit_ids = workflow.relevance_hit_ids.split(',')
+            
+            hit_ids.append(hit_id)
+            updated_workflow.update({"relevance_hit_ids": ",".join(hit_ids)})
+        elif task_type == TaskType.RELATION:
+            if workflow.relation_hit_ids !="":
+                hit_ids = workflow.relation_hit_ids.split(',')
+
+            hit_ids.append(hit_id)
+            updated_workflow.update({"relation_hit_ids": ",".join(hit_ids)})
+
+        db.session.commit()
+
+        return updated_workflow
+
     #update status
     def update_task_status_by_worker_assignment_id(self, workerId, assignmentId, status):
         task = Task.query.filter_by(assignmentId=assignmentId, 
@@ -62,6 +101,14 @@ class DBQuery(object):
         return task
 
     #get data from database
+    def get_workflow_by_id(self, workflow_id):
+        workflow = Workflow.query.filter_by(id=workflow_id).first()
+        return workflow
+
+    def get_task_by_id(self, task_id):
+        task = Task.query.filter_by(id=task_id).first()
+        return task
+
     def get_task_by_worker_assignment_id(self, workerId ,assignmentId):
         task = Task.query.filter_by(assignmentId=assignmentId, created_user=workerId).first()
         return task

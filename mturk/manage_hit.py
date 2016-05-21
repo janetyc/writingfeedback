@@ -1,5 +1,13 @@
+from mturk.create_hit import *
 import sys
-from boto.mturk.connection import HIT
+
+mtc = mturk
+
+def get_all_hits():
+    hits = mtc.get_all_hits()
+    for i, hit in enumerate(hits):
+        print "%d: %s (%s)" % (i, hit.HITId, hit.HITStatus)
+
 
 def get_all_reviewable_hits(page_size=50):
     hits = mtc.get_reviewable_hits(page_size=page_size)
@@ -21,11 +29,9 @@ def get_all_reviewable_hits(page_size=50):
 
     return hits
 
-
-
 def show_assignments(hit_id):    
     assignments = mtc.get_assignments(hit_id)
-    print assignments
+    print "====== show assignments ======"
     for assignment in assignments:
         show_assignment(assignment)
         print "---------------"
@@ -37,13 +43,14 @@ def show_assignment(assignment):
     print "HITId: %s" % assignment.HITId
 
 def show_hit(hit):
+    print "====== show hit ======"
     print "hit id: %s" % hit.HITId
     print "has expired: %s" % hit.expired
     print "title: %s" % hit.Title
     print "status: %s" % hit.HITStatus
     
-    print "=============================="
-    show_assignments(hit_id)
+    show_assignments(hit.HITId)
+    print "------ "
 
 def get_hit(hit_id):
     hit = mtc.get_hit(hit_id)[0]
@@ -69,14 +76,22 @@ if __name__ == "__main__":
         print "python manage_hit.py unreject assignment_id"
         print "python manage_hit.py expire_hit hit_id"
         print "python manage_hit.py show_hit hit_id"
+        print "python manage_hit.py get_all_hits"
+
         exit(0)
     else:
         function = sys.argv[1]
+
         if len(sys.argv) == 2:
+            if function == "get_all_hits":
+                get_all_hits()
+                exit(0)
+
             print "python manage_hit.py show_assignment assignment_id"
             print "python manage_hit.py unreject assignment_id"
             print "python manage_hit.py expire_hit hit_id"
             print "python manage_hit.py show_hit hit_id"
+            print "python manage_hit.py get_all_hits"
             exit(0)
 
         if function == "show_assignment":
@@ -96,6 +111,8 @@ if __name__ == "__main__":
             print "unreject assignment %s" % assignment_id
 
         elif function == "show_hit":
-             hit_id = sys.argv[2]
-             hit = get_hit(hit_id)
-             show_hit(hit)
+            hit_id = sys.argv[2]
+            hit = get_hit(hit_id)
+            show_hit(hit)
+
+
