@@ -33,7 +33,7 @@ def add_topic():
     problem = ""
     for paragraph_idx in paragraph_topic_map:
         topic_sentence_ids = ",".join(paragraph_topic_map[paragraph_idx])
-        problem = "%s|%s|%s" % (problem, article_id, paragraph_idx)
+        problem = "%s|%s,%s" % (problem, article_id, paragraph_idx)
 
         topic_id = DBQuery().add_topic(worker_id, article_id, paragraph_idx, topic_sentence_ids)
         topic_list.append(str(topic_id))

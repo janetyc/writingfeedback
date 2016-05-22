@@ -52,32 +52,35 @@ approve_requirement = 80
 frame_height = 500 # the height of the iframe holding the external hit
 
 
-def create_topic_hit(article_id, task_type=TaskType.TOPIC, num_assignments=max_assignments):
+def create_topic_hit(article_id, num_of_assignments=max_assignments):
+    task_type = TaskType.TOPIC
     URL = '%s/mturk?task_type=%s&article_id=%s&using_sandbox=%s' % (HOST_SERVER, task_type, article_id, str.lower(str(SANDBOX)))
     print URL
-    hit_id = create_hit(task_type, URL, num_assignments)
+    hit_id = create_hit(task_type, URL, num_of_assignments)
 
     return hit_id
 
-def create_relevance_hit(article_id, paragraph_idx, task_type=TaskType.RELEVANCE, num_assignments=max_assignments, **kwargs):
+def create_relevance_hit(article_id, paragraph_idx, num_of_assignmentss=max_assignments, **kwargs):
+    task_type = TaskType.RELEVANCE
     URL = '%s/mturk?task_type=%s&article_id=%s&paragraph_idx=%s&using_sandbox=%s' % (HOST_SERVER, task_type, article_id, paragraph_idx, str.lower(str(SANDBOX)))
 
     if "topic_sentence_idx" in kwargs:
         URL += "&topic_sentence_idx=%s" % kwargs["topic_sentence_idx"]
 
     print URL
-    hit_id = create_hit(task_type, URL, num_assignments)
+    hit_id = create_hit(task_type, URL, num_of_assignments)
 
     return hit_id
 
-def create_relation_hit(article_id, paragraph_idx, task_type=TaskType.RELATION, num_assignments=max_assignments, **kwargs):
+def create_relation_hit(article_id, paragraph_idx, num_of_assignments=max_assignments, **kwargs):
+    task_type = TaskType.RELATION
     URL = '%s/mturk?task_type=%s&article_id=%s&paragraph_idx=%s&using_sandbox=%s' % (HOST_SERVER, task_type, article_id, paragraph_idx, str.lower(str(SANDBOX)))
     print URL
 
-    hit_id = create_hit(task_type, URL, num_assignments)
+    hit_id = create_hit(task_type, URL, num_of_assignments)
     return hit_id
 
-def create_hit(task_type, URL, num_assignments):
+def create_hit(task_type, URL, num_of_assignments):
     title = title_set[task_type]
     description = description_set[task_type]
     keywords = keywords_set[task_type]
@@ -102,7 +105,7 @@ def create_hit(task_type, URL, num_assignments):
         qualifications=qualifications,
 
         duration=duration,
-        max_assignments=num_assignments,
+        max_assignments=num_of_assignments,
         lifetime=lifetime,
         approval_delay=approval_delay
         #response_groups = ( 'Minimal', 'HITDetail' ), # I don't know what response groups are

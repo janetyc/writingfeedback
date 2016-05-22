@@ -56,6 +56,10 @@ def get_hit(hit_id):
     hit = mtc.get_hit(hit_id)[0]
     return hit
 
+def get_assignments(hit_id):
+    assignments = mtc.get_assignments(hit_id)
+    return assignments
+
 def get_assignment(assignment_id):
     assignment = mtc.get_assignment(assignment_id)
 

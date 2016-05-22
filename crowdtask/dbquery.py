@@ -133,6 +133,11 @@ class DBQuery(object):
         topics = Topic.query.filter_by(article_id=article_id)
         return topics
 
+    def get_topics_by_hit_id(self, hit_id):
+        tasks = Task.query.filter_by(hit_id=hit_id)
+        for task in tasks:
+            answer_list = task.answer.split("|")
+
     def get_paragraphs_by_article_id(self, article_id):
         paragraphs = Paragraph.query.filter_by(article_id=article_id)
         return paragraphs
