@@ -134,9 +134,24 @@ class DBQuery(object):
         return topics
 
     def get_topics_by_hit_id(self, hit_id):
-        tasks = Task.query.filter_by(hit_id=hit_id)
+        tasks = Task.query.filter_by(hitId=hit_id)
+
+        answers_list = []
         for task in tasks:
-            answer_list = task.answer.split("|")
+            topic_ids = task.answer.split("|")
+            for topic_id in topic_ids:
+                topic_list = self.get_topic_by_id(int(topic_id))
+                answers_list.extend(topic_list)
+
+        return answers_list
+
+    def get_topic_by_id(self, topic_id):
+        topic_list = []
+        topic = Topic.query.filter_by(id=topic_id).first()
+        for topic_sentence in topic.topic_sentence_ids.split(","):
+            topic_list.append(("%d-%d" % (topic.article_id, topic.paragraph_idx), topic_sentence))
+
+        return topic_list
 
     def get_paragraphs_by_article_id(self, article_id):
         paragraphs = Paragraph.query.filter_by(article_id=article_id)

@@ -121,6 +121,6 @@ def create_hit(task_type, URL, num_of_assignments):
 
 if __name__ == "__main__":
     print "test create hit"
-    #topic_hit = create_topic_hit(article_id="1")
+    topic_hit = create_topic_hit(article_id="1")
     #relevance_hit = create_relevance_hit(article_id="2", paragraph_idx="2", topic_sentence_idx="1")
     #relation_hit = create_relation_hit(article_id="3", paragraph_idx="2")

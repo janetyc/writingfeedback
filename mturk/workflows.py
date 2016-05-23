@@ -6,9 +6,12 @@ from crowdtask.enum import TaskType, WorkflowType
 app=create_app()
 
 class UnityWorkflow:
+    
+
     def __init__(self, workflow_id):
         self.workflow_id = workflow_id
-
+        self.topic_map = {}
+        
     def show_hit_status_at_topic_stage(self):
         workflow = DBQuery().get_workflow_by_id(self.workflow_id)
         if workflow.topic_hit_ids != "":
@@ -17,8 +20,15 @@ class UnityWorkflow:
                 print hit_id
                 hit = get_hit(hit_id)
                 show_hit(hit)
-
                 assignments = get_assignments(hit_id)
+
+                topic_rank_list = []
+                topic_list = DBQuery().get_topics_by_hit_id(hit_id)
+                for par_topic in set(topic_list):
+                    topic_rank_list.append((par_topic, topic_list.count(par_topic)))
+
+                topic_rank_list.sort(key=lambda tup: tup[1], reverse=True)
+                print topic_rank_list
             
         else:
             print "no topic hit"
