@@ -152,9 +152,16 @@ body {
 }
 
 .paragraph{
+    margin: 15px 5px;
     line-height: 2em;
+    color: #000000;
+    background-color: #ffffff;
 }
 
+
+.go-to-next{
+    margin-top: 10px;
+}
 #loading-image{
     z-index: 1000;
     position: fixed;
@@ -169,7 +176,10 @@ body {
     -moz-box-shadow: none;
     box-shadow: none;
 }
-
+.complete-area{
+    margin-top: 5%;
+    text-align: center;
+}
 .success-area{
     border: 1px solid #cccccc;
     padding: 15px 10px;

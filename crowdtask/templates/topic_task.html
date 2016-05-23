@@ -27,16 +27,22 @@
             <div id="working-area" class="content">
                 {% for paragraph in data.content %}
                     {% if data.paragraph_idx %}
-                    <p class="paragraph" id="paragraph_{{data.paragraph_idx}}">
+                    <div class="paragraph" id="paragraph_{{data.paragraph_idx}}">
                     {% else %}
-                    <p class="paragraph" id="paragraph_{{loop.index-1}}">
+                    <div class="paragraph" id="paragraph_{{loop.index-1}}">
                     {% endif %}
                     {% for sentence in paragraph.split(".") %}
                         {% if sentence %}
                         <span class="sentence highlight-sentence" id="sentence_{{loop.index-1}}">{{ sentence }}.</span>
                         {% endif %}
                     {% endfor %}
-                    </p>
+                    {% if not data.paragraph_idx and loop.index < data.content|length %}
+                    <div class="go-to-next">
+                        <div class="tiny ui button">Go to next paragraph</div>
+                    </div>
+                    {% endif %}
+                    </div>
+                    
                 {% endfor %}
             </div>
             <div class="ui segment" id="loading-image">
@@ -63,9 +69,12 @@
 {% block extra_js %}
 <script>
     $(function() {
+        var current_idx = 0;
         var worker_id = "{{ data.worker_id }}";
         var assignment_id = "{{ data.assignment_id }}"
         var hit_id = "{{ data.hit_id }}"
+        var paragraph_length = $('.paragraph').length;
+        var active_length = 0;
 
         if(assignment_id != "" && hit_id !=""){
             $("#navBar").css("display", "none");
@@ -77,6 +86,24 @@
             $("#submitTask").css("display", "none");
         }
 
+        //initial paragraph setting
+        $('.paragraph').hide();
+        $('#paragraph_'+current_idx).addClass("active-paragraph");
+        $('#paragraph_'+current_idx).show();
+        $('.go-to-next').click(function(){
+            active_length = $('.active-paragraph').length;
+
+            if(active_length<paragraph_length){
+                current_idx = current_idx+1;
+                $(this).css("display","none");
+                
+                $('#paragraph_'+current_idx).addClass('active-paragraph');
+                $('#paragraph_'+current_idx).show();
+                
+            }
+        });
+
+
         //hide loading image
         $('#loading-image').hide();
 
@@ -84,9 +111,8 @@
         $('#submitAnswer').addClass("disabled");
 
         //highlight selection
-        $('.sentence').click(function(){
+        $('.highlight-sentence').click(function(){
             $(this).toggleClass('highlight');
-            
             
             if($('#working-area .highlight').length){
                 $('#submitAnswer').removeClass("disabled");
@@ -98,6 +124,7 @@
                 $('#checkEmpty input').removeAttr("disabled");
                 $('#submitAnswer').addClass("disabled");
             }
+
         });
 
         $('#checkEmpty').click(function(){

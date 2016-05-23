@@ -1,20 +1,21 @@
 {% extends "mturk_base.html" %}
 {% block title %} - Thanks Page for WritingFeedback Experiment{% endblock %}
 {% block content %}
-
+<div class="complete-area">
 <h1>Thanks for your participation</h1>
 <div clas="text-description" id="debriefingtext">
     <p>Thanks again for your participation in our study!</p>
     <p>To complete the HIT, simply press the button below.</p>
     {% if data.using_sandbox %}
-        <form style="width: 300px;" id="mturk_form" action="https://workersandbox.mturk.com/mturk/externalSubmit" method="post">
+        <form id="mturk_form" action="https://workersandbox.mturk.com/mturk/externalSubmit" method="post">
     {% else %}
-        <form style="width: 300px;" id="mturk_form" action="https://www.mturk.com/mturk/externalSubmit" method="post">
+        <form id="mturk_form" action="https://www.mturk.com/mturk/externalSubmit" method="post">
     {% endif %}
     <input type="hidden" id="assignmentId" name="assignmentId" value="{{ data.assignment_id }}"  /> 
     <input type="hidden" id="hitId" name="hitId" value="{{ data.hit_id }}"  /> 
     <input type="hidden" id="workerId" name="workerId" value="{{ data.worker_id }}"  /> 
-    <input style="margin: 0 auto; font-size: 140%; width: 300px;" id="submitButton" type="submit" name="Submit" value="Complete HIT"  /> 
+    <input class="ui button green" id="submitButton" type="submit" name="Submit" value="Complete HIT"  /> 
     </form>
+</div>
 </div>
 {% endblock %}

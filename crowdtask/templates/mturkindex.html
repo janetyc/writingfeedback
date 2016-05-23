@@ -1,7 +1,7 @@
-<!doctype html>
-<html>
-    <body>
-        {% if assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE" %}
+{% extends "mturk_base.html" %}
+{% block title %} - Returning to Mechanical Turk{% endblock %}
+{% block content %}
+    {% if assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE" %}
         <p>you haven't accept this mturk</p>
         {% else %}
 		<script>
@@ -22,9 +22,7 @@
 		<p>
 		Please disable pop-up blockers before continuing.
 		</p>
-		<p><a href="#" onClick="openwindow()">"Click here to start.</a></p>
+		<p><a class="ui button green" href="#" onClick="openwindow()">Click here to start</a></p>
 
-        {% endif %}
-	</body>
-</html>
-
+    {% endif %}
+{% endblock %}
