@@ -70,19 +70,19 @@ class DBQuery(object):
         hit_ids = []
         updated_workflow = Workflow.query.filter_by(id=workflow_id)
         if task_type == TaskType.TOPIC:
-            if workflow.topic_hit_ids != "":
+            if workflow.topic_hit_ids and workflow.topic_hit_ids != "":
                 hit_ids = workflow.topic_hit_ids.split(',')
 
             hit_ids.append(hit_id)
             updated_workflow.update({"topic_hit_ids": ",".join(hit_ids)})
         elif task_type == TaskType.RELEVANCE:
-            if workflow.relevance_hit_ids != "":
+            if workflow.relevance_hit_ids and workflow.relevance_hit_ids != "":
                 hit_ids = workflow.relevance_hit_ids.split(',')
             
             hit_ids.append(hit_id)
             updated_workflow.update({"relevance_hit_ids": ",".join(hit_ids)})
         elif task_type == TaskType.RELATION:
-            if workflow.relation_hit_ids !="":
+            if workflow.relation_hit_ids and workflow.relation_hit_ids !="":
                 hit_ids = workflow.relation_hit_ids.split(',')
 
             hit_ids.append(hit_id)

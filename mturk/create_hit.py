@@ -33,7 +33,7 @@ description_set = dict({
 })
 price_set = dict({
     TaskType.TOPIC : 0.05,
-    TaskType.RELEVANCE : 0.04,
+    TaskType.RELEVANCE : 0.05,
     TaskType.RELATION : 0.04,
 })
 
