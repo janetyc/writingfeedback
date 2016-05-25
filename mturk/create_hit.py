@@ -33,14 +33,14 @@ description_set = dict({
 })
 price_set = dict({
     TaskType.TOPIC : 0.05,
-    TaskType.RELEVANCE : 0.03,
-    TaskType.RELATION : 0.02,
+    TaskType.RELEVANCE : 0.04,
+    TaskType.RELATION : 0.04,
 })
 
 keywords_set = dict({
-    TaskType.TOPIC: ["annotation", "feedback", "topic", "topic sentence"],
-    TaskType.RELEVANCE: ["annotation", "feedback", "relevance", "sentence relevance"],
-    TaskType.RELATION: ["annotation", "feedback", "relation", "sentence relation"],
+    TaskType.TOPIC: ["annotation", "feedback", "topic", "topic sentence", "topic identification"],
+    TaskType.RELEVANCE: ["annotation", "feedback", "relevance", "sentence relevance", "relevance identification"],
+    TaskType.RELATION: ["annotation", "feedback", "relation", "sentence relation", "relation classification"],
 })
 
 
