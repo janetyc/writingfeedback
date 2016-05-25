@@ -81,21 +81,19 @@ def mturkroute():
                 paragraph_idx = int(paragraph_idx)
                 content = sample_article
 
-                topic_map = {}
-                topic_sentence_ids = "0"
-                topic_map[paragraph_idx] = [int(i) for i in topic_sentence_ids.split(",")]
+                #topic_map = {}
+                topic_sentence_idx = 0
+                #topic_map[paragraph_idx] = [topic_sentence_idx]
         
-                count_list = []
-                sentence_list = []
-        
+                #count_list = []
                 sentence_list = content.split(".")
                 sentence_list = sentence_list[:-1]
                 par_length = len(sentence_list)
         
-                if paragraph_idx in topic_map:
-                    count_list = [topic_map[paragraph_idx].count(j) for j in range(par_length)]
-                else:
-                    count_list = [0]*par_length
+                #if paragraph_idx in topic_map:
+                #    count_list = [topic_map[paragraph_idx].count(j) for j in range(par_length)]
+                #else:
+                #    count_list = [0]*par_length
 
                 data = {
                     'worker_id': worker_id,
@@ -103,11 +101,13 @@ def mturkroute():
                     'title': "Gold",
                     'paragraph_idx': paragraph_idx,
                     'sentence_list': sentence_list,
-                    'topic_sentence': count_list,
+                    #'topic_sentence': count_list,
                     'verified_string': "",
                     'preview_flag': "1",
                     'hit_id': hit_id,
-                    'assignment_id': assignment_id
+                    'assignment_id': assignment_id,
+
+                    'topic_sentence_idx': topic_sentence_idx
                 }
 
                 return render_template('relevance_task.html', data=data)
