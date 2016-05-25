@@ -20,10 +20,12 @@
     </div>
     <hr>
     <div class="problem-area">
-        <div><i class="help circle icon"></i><span class="block-title">Please Identify Topic Sentence in the Paragraph</span></div>
+        <div><i class="help circle icon"></i><span class="block-title">Please identify topic sentence in each paragraph.</span>
+            <div class="block-des">If no topic sentence in the paragraph, please skip the paragraph. If no any topic sentence in the whole essay, please indicate "No topic sentence" by the checkbox at the bottom page.</div>
+        </div>
         <div class="problem">
             <div>Title: {{ data.title }}</div>
-            <div>Paragraph:</div>
+            <div>Content:</div>
             <div id="working-area" class="content">
                 {% for paragraph in data.content %}
                     {% if data.paragraph_idx %}
@@ -55,7 +57,7 @@
                 <div>
                     <div class="ui checkbox" id="checkEmpty">
                     <input type="checkbox" name="example">
-                    <label>No topic sentenice</label>
+                    <label>No topic sentence in the essay</label>
                     </div>
                 </div>
                 <div id="submitAnswer" class="ui button green">Submit</div>

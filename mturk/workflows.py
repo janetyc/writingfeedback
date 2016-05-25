@@ -62,5 +62,8 @@ def coherence_workflow():
     return
 
 if __name__ == "__main__":
-    u_workflow = unity_workflow(article_id="4", task_type=TaskType.TOPIC, num_of_task=1, num_of_assignments=2)
-    print "workflow_id: %d" % u_workflow
+    article_list = ["4","6","8"]
+    assignment_num = 5
+    for article_id in article_list:
+        u_workflow = unity_workflow(article_id=article_id, task_type=TaskType.TOPIC, num_of_task=1, num_of_assignments=assignment_num)
+        print "workflow_id: %d" % u_workflow
