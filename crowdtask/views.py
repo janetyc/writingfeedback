@@ -145,6 +145,7 @@ def relevance_task():
     else:
         #sample
         paragraph_idx = 0
+        topic_sentence_idx = 0
         
         topic_map = {}
         topic_sentence_ids = "0"
@@ -173,7 +174,9 @@ def relevance_task():
             'verified_string': "",
             'preview_flag': "1",
             'hit_id': hit_id,
-            'assignment_id': assignment_id
+            'assignment_id': assignment_id,
+
+            'topic_sentence_idx': topic_sentence_idx
         }
 
     return render_template('relevance_task.html', data=data)

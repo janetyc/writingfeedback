@@ -60,13 +60,14 @@ def create_topic_hit(article_id, num_of_assignments=max_assignments):
 
     return hit_id
 
-def create_relevance_hit(article_id, paragraph_idx, num_of_assignmentss=max_assignments, **kwargs):
+def create_relevance_hit(article_id, paragraph_idx, num_of_assignments=max_assignments, **kwargs):
     task_type = TaskType.RELEVANCE
     URL = '%s/mturk?task_type=%s&article_id=%s&paragraph_idx=%s&using_sandbox=%s' % (HOST_SERVER, task_type, article_id, paragraph_idx, str.lower(str(SANDBOX)))
 
     if "topic_sentence_idx" in kwargs:
         URL += "&topic_sentence_idx=%s" % kwargs["topic_sentence_idx"]
 
+    print "num of assignments: %d" % num_of_assignments
     print URL
     hit_id = create_hit(task_type, URL, num_of_assignments)
 

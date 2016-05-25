@@ -1,0 +1,22 @@
+{% extends "mturk_base.html" %}
+{% block title %} - Workflow{% endblock %}
+{% block content %}
+<div class="vis-area">
+    <div class="article-title">{{ data.title }}</div>
+    {% for paragraph_idx in data.content_map %}
+    <p class="paragraph" id="paragraph_{{ paragraph_idx }}">
+        {% for sentence_idx in range(data.content_map[paragraph_idx]|length) %}
+        <span id="sentence_{{sentence_idx}}" class="sentence">
+            {% if data.content_map[paragraph_idx][sentence_idx][1] > 0 %}
+            <span class="topic-sentence sentence-vis weight-{{data.content_map[paragraph_idx][sentence_idx][1]}}">{{ data.content_map[paragraph_idx][sentence_idx][0] }}.</span>
+            {% elif data.content_map[paragraph_idx][sentence_idx][1] >= 5 %}
+            <span class="topic-sentence sentence-vis high-weight">{{ data.content_map[paragraph_idx][sentence_idx][0] }}.</span>
+            {% else %}
+            <span>{{ data.content_map[paragraph_idx][sentence_idx][0] }}.</span>
+            {% endif %}
+        </span>
+        {% endfor %}
+    </p>
+    {% endfor %}
+</div>
+{% endblock %}
