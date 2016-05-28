@@ -41,6 +41,7 @@ def show_assignment(assignment):
     print "id: %s" % assignment.AssignmentId
     print "WorkerId: %s" % assignment.WorkerId
     print "HITId: %s" % assignment.HITId
+    return assignment
 
 def show_hit(hit):
     print "====== show hit ======"

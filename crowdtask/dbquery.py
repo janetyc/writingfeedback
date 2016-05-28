@@ -145,6 +145,18 @@ class DBQuery(object):
 
         return answers_list
 
+    def get_relevances_by_hit_id(self, hit_id):
+        tasks = Task.query.filter_by(hitId=hit_id)
+
+        answers_list = []
+        for task in tasks:
+            relevance_ids = task.answer.split("|")
+            for relevance_id in relevance_ids:
+                relevance_list = self.get_relevance_by_id(int(relevance_id))
+                answers_list.extend(relevance_list)
+
+        return answers_list
+
     def get_topic_by_id(self, topic_id):
         topic_list = []
         topic = Topic.query.filter_by(id=topic_id).first()
@@ -152,6 +164,18 @@ class DBQuery(object):
             topic_list.append(("%d-%d" % (topic.article_id, topic.paragraph_idx), topic_sentence))
 
         return topic_list
+
+    def get_relevance_by_id(self, relevance_id):
+        relevance_list = []
+        relevance = Relevance.query.filter_by(id=relevance_id).first()
+        topic_sentence_idx = relevance.topic_sentence_idx
+        paragraph_idx = relevance.paragraph_idx
+        article_id = relevance.article_id
+        
+        for relevance_word in relevance.relevance_ids.split(","):
+            relevance_list.append((article_id, paragraph_idx, relevance_word, topic_sentence_idx))
+
+        return relevance_list
 
     def get_paragraphs_by_article_id(self, article_id):
         paragraphs = Paragraph.query.filter_by(article_id=article_id)

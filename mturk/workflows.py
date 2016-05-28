@@ -10,9 +10,12 @@ class UnityWorkflow:
     def __init__(self, workflow_id):
         self.workflow_id = workflow_id
         self.topic_map = {}
+        self.topic_worker_list = []
+        self.relevance_worker_list = []
         
     def show_hit_status_at_topic_stage(self):
         workflow = DBQuery().get_workflow_by_id(self.workflow_id)
+        
         if workflow.topic_hit_ids != "":
             topic_hits = workflow.topic_hit_ids.split(",")
             for hit_id in topic_hits:
@@ -20,6 +23,7 @@ class UnityWorkflow:
                 hit = get_hit(hit_id)
                 show_hit(hit)
                 assignments = get_assignments(hit_id)
+                self.topic_worker_list.extend([a.WorkerId for a in assignments])
 
                 topic_rank_list = []
                 topic_list = DBQuery().get_topics_by_hit_id(hit_id)
@@ -31,6 +35,35 @@ class UnityWorkflow:
             
         else:
             print "no topic hit"
+
+    def show_hit_status_at_relevance_stage(self):
+        workflow = DBQuery().get_workflow_by_id(self.workflow_id)
+        
+        if workflow.topic_hit_ids != "":
+            relevance_hits = workflow.relevance_hit_ids.split(",")
+            for hit_id in relevance_hits:
+                print hit_id
+                hit = get_hit(hit_id)
+                show_hit(hit)
+                assignments = get_assignments(hit_id)
+                self.relevance_worker_list.extend([a.WorkerId for a in assignments])
+
+                relevance_rank_list = []
+                relevance_list = DBQuery().get_relevances_by_hit_id(hit_id)
+                for par_topic in set(relevance_list):
+                    topic_rank_list.append((par_topic, topic_list.count(par_topic)))
+
+                relevance_rank_list.sort(key=lambda tup: tup[1], reverse=True)
+                print relevance_rank_list
+            
+        else:
+            print "no topic hit"
+
+    def get_topic_worker_list(self):
+        return self.topic_worker_list
+
+    def get_relevance_worker_list(self):
+        return self.relevance_worker_list
 
 
 class CoherenceWorkflow:
@@ -75,6 +108,7 @@ def unity_workflow(article_id, task_type, num_of_task, num_of_assignments, **kwa
 
         workflow_id = int(kwargs.get("workflow_id"))
         topic_list = kwargs.get("topic_list")
+        num_of_assignments = kwargs.get('num_of_assignments')
 
         for topic in topic_list:
             items = topic.split("-")
@@ -82,7 +116,8 @@ def unity_workflow(article_id, task_type, num_of_task, num_of_assignments, **kwa
             paragraph_idx = items[1]
             topic_sentence_idx = items[2]
         
-            hit_id = create_relevance_hit(article_id=article_id, paragraph_idx=paragraph_idx, topic_sentence_idx=topic_sentence_idx)
+            hit_id = create_relevance_hit(article_id=article_id, paragraph_idx=paragraph_idx, 
+                                            num_of_assignments=num_of_assignments, topic_sentence_idx=topic_sentence_idx)
             DBQuery().add_hit_id_to_workflow(workflow_id, task_type, hit_id)
 
 

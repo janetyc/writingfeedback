@@ -240,6 +240,13 @@ body {
     -moz-border-radius-bottomleft: 5px; -webkit-border-bottom-left-radius: 5px; -khtml-border-bottom-left-radius: 5px; border-bottom-left-radius: 5px;
     -moz-border-radius-bottomright: 5px; -webkit-border-bottom-right-radius: 5px; -khtml-border-bottom-right-radius: 5px; border-bottom-right-radius: 5px;
 }
+.word-relevance{
+    padding: 1px;
+}
+.relevance-weight-1{ border-bottom: 1px solid #aaaaaa; }
+.relevance-weight-2{ border-bottom: 3px solid #555555; }
+.relevance-weight-3{ border-bottom: 5px solid #000000; }
+
 /* ==============
     MOBILE: Menu
    ============== */
