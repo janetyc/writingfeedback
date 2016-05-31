@@ -4,7 +4,7 @@
 <section>
     <ul>
     {% for article in data %}
-    <li><a href="{{ url_for('views.show_article', article_id=article.article_id)}}">{{article.title}}</a></li>
+    <li><a href="{{ url_for('views.show_article', article_id=article.article_id)}}">{{article.title}} ({{article.authors}})</a></li>
     {% endfor %}
     </ul>
 </section>

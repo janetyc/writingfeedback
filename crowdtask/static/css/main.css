@@ -247,6 +247,10 @@ body {
 .relevance-weight-2{ border-bottom: 3px solid #555555; }
 .relevance-weight-3{ border-bottom: 5px solid #000000; }
 
+.small-block {
+    border: 1px solid #000000;
+    padding: 1px;
+}
 /* ==============
     MOBILE: Menu
    ============== */

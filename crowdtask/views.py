@@ -251,14 +251,19 @@ def relation_task():
 def show_all():
     all_articles = DBQuery().get_all_articles();
 
+    article_authors = "anonymous"
     data_list = []
     for article in all_articles:
         article_id = article.id
         title = article.title.encode("utf-8")
+
+        if article.authors:
+            article_authors = article.authors
         
         data = {
             "title": title,
-            "article_id": article_id
+            "article_id": article_id,
+            "authors": article_authors
         }
         data_list.append(data)
 
@@ -268,6 +273,8 @@ def show_all():
 def show_article(article_id):
     article = DBQuery().get_article_by_id(article_id)
     paragraphs = DBQuery().get_paragraphs_by_article_id(article_id)
+    workflows = DBQuery().get_workflows_by_article_id(article_id)
+    workflow_list = [str(workflow.id) for workflow in workflows]
 
     list = []
     for par in paragraphs:
@@ -277,7 +284,8 @@ def show_article(article_id):
     data = {
        "id": article.id, 
        "title": article.title,
-       "paragraphs": list
+       "paragraphs": list,
+       "workflow_list": workflow_list
     }
 
     return render_template('article.html', data=data)

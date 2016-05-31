@@ -17,7 +17,7 @@
                 <span class="topic-sentence sentence-vis high-weight">
                 {% for word_idx in range(data.content_map[paragraph_idx][sentence_idx][0]|length) %}
                     <span class="word-vis">{{data.content_map[paragraph_idx][sentence_idx][0][word_idx][0]}}</span>
-                {% endfor %}  
+                {% endfor %}
                 </span>
             {% else %}
                 <span class="not-topic-sentence">

@@ -6,8 +6,8 @@ from enum import TaskType
 class DBQuery(object):
 
     #insert article
-    def add_article(self, title, content):
-        article = Article(title, content)
+    def add_article(self, title, content, authors, source, year):
+        article = Article(title, content, authors, source, year)
         db.session.add(article)
         db.session.commit()
 
@@ -55,8 +55,8 @@ class DBQuery(object):
 
         return relevance.id
 
-    def add_workflow(self, workflow_type):
-        workflow = Workflow(workflow_type)
+    def add_workflow(self, workflow_type, article_id):
+        workflow = Workflow(workflow_type, article_id)
         db.session.add(workflow)
         db.session.commit()
 
@@ -105,6 +105,10 @@ class DBQuery(object):
         workflow = Workflow.query.filter_by(id=workflow_id).first()
         return workflow
 
+    def get_workflows_by_article_id(self, article_id):
+        workflows = Workflow.query.filter_by(article_id=article_id).all()
+        return workflows
+
     def get_task_by_id(self, task_id):
         task = Task.query.filter_by(id=task_id).first()
         return task
@@ -121,16 +125,20 @@ class DBQuery(object):
         article = Article.query.filter_by(title=title).first()
         return article
 
+    def get_article_by_title_and_authors(self, title, authors):
+        article = Article.query.filter_by(title=title, authors=authors).first()
+        return article
+
     def get_paragraph_by_id(self, paragraph_id):
         paragraph = Paragraph.query.filter_by(id=paragraph_id).first()
         return paragraph
 
     def get_topics_by_article_paragraph_id(self, article_id, paragraph_idx):
-        topics = Topic.query.filter_by(article_id=article_id, paragraph_idx=paragraph_idx)
+        topics = Topic.query.filter_by(article_id=article_id, paragraph_idx=paragraph_idx).all()
         return topics
 
     def get_topics_by_article_id(self, article_id):
-        topics = Topic.query.filter_by(article_id=article_id)
+        topics = Topic.query.filter_by(article_id=article_id).all()
         return topics
 
     def get_topics_by_hit_id(self, hit_id):
@@ -178,7 +186,7 @@ class DBQuery(object):
         return relevance_list
 
     def get_paragraphs_by_article_id(self, article_id):
-        paragraphs = Paragraph.query.filter_by(article_id=article_id)
+        paragraphs = Paragraph.query.filter_by(article_id=article_id).all()
         return paragraphs
 
     def get_all_articles(self):

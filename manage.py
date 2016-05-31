@@ -45,26 +45,34 @@ def import_articles(directory, filename):
         data = dict(all_match)
 
         article_title = data['Title'].strip()
+        article_authors = data['Authors'].strip()
+        article_source = data['Source'].strip()
+        article_year = data['Year'].strip()
         article_content = data['Introduction'].strip()
         article_paragraphs = article_content.split('<BR>')
 
         #check whether article is exist
-        article = DBQuery().get_article_by_title(article_title)
+        article = DBQuery().get_article_by_title_and_authors(article_title, article_authors)
         if article:
             print "file exist!"
-            shutil.move('%s/%s' % (directory, file), 'data-in-db')
+            if not isfile(join('data-in-db',file)):
+                shutil.move('%s/%s' % (directory, file), 'data-in-db')
             continue
 
         print "insert article to the database ..."
-        article_id = DBQuery().add_article(article_title, article_content)
+        article_id = DBQuery().add_article(article_title, article_content, article_authors, article_source, int(article_year))
 
         for idx, paragraph in enumerate(article_paragraphs):
             paragraph = paragraph.strip()
             paragraph_id = DBQuery().add_paragraph(article_id, idx, paragraph)
             print "insert article %s - paragraph %s to the database ..." % (article_title, idx)
 
+
         print "move article to data-in-db folder ..."
-        shutil.move('%s/%s' % (directory, file), 'data-in-db')
+        if isfile(join('data-in-db',file)):
+            print "file has already existed in data-in-db folder..."
+        else:
+            shutil.move('%s/%s' % (directory, file), 'data-in-db')
 
 if __name__ == '__main__':
     manager.run()

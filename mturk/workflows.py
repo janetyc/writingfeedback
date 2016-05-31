@@ -87,7 +87,7 @@ class CoherenceWorkflow:
 def unity_workflow(article_id, task_type, num_of_task, num_of_assignments, **kwargs):
     workflow_id = None
     if task_type == TaskType.TOPIC:
-        workflow_id = DBQuery().add_workflow(WorkflowType.UNITY)
+        workflow_id = DBQuery().add_workflow(WorkflowType.UNITY, int(article_id))
         print "workflow id:"
         print workflow_id
         for i in range(num_of_task):
@@ -125,7 +125,7 @@ def unity_workflow(article_id, task_type, num_of_task, num_of_assignments, **kwa
 
 def coherence_workflow(article_id, paragraph_length, task_type, num_of_task, num_of_assignments, **kwargs):
     if task_type == TaskType.RELATION:
-        workflow_id = DBQuery().add_workflow(WorkflowType.COHERENCE)
+        workflow_id = DBQuery().add_workflow(WorkflowType.COHERENCE, int(article_id))
 
         for i in range(paragraph_length):
             hit_id = create_relation_hit(article_id=article_id, paragraph_idx=str(i), num_of_assignments=num_of_assignments)
@@ -137,11 +137,11 @@ def coherence_workflow(article_id, paragraph_length, task_type, num_of_task, num
     return workflow_id
 
 if __name__ == "__main__":
-#    article_list = ["4","6","8"]
-#    assignment_num = 5
-#    for article_id in article_list:
-#        u_workflow = unity_workflow(article_id=article_id, task_type=TaskType.TOPIC, num_of_task=1, num_of_assignments=assignment_num)
-#        print "workflow_id: %d" % u_workflow
+    article_list = ["5"]
+    assignment_num = 5
+    for article_id in article_list:
+        u_workflow = unity_workflow(article_id=article_id, task_type=TaskType.TOPIC, num_of_task=1, num_of_assignments=assignment_num)
+        print "workflow_id: %d" % u_workflow
 
 #    print "Relation Task ..."
 #    article_list = ["4","6","8"]
@@ -151,17 +151,17 @@ if __name__ == "__main__":
 #        print "artcile_id: %s, paragraph_idx: %d" % (article_id, i)
 #        u_workflow = coherence_workflow(article_id=article_id, paragraph_length=paragraph_length_list[i], task_type=TaskType.RELATION, num_of_task=1, num_of_assignments=assignment_num)    
 #        print "workflow_id: %d" % u_workflow
-    assignment_num = 3
-    print "Relevance Task..."
-    workflow_list = [9,10,11]
-    article_topic_list = [['4-0-2','4-1-0'],['6-0-0', '6-1-0', '6-2-0', '6-3-0', '6-4-0'],['8-0-3','8-1-0','8-2-0','8-3-0','8-4-0']]
-    for i, workflow_id in enumerate(workflow_list):
-        topic_list = article_topic_list[i]
-        article_id = topic_list[0].split("-")[0]
-        u_workflow = unity_workflow(article_id=article_id, task_type=TaskType.RELEVANCE, 
-                                    num_of_task=1, num_of_assignments=assignment_num, workflow_id=workflow_id, topic_list=topic_list)
+#    assignment_num = 3
+#    print "Relevance Task..."
+#    workflow_list = [9,10,11]
+#    article_topic_list = [['4-0-2','4-1-0'],['6-0-0', '6-1-0', '6-2-0', '6-3-0', '6-4-0'],['8-0-3','8-1-0','8-2-0','8-3-0','8-4-0']]
+#    for i, workflow_id in enumerate(workflow_list):
+#        topic_list = article_topic_list[i]
+#        article_id = topic_list[0].split("-")[0]
+#        u_workflow = unity_workflow(article_id=article_id, task_type=TaskType.RELEVANCE, 
+#                                    num_of_task=1, num_of_assignments=assignment_num, workflow_id=workflow_id, topic_list=topic_list)
         
-        print "workflow_id: %d" % u_workflow
+#        print "workflow_id: %d" % u_workflow
 
 
 

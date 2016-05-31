@@ -8,10 +8,10 @@ class Article(db.Model):
     title = db.Column(db.Text())
     content = db.Column(db.Text())
     created_time = db.Column(db.DateTime())
-    #authors = db.Column(db.Text())
+    authors = db.Column(db.Text())
     #keywords = db.Column(db.Text())
-    #source = db.Column(db.Text())
-    #year = db.Column(db.Integer)
+    source = db.Column(db.Text())
+    year = db.Column(db.Integer)
 
     #def __init__(self, title, content, authors="", keywords="", source="", year=-1):
     #    self.title = title
@@ -21,10 +21,13 @@ class Article(db.Model):
     #    self.source = source
     #    self.year = year
 
-    def __init__(self, title, content):
+    def __init__(self, title, content, authors, source, year):
         self.title = title
         self.content = content
         self.created_time = datetime.utcnow()
+        self.authors = authors
+        self.source = source
+        self.year = year
 
     def __repr__(self):
         return '<Article %r>' % self.title
@@ -162,13 +165,15 @@ class Workflow(db.Model):
     topic_hit_ids = db.Column(db.Text())
     relevance_hit_ids = db.Column(db.Text())
     relation_hit_ids = db.Column(db.Text())
+    article_id = db.Column(db.Integer)
 
-    def __init__(self, workflow_type):
+    def __init__(self, workflow_type, article_id):
         self.workflow_type = workflow_type
         self.topic_hit_ids = ""
         self.relevance_hit_ids = ""
         self.relation_hit_ids = ""
         self.created_time = datetime.utcnow()
+        self.article_id = article_id
 
     def __repr__(self):
         return '<Workflow %r>' % self.id
