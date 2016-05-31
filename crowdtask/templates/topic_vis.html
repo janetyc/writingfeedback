@@ -7,14 +7,14 @@
     <p class="paragraph" id="paragraph_{{ paragraph_idx }}">
         {% for sentence_idx in range(data.content_map[paragraph_idx]|length) %}
         <span id="sentence_{{sentence_idx}}" class="sentence">
-            {% if data.content_map[paragraph_idx][sentence_idx][1] > 0 %}
-                <span class="topic-sentence sentence-vis weight-{{data.content_map[paragraph_idx][sentence_idx][1]}}">
+            {% if data.content_map[paragraph_idx][sentence_idx][1] >= 5 %}
+                <span class="topic-sentence sentence-vis high-weight">
                 {% for word_idx in range(data.content_map[paragraph_idx][sentence_idx][0]|length) %}
                     <span class="word-vis">{{data.content_map[paragraph_idx][sentence_idx][0][word_idx][0]}}</span>
                 {% endfor %}
                 </span>
-                {% elif data.content_map[paragraph_idx][sentence_idx][1] >= 5 %}
-                <span class="topic-sentence sentence-vis high-weight">
+            {% elif data.content_map[paragraph_idx][sentence_idx][1] > 0 %}
+                <span class="topic-sentence sentence-vis weight-{{data.content_map[paragraph_idx][sentence_idx][1]}}">
                 {% for word_idx in range(data.content_map[paragraph_idx][sentence_idx][0]|length) %}
                     <span class="word-vis">{{data.content_map[paragraph_idx][sentence_idx][0][word_idx][0]}}</span>
                 {% endfor %}

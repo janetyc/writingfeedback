@@ -26,13 +26,12 @@ def topic_vis():
                 article_ids.append(par_topic[0].split("-")[0])
                 key = "-".join(par_topic)
                 topic_map[key] = topic_list.count(par_topic)
-                
 
     if workflow.relevance_hit_ids != "":
         relevance_hits = workflow.relevance_hit_ids.split(",")
         for hit_id in relevance_hits:
             relevance_list = DBQuery().get_relevances_by_hit_id(hit_id)
-            
+
             for par_relevance in set(relevance_list):
                 # paragraph_idx-sentence_idx-word_idx
                 print par_relevance
