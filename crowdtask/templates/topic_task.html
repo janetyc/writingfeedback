@@ -101,7 +101,16 @@
                 
                 $('#paragraph_'+current_idx).addClass('active-paragraph');
                 $('#paragraph_'+current_idx).show();
-                
+            }
+
+            if(active_length==paragraph_length-1){
+                if($('#working-area .highlight').length){
+                    $('#submitAnswer').removeClass("disabled");
+                    $('#checkEmpty input').removeAttr("checked");
+                    $('#checkEmpty input').attr("disabled", true);
+                }else{
+                    $('#checkEmpty input').removeAttr("disabled");
+                }
             }
         });
 
@@ -111,25 +120,29 @@
 
         //disable submit button
         $('#submitAnswer').addClass("disabled");
+        $('#checkEmpty input').attr("disabled", true);
 
         //highlight selection
         $('.highlight-sentence').click(function(){
             $(this).toggleClass('highlight');
-            
-            if($('#working-area .highlight').length){
-                $('#submitAnswer').removeClass("disabled");
-                $('#checkEmpty input').removeAttr("checked");
-                $('#checkEmpty input').attr("disabled", true);
-            }
-            else{
-                $('#checkEmpty input').removeAttr("checked");
-                $('#checkEmpty input').removeAttr("disabled");
-                $('#submitAnswer').addClass("disabled");
+            active_length = $('.active-paragraph').length;
+            topic_leng = $('#working-area .highlight').length;
+
+            if(active_length==paragraph_length){
+                if(topic_leng>0){
+                    $('#submitAnswer').removeClass("disabled");
+                    $('#checkEmpty input').removeAttr("checked");
+                    $('#checkEmpty input').attr("disabled", true);    
+                }else{
+                    $('#checkEmpty input').removeAttr("checked");
+                    $('#checkEmpty input').removeAttr("disabled");
+                    $('#submitAnswer').addClass("disabled");
+                }
             }
 
         });
 
-        $('#checkEmpty').click(function(){
+        $('#checkEmpty input').click(function(){
             if($('#checkEmpty input').is(':checked')) $('#submitAnswer').removeClass("disabled");
             else $('#submitAnswer').addClass("disabled");
         });
