@@ -3,8 +3,12 @@
 {% block content %}
 <div class="vis-area ui piled segment">
     <div class="slider-area">
-        <div class="ui range blue" id="vis-mode"></div>
-        <div class="value-block">Filter: <span id="slider-value"></span></div>
+        <div class="ui range blue" id="topic-slider"></div>
+        <div class="value-block">Topic weight: <span id="topic-value"></span></div>
+    </div>
+    <div class="slider-area">
+        <div class="ui range black" id="relevance-slider"></div>
+        <div class="value-block">Relevance weight: <span id="relevance-value"></span></div>
     </div>
     
     <div class="article-title">{{ data.title }}</div>
@@ -50,22 +54,30 @@
 {% block extra_js %}
 
 <script>
-    function structureMode(){
-        $("weight-1").hide();
-    }
-    function noiseMode(){
-        $("weight-1").show();
-    }
+    
     $(function() {
-        $('#vis-mode').range({
+        $('#topic-slider').range({
             min: 0,
             max: 5,
             start: 2,
             onChange: function(val) { 
-                $("#slider-value").text(val);
+                $("#topic-value").text(val);
                 $(".sentence-vis").removeClass('disable-color');
                 for(var i=0; i<val; i++){
                     if(!$(".weight-"+i).hasClass('disable-color')) $(".weight-"+i).addClass('disable-color');
+                }
+            }
+        });
+
+        $('#relevance-slider').range({
+            min: 0,
+            max: 3,
+            start: 2,
+            onChange: function(val) { 
+                $("#relevance-value").text(val);
+                $(".word-relevance").removeClass('disable-color');
+                for(var i=0; i<val; i++){
+                    if(!$(".relevance-weight-"+i).hasClass('disable-color')) $(".relevance-weight-"+i).addClass('disable-color');
                 }
             }
         });
