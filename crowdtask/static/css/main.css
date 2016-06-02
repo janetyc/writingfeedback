@@ -227,6 +227,7 @@ body {
 .weight-4{ background-color: #0057B4; color: #FFFFFF; }
 .weight-5{ background-color: #00438A; color: #FFFFFF; }
 .high-weight{ background-color: #00438A; color: #FFFFFF; }
+.disable-color{ background-color: #FFFFFF; color: #000000 !important; }
 .article-title{
     font-size: 1.3em;
     font-weight: bold;
@@ -250,6 +251,21 @@ body {
 .small-block {
     border: 1px solid #000000;
     padding: 1px;
+}
+.slider-area{
+    margin: 3px;
+    border: 1px solid #FEE2B0;
+    background-color: #FFF4CB;
+    padding: 3px;
+    width: 200px;
+}
+.value-block{
+    margin-left: 9px;
+}
+.value-block span{
+    margin-left: 4px;
+    width: 20px;
+
 }
 /* ==============
     MOBILE: Menu

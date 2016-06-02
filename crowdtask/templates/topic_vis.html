@@ -1,7 +1,12 @@
 {% extends "mturk_base.html" %}
 {% block title %} - Workflow{% endblock %}
 {% block content %}
-<div class="vis-area">
+<div class="vis-area ui piled segment">
+    <div class="slider-area">
+        <div class="ui range blue" id="vis-mode"></div>
+        <div class="value-block">Filter: <span id="slider-value"></span></div>
+    </div>
+    
     <div class="article-title">{{ data.title }}</div>
     {% for paragraph_idx in data.content_map %}
     <p class="paragraph" id="paragraph_{{ paragraph_idx }}">
@@ -40,4 +45,31 @@
     </p>
     {% endfor %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+    function structureMode(){
+        $("weight-1").hide();
+    }
+    function noiseMode(){
+        $("weight-1").show();
+    }
+    $(function() {
+        $('#vis-mode').range({
+            min: 0,
+            max: 5,
+            start: 2,
+            onChange: function(val) { 
+                $("#slider-value").text(val);
+                $(".sentence-vis").removeClass('disable-color');
+                for(var i=0; i<val; i++){
+                    if(!$(".weight-"+i).hasClass('disable-color')) $(".weight-"+i).addClass('disable-color');
+                }
+            }
+        });
+        
+    });
+</script>
 {% endblock %}

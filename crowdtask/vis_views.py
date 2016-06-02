@@ -34,7 +34,7 @@ def topic_vis():
 
             for par_relevance in set(relevance_list):
                 # paragraph_idx-sentence_idx-word_idx
-                print par_relevance
+                
                 key = "%d-%d-%s" % (par_relevance[0],par_relevance[1],par_relevance[2])
                 relevance_map[key] = relevance_list.count(par_relevance)
 
