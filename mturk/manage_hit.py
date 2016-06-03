@@ -75,6 +75,24 @@ def approve_rejected_assignment(assignment_id, feedback=None):
     else:
         return False
 
+def approve_hit(hit_id):
+    assignments = mtc.get_assignments(hit_id)
+    for assignment in assignments:
+        approve = approve_assignment(assignment.AssignmentId)
+        if approve:
+            print "approve assignemnt - %s" % assignment.AssignmentId
+        else:
+            print "fail to approve assignment - %s" % assignment.AssignmentId
+
+    print "finish approving hit - %s" % hit_id
+
+def approve_assignment(assignment_id):
+    approve = mtc.approve_assignment(assignment_id)
+    if approve:
+        return True
+    else:
+        return False
+
 if __name__ == "__main__":
     if len(sys.argv) == 1:
         print "python manage_hit.py show_assignment assignment_id"
@@ -83,6 +101,8 @@ if __name__ == "__main__":
         print "python manage_hit.py show_hit hit_id"
         print "python manage_hit.py get_all_hits"
 
+        print "python manage_hit.py approve_hit hit_id"
+        print "python manage_hit.py approve_assignment assignment_id"
         exit(0)
     else:
         function = sys.argv[1]
@@ -97,6 +117,9 @@ if __name__ == "__main__":
             print "python manage_hit.py expire_hit hit_id"
             print "python manage_hit.py show_hit hit_id"
             print "python manage_hit.py get_all_hits"
+
+            print "python manage_hit.py approve_hit"
+            print "python manage_hit.py approve_assignment"
             exit(0)
 
         if function == "show_assignment":
@@ -120,4 +143,11 @@ if __name__ == "__main__":
             hit = get_hit(hit_id)
             show_hit(hit)
 
-
+        elif function == "approve_hit":
+            hit_id = sys.argv[2]
+            approve_hit(hit_id)
+            
+        elif function == "approve_assignment":
+            assignment_id = sys.argv[2]
+            approve_assignment(assignment_id)
+        

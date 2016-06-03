@@ -21,26 +21,26 @@ def add_topic():
     #print "---"
 
     paragraph_topic_map={}
-
-    for item in paragraph_topic.split("|"):
-        p_topic = item.split(":")
-        if p_topic[0] not in paragraph_topic_map:
-            paragraph_topic_map[p_topic[0]] = []
-
-        paragraph_topic_map[p_topic[0]].extend([p_topic[1]])
-
-    topic_list = []
     problem = ""
-    for paragraph_idx in paragraph_topic_map:
-        topic_sentence_ids = ",".join(paragraph_topic_map[paragraph_idx])
-        problem = "%s|%s,%s" % (problem, article_id, paragraph_idx)
+    topic_list = []
+    if paragraph_topic:
+        for item in paragraph_topic.split("|"):
+            p_topic = item.split(":")
+            if p_topic[0] not in paragraph_topic_map:
+                paragraph_topic_map[p_topic[0]] = []
 
-        topic_id = DBQuery().add_topic(worker_id, article_id, paragraph_idx, topic_sentence_ids)
-        topic_list.append(str(topic_id))
+            paragraph_topic_map[p_topic[0]].extend([p_topic[1]])
 
+        for paragraph_idx in paragraph_topic_map:
+            topic_sentence_ids = ",".join(paragraph_topic_map[paragraph_idx])
+            problem = "%s|%s,%s" % (problem, article_id, paragraph_idx)
+
+            topic_id = DBQuery().add_topic(worker_id, article_id, paragraph_idx, topic_sentence_ids)
+            topic_list.append(str(topic_id))
+
+        problem = problem[1:]
 
     #add task
-    problem = problem[1:]
     DBQuery().add_task(created_user=worker_id, task_type=TaskType.TOPIC, problem=problem, 
                         answer="|".join(topic_list), verified_string=verified_string, 
                         status=Status.WORKING, assignmentId=assignment_id, hitId=hit_id)
@@ -58,7 +58,6 @@ def add_relevance():
     assignment_id = request.args.get('assignment_id')
     hit_id = request.args.get('hit_id')
 
-
     topic_map = {}
     for item in paragraph_topic.split("|"):
         p_topic = item.split(":")
@@ -69,29 +68,33 @@ def add_relevance():
 
     relevance_list = []
     relevance_map = {}
-    for item in paragraph_relevance.split("|"):
-        p_relevance = item.split(":")
-        paragraph_idx = p_relevance[0]
-        relevance_ids = p_relevance[1]
-
-        if paragraph_idx not in relevance_map:
-            relevance_map[paragraph_idx] = []
-
-        relevance_map[paragraph_idx].extend([relevance_ids])
 
     problem = ""
-    for paragraph_idx in relevance_map:
-        topic_ids = ""
-        if paragraph_idx in topic_map:
-            topic_ids = topic_map[paragraph_idx]
+    if paragraph_relevance:
+        for item in paragraph_relevance.split("|"):
+            p_relevance = item.split(":")
+            paragraph_idx = p_relevance[0]
+            relevance_ids = p_relevance[1]
 
-        relevance_ids_str = ",".join(relevance_map[paragraph_idx])
-        problem = "%s|%s|%s" % (problem, article_id, paragraph_idx)
+            if paragraph_idx not in relevance_map:
+                relevance_map[paragraph_idx] = []
 
-        relevance_id = DBQuery().add_relevance(worker_id, int(article_id), int(paragraph_idx), topic_ids, relevance_ids_str)
-        relevance_list.append(str(relevance_id))
+            relevance_map[paragraph_idx].extend([relevance_ids])
 
-    problem = problem[1:]
+        for paragraph_idx in relevance_map:
+            topic_ids = ""
+            if paragraph_idx in topic_map:
+                topic_ids = topic_map[paragraph_idx]
+
+            relevance_ids_str = ",".join(relevance_map[paragraph_idx])
+            problem = "%s|%s|%s" % (problem, article_id, paragraph_idx)
+
+            relevance_id = DBQuery().add_relevance(worker_id, int(article_id), int(paragraph_idx), topic_ids, relevance_ids_str)
+            relevance_list.append(str(relevance_id))
+
+        problem = problem[1:]
+    else:
+        problem = "%s|%s" % (article_id, paragraph_idx)
 
     DBQuery().add_task(created_user=worker_id, task_type=TaskType.RELEVANCE, problem=problem, 
                         answer="|".join(relevance_list), verified_string=verified_string, status=Status.WORKING, 
