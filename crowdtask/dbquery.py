@@ -158,6 +158,9 @@ class DBQuery(object):
 
         answers_list = []
         for task in tasks:
+            if not task.answer or task.answer == "":
+                continue
+
             relevance_ids = task.answer.split("|")
             for relevance_id in relevance_ids:
                 relevance_list = self.get_relevance_by_id(int(relevance_id))
@@ -180,8 +183,9 @@ class DBQuery(object):
         paragraph_idx = relevance.paragraph_idx
         article_id = relevance.article_id
         
-        for relevance_word in relevance.relevance_ids.split(","):
-            relevance_list.append((article_id, paragraph_idx, relevance_word, topic_sentence_idx))
+        if relevance.relevance_ids and relevance.relevance_ids != "":
+            for relevance_word in relevance.relevance_ids.split(","):
+                relevance_list.append((article_id, paragraph_idx, relevance_word, topic_sentence_idx))
 
         return relevance_list
 
