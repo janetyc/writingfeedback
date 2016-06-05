@@ -49,6 +49,7 @@ def show_hit(hit):
     print "has expired: %s" % hit.expired
     print "title: %s" % hit.Title
     print "status: %s" % hit.HITStatus
+    print "review status: %s" % hit.HITReviewStatus
     
     show_assignments(hit.HITId)
     print "------ "
@@ -70,28 +71,19 @@ def expire_hit(hit_id):
 
 def approve_rejected_assignment(assignment_id, feedback=None):
     approve = mtc.approve_rejected_assignment(assignment_id)
-    if approve:
-        return True
-    else:
-        return False
+    print "approve rejected assignment - %s" % assignment_id
 
 def approve_hit(hit_id):
     assignments = mtc.get_assignments(hit_id)
     for assignment in assignments:
         approve = approve_assignment(assignment.AssignmentId)
-        if approve:
-            print "approve assignemnt - %s" % assignment.AssignmentId
-        else:
-            print "fail to approve assignment - %s" % assignment.AssignmentId
 
     print "finish approving hit - %s" % hit_id
 
 def approve_assignment(assignment_id):
     approve = mtc.approve_assignment(assignment_id)
-    if approve:
-        return True
-    else:
-        return False
+    print "approve assignment - %s" % assignment_id
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
