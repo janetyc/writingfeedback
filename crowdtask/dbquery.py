@@ -117,6 +117,10 @@ class DBQuery(object):
         task = Task.query.filter_by(assignmentId=assignmentId, created_user=workerId).first()
         return task
 
+    def get_task_by_code(self, code):
+        task = Task.query.filter_by(verified_string=code).first()
+        return task        
+
     def get_article_by_id(self, article_id):
         article = Article.query.filter_by(id=article_id).first()
         return article
@@ -179,6 +183,9 @@ class DBQuery(object):
     def get_relevance_by_id(self, relevance_id):
         relevance_list = []
         relevance = Relevance.query.filter_by(id=relevance_id).first()
+        if not relevance:
+            return []
+
         topic_sentence_idx = relevance.topic_sentence_idx
         paragraph_idx = relevance.paragraph_idx
         article_id = relevance.article_id

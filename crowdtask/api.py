@@ -95,6 +95,9 @@ def add_relevance():
         problem = problem[1:]
     else:
         problem = "%s|%s" % (article_id, paragraph_idx)
+        relevance_ids_str = ""
+        relevance_id = DBQuery().add_relevance(worker_id, int(article_id), int(paragraph_idx), topic_ids, relevance_ids_str)
+        relevance_list.append(str(relevance_id))
 
     DBQuery().add_task(created_user=worker_id, task_type=TaskType.RELEVANCE, problem=problem, 
                         answer="|".join(relevance_list), verified_string=verified_string, status=Status.WORKING, 
