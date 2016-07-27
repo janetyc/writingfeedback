@@ -38,12 +38,11 @@
                     {% else %}
                     <span id="word_{{word_idx}}" class="word-vis">
                         {{data.content_map[paragraph_idx][sentence_idx][0][word_idx][0]}}
-                    </span>    
+                    </span>
                     {% endif %}
+                {% endfor %}.
                 </span>
-                {% endfor %}
-                </span>
-            {% endif %}.
+            {% endif %}
         </span>
         {% endfor %}
     </p>
@@ -66,6 +65,8 @@
                 for(var i=0; i<val; i++){
                     if(!$(".weight-"+i).hasClass('disable-color')) $(".weight-"+i).addClass('disable-color');
                 }
+
+
             }
         });
 
