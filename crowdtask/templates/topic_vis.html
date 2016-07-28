@@ -18,7 +18,7 @@
     <!-- Issue Tips -->
     <div class="ui error message">
     <i class="close icon"></i>
-        <div class="header">Structrual Issues</div>
+        <div class="header">Structural Issues</div>
         <ul class="list">
             {% if data.issue_map[paragraph_idx]["topic"] != 1 %}
                 {% if data.issue_map[paragraph_idx]["topic"] < 1 %}
@@ -67,9 +67,9 @@
                         {{data.content_map[paragraph_idx][sentence_idx][0][word_idx][0]}}
                     </span>
                     {% endif %}
-                {% endfor %}.
+                {% endfor %}
                 </span>
-            {% endif %}
+            {% endif %}.
         </span>
         {% endfor %}
     </p>
