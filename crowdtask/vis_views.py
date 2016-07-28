@@ -85,29 +85,27 @@ def topic_vis():
     return render_template('topic_vis.html', data=data)
 
 def create_issues(weighted_list):
-    topic_issue = 0
-    relevance_issue = 0
+    topic_count = 0
+    irrelevant_count = 0
 
     list, weight = zip(*weighted_list)
     total_length = len(weighted_list)
     
     #check topic issue
     not_topic = weight.count(0) + weight.count(1)
-    
-    if total_length - not_topic > 1: topic_issue = 1
-    elif total_length - not_topic == 1: topic_issue = 0
-    else: topic_issue = -1
+    topic_count = total_length - not_topic
 
     #check relevant issue
-    irrelevant_count = 0
     for sentence in list:
         words, words_weight = zip(*sentence)
         not_relevance = words_weight.count(0) + words_weight.count(1)
-        if len(sentence) - not_relevance < 1:
+
+        if len(sentence) - not_relevance == 0:
             irrelevant_count = irrelevant_count + 1
 
+    irrelevant_count = irrelevant_count - topic_count
     issues = {
-        "topic": topic_issue,
+        "topic": topic_count,
         "irrelevance": irrelevant_count
     }
     return issues
