@@ -101,17 +101,17 @@ def create_issues(weighted_list):
     topic_count = len(topic_list)
 
     #check relevant issue
-    for not_topic_idx in not_topic_list:
-        sentence = list[not_topic_idx]
-        words, words_weight = zip(*sentence)
-        not_relevance = words_weight.count(0) + words_weight.count(1)
+    if topic_count:
+        for not_topic_idx in not_topic_list:
+            sentence = list[not_topic_idx]
+            words, words_weight = zip(*sentence)
+            not_relevance = words_weight.count(0) + words_weight.count(1)
 
-        if len(sentence) - not_relevance == 0:
-            irrelevant_count = irrelevant_count + 1
-            irrelevance_list.append(not_topic_idx)
+            if len(sentence) - not_relevance == 0:
+                irrelevant_count = irrelevant_count + 1
+                irrelevance_list.append(not_topic_idx)
 
     irrelevant_count = len(irrelevance_list)
-
     issues = {
         "topic": topic_count,
         "irrelevance": irrelevant_count,

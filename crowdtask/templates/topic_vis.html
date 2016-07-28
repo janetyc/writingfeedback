@@ -18,25 +18,31 @@
     <!-- Issue Tips -->
     <div class="ui error message">
     <i class="close icon"></i>
-        <div class="header">Structural Issues</div>
-        <ul class="list">
+        <div class="header">Structural Issues:
             {% if data.issue_map[paragraph_idx]["topic"] != 1 %}
                 {% if data.issue_map[paragraph_idx]["topic"] < 1 %}
-                <li>missing topic sentence</li>
+                <span>missing topic sentence</span>
                 {% elif data.issue_map[paragraph_idx]["topic"] > 1 %}
-                <li>multiple topic sentence</li>
+                <span>multiple topic sentence</span>
                 {% endif %}
+                </div>
+                <ul class="list">
+                    <li>Please rewrite the paragraph to have one topic sentence</li>
+                </ul>
             {% endif %}
             {% if data.issue_map[paragraph_idx]["topic"] >= 1 %}
                 {% if data.issue_map[paragraph_idx]["irrelevance"] %}
                     {% if data.issue_map[paragraph_idx]["irrelevance"] == 1 %}
-                    <li>existing {{ data.issue_map[paragraph_idx]["irrelevance"] }} irrelevant sentence.</li>
+                    <span>existing {{ data.issue_map[paragraph_idx]["irrelevance"] }} irrelevant sentence.</span>
                     {% else %}
-                    <li>existing {{ data.issue_map[paragraph_idx]["irrelevance"] }} irrelevant sentences.</li>
+                    <span>existing {{ data.issue_map[paragraph_idx]["irrelevance"] }} irrelevant sentences.</span>
                     {% endif %}
                 {% endif %}
+                </div>
+                <ul class="list">
+                    <li>Please remove irrelevant sentences or rewrite them to become relevant to the topic sentence.</li>
+                </ul>
             {% endif %}
-        </ul>
     </div>
     {% endif %}
     <!-- Paragraph Content -->
@@ -58,9 +64,17 @@
             {% else %}
             <span class="not-topic-sentence">
                 {% if data.content_map[paragraph_idx][sentence_idx][1] > 0 %}
-                <span class="sentence-vis weight-{{data.content_map[paragraph_idx][sentence_idx][1]}}">
+                    {% if sentence_idx in data.issue_map[paragraph_idx]["irrelevance_list"] %}
+                    <span class="sentence-vis weight-{{data.content_map[paragraph_idx][sentence_idx][1]}} irrelevant-sentence">
+                    {% else %}
+                    <span class="sentence-vis weight-{{data.content_map[paragraph_idx][sentence_idx][1]}}">
+                    {% endif %}
                 {% else %}
-                <span>
+                    {% if sentence_idx in data.issue_map[paragraph_idx]["irrelevance_list"] %}
+                    <span class="irrelevant-sentence">
+                    {% else %}
+                    <span>
+                    {% endif %}
                 {% endif %}
                 
                 {% for word_idx in range(data.content_map[paragraph_idx][sentence_idx][0]|length) %}
