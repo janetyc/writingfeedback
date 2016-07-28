@@ -49,6 +49,7 @@ def topic_vis():
     article = DBQuery().get_article_by_id(article_id)
     content_map = {}
     issue_map={}
+    topic_tip = 0
     for i, paragraph in enumerate(article.content.split("<BR>")):
         if paragraph:
             sentence_list = paragraph.split(".")
@@ -75,12 +76,15 @@ def topic_vis():
 
             content_map[i] = weight_sentence_list
             issue_map[i] = create_issues(weight_sentence_list)
+
+            if issue_map[i]['is_issue']: topic_tip = 1
     
     data = {
         "content_map": content_map,
         "article_id": article_id,
         "title": article.title,
-        "issue_map": issue_map
+        "issue_map": issue_map,
+        "topic_tip": topic_tip
     }
     return render_template('topic_vis.html', data=data)
 
@@ -112,10 +116,14 @@ def create_issues(weighted_list):
                 irrelevance_list.append(not_topic_idx)
 
     irrelevant_count = len(irrelevance_list)
+    if topic_count != 1: is_issue = 1
+    else: is_issue = 0
+
     issues = {
         "topic": topic_count,
         "irrelevance": irrelevant_count,
-        "irrelevance_list": irrelevance_list
+        "irrelevance_list": irrelevance_list,
+        "is_issue": is_issue
     }
     return issues
 

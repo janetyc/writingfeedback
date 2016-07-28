@@ -11,19 +11,33 @@
         <div class="value-block">Relevance weight: <span id="relevance-value"></span></div>
     </div>
     
+    {% if data.topic_tip %}
+    <div class="ui info message teal">
+        <i class="close icon"></i>
+        <div class="header">
+            Tips: Topic sentence
+        </div>
+        <ul class="list">
+            <li>Topic sentence is a sentence that captures the meaning of the entire paragraph.</li>
+            <li>It should have two parts: (a) the topic itself and (b) the controlling idea.</li>
+            <li>Each paragraph should have <u>only one</u> topic sentence.</li>
+        </ul>
+    </div>
+    {% endif %}
+
     <div class="article-title">{{ data.title }}</div>
     {% for paragraph_idx in data.content_map %}
-
+    
     {% if data.issue_map[paragraph_idx]["topic"] != 1 or data.issue_map[paragraph_idx]["irrelevance"] != 0 %}
     <!-- Issue Tips -->
-    <div class="ui error message">
-    <i class="close icon"></i>
-        <div class="header">Structural Issues:
+    <div class="ui red error message">
+        <i class="close icon"></i>
+        <div class="header">Paragraph {{paragraph_idx+1}}:
             {% if data.issue_map[paragraph_idx]["topic"] != 1 %}
                 {% if data.issue_map[paragraph_idx]["topic"] < 1 %}
-                <span>missing topic sentence</span>
+                <span>Missing topic sentence</span>
                 {% elif data.issue_map[paragraph_idx]["topic"] > 1 %}
-                <span>multiple topic sentence</span>
+                <span>Multiple topic sentence</span>
                 {% endif %}
                 </div>
                 <ul class="list">
@@ -32,9 +46,9 @@
             {% else %}
                 {% if data.issue_map[paragraph_idx]["irrelevance"] %}
                     {% if data.issue_map[paragraph_idx]["irrelevance"] == 1 %}
-                    <span>existing {{ data.issue_map[paragraph_idx]["irrelevance"] }} irrelevant sentence.</span>
+                    <span>Existing {{ data.issue_map[paragraph_idx]["irrelevance"] }} irrelevant sentence.</span>
                     {% else %}
-                    <span>existing {{ data.issue_map[paragraph_idx]["irrelevance"] }} irrelevant sentences.</span>
+                    <span>Existing {{ data.issue_map[paragraph_idx]["irrelevance"] }} irrelevant sentences.</span>
                     {% endif %}
                 {% endif %}
                 </div>
