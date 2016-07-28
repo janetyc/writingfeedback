@@ -29,8 +29,7 @@
                 <ul class="list">
                     <li>Please rewrite the paragraph to have one topic sentence</li>
                 </ul>
-            {% endif %}
-            {% if data.issue_map[paragraph_idx]["topic"] >= 1 %}
+            {% else %}
                 {% if data.issue_map[paragraph_idx]["irrelevance"] %}
                     {% if data.issue_map[paragraph_idx]["irrelevance"] == 1 %}
                     <span>existing {{ data.issue_map[paragraph_idx]["irrelevance"] }} irrelevant sentence.</span>
