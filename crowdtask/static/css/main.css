@@ -227,7 +227,8 @@ body {
 .weight-4{ background-color: #0057B4; color: #FFFFFF; }
 .weight-5{ background-color: #00438A; color: #FFFFFF; }
 .high-weight{ background-color: #00438A; color: #FFFFFF; }
-.disable-color{ background-color: #FFFFFF !important; color: #000000 !important; border-bottom: 1px !important; }
+.sentence-disable-color{ background-color: #FFFFFF !important; color: #000000 !important; border-bottom: 1px !important; }
+.word-disable-color{ border-bottom: 0px !important; }
 .article-title{
     font-size: 1.3em;
     font-weight: bold;

@@ -75,7 +75,7 @@ def topic_vis():
 
             content_map[i] = weight_sentence_list
             issue_map[i] = create_issues(weight_sentence_list)
-        
+    
     data = {
         "content_map": content_map,
         "article_id": article_id,
@@ -87,26 +87,35 @@ def topic_vis():
 def create_issues(weighted_list):
     topic_count = 0
     irrelevant_count = 0
+    irrelevance_list = []
+    get_indexes = lambda x, xs: [i for (y, i) in zip(xs, range(len(xs))) if x == y]
 
     list, weight = zip(*weighted_list)
     total_length = len(weighted_list)
     
     #check topic issue
-    not_topic = weight.count(0) + weight.count(1)
-    topic_count = total_length - not_topic
+    #not_topic = weight.count(0) + weight.count(1)
+    #topic_count = total_length - not_topic
+    not_topic_list = set(get_indexes(0, weight)) | set(get_indexes(1, weight))
+    topic_list = set([i for i in range(total_length)]) - not_topic_list
+    topic_count = len(topic_list)
 
     #check relevant issue
-    for sentence in list:
+    for not_topic_idx in not_topic_list:
+        sentence = list[not_topic_idx]
         words, words_weight = zip(*sentence)
         not_relevance = words_weight.count(0) + words_weight.count(1)
 
         if len(sentence) - not_relevance == 0:
             irrelevant_count = irrelevant_count + 1
+            irrelevance_list.append(not_topic_idx)
 
-    irrelevant_count = irrelevant_count - topic_count
+    irrelevant_count = len(irrelevance_list)
+
     issues = {
         "topic": topic_count,
-        "irrelevance": irrelevant_count
+        "irrelevance": irrelevant_count,
+        "irrelevance_list": irrelevance_list
     }
     return issues
 

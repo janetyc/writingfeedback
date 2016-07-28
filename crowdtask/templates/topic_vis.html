@@ -43,20 +43,26 @@
     <p class="paragraph" id="paragraph_{{ paragraph_idx }}">
         {% for sentence_idx in range(data.content_map[paragraph_idx]|length) %}
         <span id="sentence_{{sentence_idx}}" class="sentence">
-            {% if data.content_map[paragraph_idx][sentence_idx][1] > 5 %}
-                <span class="topic-sentence sentence-vis high-weight">
+            {% if data.content_map[paragraph_idx][sentence_idx][1] > 1 %}
+            <span class="topic-sentence">
+                {% if data.content_map[paragraph_idx][sentence_idx][1] > 5 %}
+                <span class="sentence-vis high-weight">
+                {% else %}
+                <span class="sentence-vis weight-{{data.content_map[paragraph_idx][sentence_idx][1]}}">
+                {% endif %}
                 {% for word_idx in range(data.content_map[paragraph_idx][sentence_idx][0]|length) %}
                     <span class="word-vis">{{data.content_map[paragraph_idx][sentence_idx][0][word_idx][0]}}</span>
                 {% endfor %}
                 </span>
-            {% elif data.content_map[paragraph_idx][sentence_idx][1] > 0 %}
-                <span class="topic-sentence sentence-vis weight-{{data.content_map[paragraph_idx][sentence_idx][1]}}">
-                {% for word_idx in range(data.content_map[paragraph_idx][sentence_idx][0]|length) %}
-                    <span class="word-vis">{{data.content_map[paragraph_idx][sentence_idx][0][word_idx][0]}}</span>
-                {% endfor %}
-                </span>
+            </span>
             {% else %}
-                <span class="not-topic-sentence">
+            <span class="not-topic-sentence">
+                {% if data.content_map[paragraph_idx][sentence_idx][1] > 0 %}
+                <span class="sentence-vis weight-{{data.content_map[paragraph_idx][sentence_idx][1]}}">
+                {% else %}
+                <span>
+                {% endif %}
+                
                 {% for word_idx in range(data.content_map[paragraph_idx][sentence_idx][0]|length) %}
                     {% if data.content_map[paragraph_idx][sentence_idx][0][word_idx][1] > 0 %}
                     <span id="word_{{word_idx}}" class="word-vis word-relevance relevance-weight-{{data.content_map[paragraph_idx][sentence_idx][0][word_idx][1]}}">
@@ -68,8 +74,9 @@
                     </span>
                     {% endif %}
                 {% endfor %}
-                </span>
-            {% endif %}.
+                .</span>
+            </span>
+            {% endif %}
         </span>
         {% endfor %}
     </p>
@@ -88,9 +95,9 @@
             start: 2,
             onChange: function(val) { 
                 $("#topic-value").text(val);
-                $(".sentence-vis").removeClass('disable-color');
+                $(".sentence-vis").removeClass('sentence-disable-color');
                 for(var i=0; i<val; i++){
-                    if(!$(".weight-"+i).hasClass('disable-color')) $(".weight-"+i).addClass('disable-color');
+                    if(!$(".weight-"+i).hasClass('sentence-disable-color')) $(".weight-"+i).addClass('sentence-disable-color');
                 }
 
 
@@ -103,9 +110,9 @@
             start: 2,
             onChange: function(val) { 
                 $("#relevance-value").text(val);
-                $(".word-relevance").removeClass('disable-color');
+                $(".word-relevance").removeClass('word-disable-color');
                 for(var i=0; i<val; i++){
-                    if(!$(".relevance-weight-"+i).hasClass('disable-color')) $(".relevance-weight-"+i).addClass('disable-color');
+                    if(!$(".relevance-weight-"+i).hasClass('word-disable-color')) $(".relevance-weight-"+i).addClass('word-disable-color');
                 }
             }
         });
