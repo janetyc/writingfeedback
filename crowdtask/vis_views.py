@@ -48,7 +48,7 @@ def topic_vis():
 
     article = DBQuery().get_article_by_id(article_id)
     content_map = {}
-
+    issue_map={}
     for i, paragraph in enumerate(article.content.split("<BR>")):
         if paragraph:
             sentence_list = paragraph.split(".")
@@ -74,15 +74,43 @@ def topic_vis():
                     weight_sentence_list.append((weight_word_list, 0))
 
             content_map[i] = weight_sentence_list
-
-
+            issue_map[i] = create_issues(weight_sentence_list)
+        
     data = {
         "content_map": content_map,
         "article_id": article_id,
-        "title": article.title
+        "title": article.title,
+        "issue_map": issue_map
     }
     return render_template('topic_vis.html', data=data)
 
+def create_issues(weighted_list):
+    topic_issue = 0
+    relevance_issue = 0
+
+    list, weight = zip(*weighted_list)
+    total_length = len(weighted_list)
+    
+    #check topic issue
+    not_topic = weight.count(0) + weight.count(1)
+    
+    if total_length - not_topic > 1: topic_issue = 1
+    elif total_length - not_topic == 1: topic_issue = 0
+    else: topic_issue = -1
+
+    #check relevant issue
+    irrelevant_count = 0
+    for sentence in list:
+        words, words_weight = zip(*sentence)
+        not_relevance = words_weight.count(0) + words_weight.count(1)
+        if len(sentence) - not_relevance < 1:
+            irrelevant_count = irrelevant_count + 1
+
+    issues = {
+        "topic": topic_issue,
+        "irrelevance": irrelevant_count
+    }
+    return issues
 
 #@vis_views.route('/coherence_vis', methods=('GET','POST'))
 #def coherence_vis():

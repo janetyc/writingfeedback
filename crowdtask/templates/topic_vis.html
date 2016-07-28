@@ -13,6 +13,31 @@
     
     <div class="article-title">{{ data.title }}</div>
     {% for paragraph_idx in data.content_map %}
+
+    {% if data.issue_map[paragraph_idx]["topic"] != 0 and data.issue_map[paragraph_idx]["irrelevance"] != 0 %}
+    <!-- Issue Tips -->
+    <div class="ui error message">
+    <i class="close icon"></i>
+        <div class="header">Structrual Issues</div>
+        <ul class="list">
+            {% if data.issue_map[paragraph_idx]["topic"] != 0 %}
+                {% if data.issue_map[paragraph_idx]["topic"] == 1 %}
+                <li>multiple topic sentence</li>
+                {% elif data.issue_map[paragraph_idx]["topic"] == -1 %}
+                <li>missing topic sentence</li>
+                {% endif %}
+            {% endif %}
+            {% if data.issue_map[paragraph_idx]["irrelevance"] != 0 %}
+                {% if data.issue_map[paragraph_idx]["irrelevance"] == 1 %}
+                <li>existing {{ data.issue_map[paragraph_idx]["irrelevance"] }} irrelevant sentence.</li>
+                {% else %}
+                <li>existing {{ data.issue_map[paragraph_idx]["irrelevance"] }} irrelevant sentences.</li>
+                {% endif %}
+            {% endif %}
+        </ul>
+    </div>
+    {% endif %}
+    <!-- Paragraph Content -->
     <p class="paragraph" id="paragraph_{{ paragraph_idx }}">
         {% for sentence_idx in range(data.content_map[paragraph_idx]|length) %}
         <span id="sentence_{{sentence_idx}}" class="sentence">
@@ -81,6 +106,10 @@
                     if(!$(".relevance-weight-"+i).hasClass('disable-color')) $(".relevance-weight-"+i).addClass('disable-color');
                 }
             }
+        });
+
+        $(".close.icon").click(function(){
+            $(this).parent().hide();
         });
         
     });
