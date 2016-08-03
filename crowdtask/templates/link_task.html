@@ -2,16 +2,19 @@
 {% block content %}
 <header>Task: Linking Ideas between Two Topic Sentences</header>
 <section>
-
     <div class="example-area">
         <div><i class="newspaper icon"></i><span class="block-title">Example</span></div>
         <div>Title: Qualities of a good neighbor</div>
+        <div class="item">
+                <div>(a) What's the common idea of two highlighted sentences? <span class="word-box"><i class="write icon"></i>Neighbor, living behavior</span></div>
+                <div>(b) Please highlight the relevant keywords between two sentencess.</div>
+            </div>
         <div class="content-area">
-            <div class="ui two column grid">
+            <div class="item ui grid two column">
                 <div class="column">
                     <div class="ui segment">
                         <span class="paragraph-title">Introduction Paragraph</span>
-                        <p><span class="highlight"><span class="relevance">Neighbors</span> are the people who live near us, and <span class="relevance">their behavior</span> influences our daily life.</span> <span class="gray-text">Good neighbors can make us feel comfortable and give us many help, and everyone will benefit from a good relationship among neighbors. In my point of view, these are three conspicuous aspects of the qualities of a good neighbor.<span></p>
+                        <p><span class="highlight"><span class="relevance">Neighbors</span> are the people who live near us, and <span class="relevance">their behavior</span> influences our daily life.</span> <span class="gray-text">Good neighbors can make us feel comfortable and give us many help, and everyone will benefit from a good relationship among neighbors. In my point of view, these are three conspicuous aspects of the qualities of a good neighbor.</span></p>
                     </div>
                 </div>
                 <div class="column">
@@ -33,13 +36,14 @@
                 <div id="problem-{{topic_paragraph_idx+1}}" class="problem-block">
                     <span class="problem-title">Problem {{topic_paragraph_idx+1}}</span>
                     <div class="common-idea item">
-                        <div class="ui input">
-                            <div>(a) Please describe the common idea between two highlighted sentences.</div>
-                            <input type="text" placeholder="Please describe...">
+                        <div>(a) What's the <b>"common idea"</b> of two highlighted sentences?</div>
+                        <div class="ui fluid input left icon">
+                            <i class="write icon"></i>
+                            <input class="input-box" type="text" placeholder="Please describe...">
                         </div>
                     </div>
                     <div class="link-idea item">
-                        <span>(b) Please highlight the relevant keywords between two sentencess.</span>
+                        <div>(b) Please highlight the <b>"relevant keywords"</b> between two highlighted sentencess.</div>
                         <div class="ui two column grid">
                             <div class="column">
                                 <div class="ui segment intro-paragraph">
@@ -91,7 +95,7 @@
                     <div class="check-empty item">
                         <div class="ui checkbox" id="checkEmpty-{{topic_paragraph_idx+1}}">
                             <input type="checkbox" name="example">
-                            <label>No relevance area corresponding to the topic sentence</label>
+                            <label>No relevance keywords corresponding to the two highlighted sentences</label>
                         </div>
                     </div>
                 </div>

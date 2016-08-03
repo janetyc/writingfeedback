@@ -24,7 +24,6 @@ def topic_task():
     paragraph_idx = request.args.get('paragraph_idx')
     preview_flag = request.args.get('preview_flag')
 
-    
     if request.args.has_key('article_id'):
         article_id = request.args.get('article_id')
         article = DBQuery().get_article_by_id(article_id)

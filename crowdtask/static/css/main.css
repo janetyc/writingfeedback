@@ -66,6 +66,7 @@ body {
     margin: 0 5%;
 }
 
+
 /* ===================
     ALL: Green Theme
    =================== */
@@ -351,7 +352,7 @@ nav ul{
     padding: 7px;
     margin: 3px;
 }
-.content{
+.content {
     padding: 7px;
     display:block;
     width: auto;
@@ -361,6 +362,7 @@ nav ul{
     border-radius: 4px;
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    margin: 5px;
 }
 
 .block-title{
@@ -401,18 +403,38 @@ nav ul{
 */
 .problem-title{ font-weight: bold; }
 .paragraph-title { font-weight: bold; }
-.content-area{ margin: 0 17px; }
+
+.content-area { 
+    display:block;
+    width: auto;
+    height: auto;
+    padding: 10px;
+    margin: 3px;
+}
+.content-area p{
+    line-height: 2em;
+}
 .gray-text{ color: #afafaf; }
 .problem-block{ 
     border: #c1c1c1 solid 1px;
     padding: 1%;
     margin-top: 2px;
+
 }
 .common-idea{
     overflow: hidden;
 }
-.item{
-/*    border: #ff0000 solid 1px;*/
+/*.item{  border: #ff0000 solid 1px; }*/
+.problem-block .item{
+    /*border: #ff0000 solid 1px;*/
+    margin-bottom: 1.5em;
+}
+.problem-block .item div{
+    margin-top: 0px; 
+}
+.grid > .column{
+    padding: 0.3em 1em !important;
+    margin: 0  !important;
 }
 /* ==========================================================================
    Media Queries
