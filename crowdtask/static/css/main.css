@@ -90,7 +90,7 @@ body {
 .title {
     color: white;
 }
-
+.title a{ color: white; text-decoration: none; }
 .highlight-sentence:hover{
     background-color: #ffb3b3;
     cursor: pointer;
