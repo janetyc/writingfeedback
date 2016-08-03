@@ -5,7 +5,7 @@ def enum(*sequential, **named):
     return type('Enum', (), enums)
 
 TaskType = enum(
-    TOPIC="topic", RELEVANCE="relevance", RELATION="relation"
+    TOPIC="topic", RELEVANCE="relevance", RELATION="relation", LINK="link"
 )
 
 RelationType = enum(

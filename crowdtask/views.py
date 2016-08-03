@@ -5,7 +5,10 @@ from crowdtask.dbquery import DBQuery
 
 views = Blueprint('views', __name__, template_folder='templates')
 sample_article = "Gold, a precious metal, is prized for two important characteristics. First of all, gold has a lustrous beauty that is resistant to corrosion. Therefore, it is suitable for jewelry, coins, and ornamental purposes. Gold never needs to be polished and will remain beautiful forever. For example, a Macedonian coin remains as untarnished today as the day it was made 25 centuries ago. Another important characteristic of gold is its usefulness to industry and science. For many years, it has been used in hundreds of industrial applications, such as photography and dentistry. The most recent use of gold is in astronauts' suits. Astronauts wear gold-plated heat shields for protection when they go outside spaceships in space. In conclusion, gold is treasured not only for its beauty but also for its utility."
-
+sample_essay = {
+    "title":"Important qualities of a co-worker",
+    "content": "We spend more time with our co-workers during weekdays than we do with our family. Thus, it's important for our co-workers to be the people we can get along with. In my opinion, there are certain characteristics that all good co-workers have in common. They are cooperative, considerate and humorous.<BR>We no longer observe now a time that worships individual merits with great enthusiasm. Everyone should cooperate with each other. Teamwork is curial to a business. A good co-worker is willing to contribute to the office community and not too stubborn to accept advice. He realizes the fact that if one's work is left not done in time, it may hold up everyone else.<BR>Besides, a good co-worker is very considerate. He may change his own schedule to accommodate another's emergency. He may be a sympathetic listener, comforting others when they are miserable.<BR>What is more, a good co-worker should have a sense of humor. His positive attitude may create a pleasant environment. When we are under the great stress of work, what we need most is not a delicious meal but merely a few good jokes to relax our nerve cells.<BR>What I have listed is not the complete set of characters of a good co-worker, however, we can feel how comfortable it is to get along with a good co-worker. Being a good co-worker is not difficult but really very necessary. Such ex- perience of being a good co-worker will definitely contribute to other aspects of life such as friendship and a healthy lifestyle."
+}
 @views.route('/')
 def index():
     return render_template('index.html')
@@ -121,7 +124,7 @@ def relevance_task():
             topic_sentence = [0]*par_length
             
 
-            if max(count_list) >= 3:
+            if max(count_list) >= 2:
                 topic_sentence[count_list.index(max(count_list))] = count_list[count_list.index(max(count_list))]
                 topic_sentence_idx = count_list.index(max(count_list))
         else:
@@ -246,6 +249,121 @@ def relation_task():
         }
 
     return render_template('relation_task.html', data=data)
+
+@views.route('/link', methods=('GET','POST'))
+def link_task():
+    article_id = None
+    article = None
+
+
+    worker_id = request.args.get('workerId',u'tester')
+    verified_string = generate_verified_str(6)
+
+    thesis_statement_idx = request.args.get('thesis_statement_idx',u'0-0') #0-0 (#paragraph_idx,#topic_sentence_idx)
+
+    #mturk stuff
+    assignment_id = request.args.get('assignmentId', u'')
+    hit_id = request.args.get('hitId', u'')
+
+    if request.args.has_key('article_id'):
+        article_id = request.args.get('article_id')
+        article = DBQuery().get_article_by_id(article_id)    
+
+    if request.args.has_key('topic_sentence_ids'):
+        topic_sentence_ids = request.args.get('topic_sentence_ids') #1-1|2-0 (at least two elements)
+    else:
+        topic_sentence_ids = "1-0|2-0"
+
+    if article:
+        content = article.content
+        title = article.title
+
+    else:
+        #sample
+        title = sample_essay["title"]
+        content = sample_essay["content"]
+        preview_flag = "1"
+
+    # ----------------------
+    # paragraph_map structure
+    # paragraph_map = {
+    #   0: [sentence_0, sentence_1, sentence_2],
+    #   1: [sentence_0, sentence_1, sentence_2],
+    #   2: [sentence_0, sentence_1, sentence_2]
+    # }
+    # ----------------------
+
+    paragraph_map = {}
+    thesis_statement = None
+    all_topic_sentences = []
+    for i, paragraph in enumerate(content.split("<BR>")):
+        if paragraph:
+            sentence_list = paragraph.split(".")
+            sentence_list = sentence_list[:-1]
+            paragraph_map[i] = sentence_list
+
+
+    #if no input, retrieve database
+    if article and not request.args.has_key('topic_sentence_ids'):
+
+        for paragraph_idx in range(len(paragraph_map)):
+            topic_sentence_idx = None
+            topics = DBQuery().get_topics_by_article_paragraph_id(article_id, paragraph_idx)
+
+            topic_map = []
+            for topic in topics:
+                topic_map.extend([int(i) for i in topic.topic_sentence_ids.split(",")])
+            
+            par_length = len(paragraph_map[paragraph_idx])
+            count_list = [topic_map.count(j) for j in range(par_length)]
+
+            #filter - only keep the max value, and clear up the remaining value
+            topic_sentence = [0]*par_length
+
+            if max(count_list) >= 2:
+                topic_sentence[count_list.index(max(count_list))] = count_list[count_list.index(max(count_list))]
+                topic_sentence_idx = count_list.index(max(count_list))
+
+            if topic_sentence_idx != None:
+                if paragraph_idx == 0:
+                    thesis_statement = (paragraph_idx, topic_sentence_idx)
+                else:
+                    all_topic_sentences.append((paragraph_idx, topic_sentence_idx))
+
+    else:
+        
+        thesis_statement = tuple(map(int, thesis_statement_idx.split("-")))
+        all_topic_sentences = [ tuple(map(int,topic.split("-"))) for topic in topic_sentence_ids.split("|")]
+
+    print "article_id: %s" % article_id
+    print "+++++++"
+    print thesis_statement
+    print all_topic_sentences
+    print "+++++++"
+
+    data = {
+        'worker_id': worker_id,
+        'article_id': article_id,
+        'title': title,
+
+        'thesis_statement_idx': thesis_statement_idx,
+        'topic_sentence_ids': topic_sentence_ids,
+        'paragraph_map': paragraph_map,
+        'thesis_statement': thesis_statement,
+        'all_topic_sentences': all_topic_sentences,
+            
+        'verified_string': verified_string,
+        'hit_id': hit_id,
+        'assignment_id': assignment_id,
+    }
+
+    if not article:
+        data['preview_flag'] = preview_flag
+        data['verified_string'] = ""
+
+    
+    return render_template('link_task.html', data=data)
+
 
 @views.route('/all')
 def show_all():

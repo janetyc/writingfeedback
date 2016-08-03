@@ -1,11 +1,14 @@
-from crowdtask.models import Task, Article, Paragraph, Topic, Relation, Relevance
+from crowdtask.models import Article, Paragraph
+from crowdtask.models import Task, Topic, Relation, Relevance, Link
 from crowdtask.models import Workflow, Structure
 from crowdtask import db
 from enum import TaskType
 
 class DBQuery(object):
-
-    #insert article
+    # ************************************************** #
+    #               Add data from database               #
+    # ************************************************** #
+    # article
     def add_article(self, title, content, authors, source, year):
         article = Article(title, content, authors, source, year)
         db.session.add(article)
@@ -20,11 +23,11 @@ class DBQuery(object):
 
         return paragraph.id
 
-    #crowd task
-    def add_task(self, created_user, task_type, problem, answer, 
+    # crowd task
+    def add_task(self, created_user, task_type, problem, answer,
                  verified_string, status, assignmentId, hitId):
 
-        task = Task(created_user, task_type, problem, answer, 
+        task = Task(created_user, task_type, problem, answer,
                     verified_string, status, assignmentId, hitId)
         db.session.add(task)
         db.session.commit()
@@ -37,24 +40,35 @@ class DBQuery(object):
 
         return topic.id
 
-    def add_relation(self, created_user, article_id, paragraph_idx, 
+    def add_relation(self, created_user, article_id, paragraph_idx,
                      sentence_pair, relation_type, others):
-        relation = Relation(created_user, article_id, paragraph_idx, 
+        relation = Relation(created_user, article_id, paragraph_idx,
                             sentence_pair, relation_type, others)
         db.session.add(relation)
         db.session.commit()
 
         return relation.id
 
-    def add_relevance(self, created_user, article_id, paragraph_idx, 
+    def add_relevance(self, created_user, article_id, paragraph_idx,
                       topic_sentence_idx, relevance_ids):
-        relevance = Relevance(created_user, article_id, paragraph_idx, 
+        relevance = Relevance(created_user, article_id, paragraph_idx,
                               topic_sentence_idx, relevance_ids)
         db.session.add(relevance)
         db.session.commit()
 
         return relevance.id
 
+    def add_link(self, created_user, article_id, thesis_statement_idx, topic_sentence_idx,
+                 thesis_statement_relevance_ids, topic_sentence_relevance_ids, common_idea, irrelevance_check):
+        link = Link(created_user, article_id, thesis_statement_idx, topic_sentence_idx,
+                    thesis_statement_relevance_ids, topic_sentence_relevance_ids, common_idea, irrelevance_check)
+
+        db.session.add(link)
+        db.session.commit()
+
+        return link.id
+
+    # crowd workflow - manage task
     def add_workflow(self, workflow_type, article_id):
         workflow = Workflow(workflow_type, article_id)
         db.session.add(workflow)
@@ -78,11 +92,11 @@ class DBQuery(object):
         elif task_type == TaskType.RELEVANCE:
             if workflow.relevance_hit_ids and workflow.relevance_hit_ids != "":
                 hit_ids = workflow.relevance_hit_ids.split(',')
-            
+
             hit_ids.append(hit_id)
             updated_workflow.update({"relevance_hit_ids": ",".join(hit_ids)})
         elif task_type == TaskType.RELATION:
-            if workflow.relation_hit_ids and workflow.relation_hit_ids !="":
+            if workflow.relation_hit_ids and workflow.relation_hit_ids != "":
                 hit_ids = workflow.relation_hit_ids.split(',')
 
             hit_ids.append(hit_id)
@@ -92,15 +106,21 @@ class DBQuery(object):
 
         return updated_workflow
 
-    #update status
+    # ************************************************** #
+    #               Update data from database            #
+    # ************************************************** #
+    # task status
     def update_task_status_by_worker_assignment_id(self, workerId, assignmentId, status):
-        task = Task.query.filter_by(assignmentId=assignmentId, 
+        task = Task.query.filter_by(assignmentId=assignmentId,
                                     created_user=workerId).update({"status": status})
         db.session.commit()
 
         return task
 
-    #get data from database
+    # ************************************************** #
+    #               Get data from database               #
+    # ************************************************** #
+    # workflow
     def get_workflow_by_id(self, workflow_id):
         workflow = Workflow.query.filter_by(id=workflow_id).first()
         return workflow
@@ -113,14 +133,20 @@ class DBQuery(object):
         task = Task.query.filter_by(id=task_id).first()
         return task
 
-    def get_task_by_worker_assignment_id(self, workerId ,assignmentId):
+    # task
+    def get_task_by_worker_assignment_id(self, workerId, assignmentId):
         task = Task.query.filter_by(assignmentId=assignmentId, created_user=workerId).first()
         return task
 
     def get_task_by_code(self, code):
         task = Task.query.filter_by(verified_string=code).first()
-        return task        
+        return task
 
+    def get_all_tasks(self):
+        all_tasks = Task.query.all()
+        return all_tasks
+
+    # article
     def get_article_by_id(self, article_id):
         article = Article.query.filter_by(id=article_id).first()
         return article
@@ -133,10 +159,24 @@ class DBQuery(object):
         article = Article.query.filter_by(title=title, authors=authors).first()
         return article
 
+    def get_all_articles(self):
+        all_articles = Article.query.all()
+        return all_articles
+
+    # paragraph
     def get_paragraph_by_id(self, paragraph_id):
         paragraph = Paragraph.query.filter_by(id=paragraph_id).first()
         return paragraph
 
+    def get_paragraphs_by_article_id(self, article_id):
+        paragraphs = Paragraph.query.filter_by(article_id=article_id).all()
+        return paragraphs
+
+    def get_all_paragraphs(self):
+        all_paragraphs = Paragraph.query.all()
+        return all_paragraphs
+
+    # topic
     def get_topics_by_article_paragraph_id(self, article_id, paragraph_idx):
         topics = Topic.query.filter_by(article_id=article_id, paragraph_idx=paragraph_idx).all()
         return topics
@@ -157,6 +197,19 @@ class DBQuery(object):
 
         return answers_list
 
+    def get_topic_by_id(self, topic_id):
+        topic_list = []
+        topic = Topic.query.filter_by(id=topic_id).first()
+        for topic_sentence in topic.topic_sentence_ids.split(","):
+            topic_list.append(("%d-%d" % (topic.article_id, topic.paragraph_idx), topic_sentence))
+
+        return topic_list
+
+    def get_all_topics(self):
+        all_topics = Topic.query.all()
+        return all_topics
+
+    # relevance
     def get_relevances_by_hit_id(self, hit_id):
         tasks = Task.query.filter_by(hitId=hit_id)
 
@@ -172,14 +225,6 @@ class DBQuery(object):
 
         return answers_list
 
-    def get_topic_by_id(self, topic_id):
-        topic_list = []
-        topic = Topic.query.filter_by(id=topic_id).first()
-        for topic_sentence in topic.topic_sentence_ids.split(","):
-            topic_list.append(("%d-%d" % (topic.article_id, topic.paragraph_idx), topic_sentence))
-
-        return topic_list
-
     def get_relevance_by_id(self, relevance_id):
         relevance_list = []
         relevance = Relevance.query.filter_by(id=relevance_id).first()
@@ -189,33 +234,29 @@ class DBQuery(object):
         topic_sentence_idx = relevance.topic_sentence_idx
         paragraph_idx = relevance.paragraph_idx
         article_id = relevance.article_id
-        
+
         if relevance.relevance_ids and relevance.relevance_ids != "":
             for relevance_word in relevance.relevance_ids.split(","):
                 relevance_list.append((article_id, paragraph_idx, relevance_word, topic_sentence_idx))
 
         return relevance_list
 
-    def get_paragraphs_by_article_id(self, article_id):
-        paragraphs = Paragraph.query.filter_by(article_id=article_id).all()
-        return paragraphs
+    def get_link_by_id(self, link_id):
+        link_list = []
+        link = Link.query.filter_by(id=link_id).first()
+        if not link:
+            return []
 
-    def get_all_articles(self):
-        all_articles = Article.query.all()
+        article_id = link.article_id
+        thesis_statement_idx = link.thesis_statement_idx
+        topic_sentence_idx = link.topic_sentence_idx
+        irrelevance_check = link.irrelevance_check
 
-        return all_articles
+        tts_relevance_list = link.thesis_statement_relevance_ids.split(',')
+        ts_relevance_list = link.topic_sentence_relevance_ids.split(',')
+        if link.topic_sentence_relevance_ids and link.topic_sentence_relevance_ids != "":
+            for i in range(len()):
+                link_list.append((article_id, thesis_statement_idx, topic_sentence_idx, tts_relevance_list[i],
+                                  ts_relevance_list[i], irrelevance_check, link.created_user))
 
-    def get_all_tasks(self):
-        all_tasks = Task.query.all()
-
-        return all_tasks
-
-    def get_all_paragraphs(self):
-        all_paragraphs = Paragraph.query.all()
-
-        return all_paragraphs
-
-    def get_all_topics(self):
-        all_topics = Topic.query.all()
-
-        return all_topic
+        return link_list

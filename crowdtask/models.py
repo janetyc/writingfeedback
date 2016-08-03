@@ -130,8 +130,8 @@ class Relation(db.Model):
 
 '''
     Relevance for each paragraph
-    - topic_sentence: sentence1, sentence2
-    - relevance_ids: word_idx1,word_idx2,word_idx3
+    - topic_sentence_idx: sentence_idx 
+    - relevance_ids: sentence_idx1-word_idx1,sentence_idx2-word_idx2,sentence_idx3-word_idx3
 '''
 class Relevance(db.Model):
     __tablename__ = 'relevance'
@@ -154,7 +154,40 @@ class Relevance(db.Model):
     def __repr__(self):
         return '<Relevance %r>' % self.created_user
 
+'''
+    Link topic sentence to thesis statement
+    - thesis_statement_idx: paragraph_idx-sentence_idx
+    - topic_sentence_ids: paragraph_idx-topic_sentence1-word_idx1
+    - thesis_statement_relevance_ids: paragraph_idx-topic_sentence1-word_idx1,paragraph_idx-t-topic_sentence2-word_idx2
+    - topic_sentence_relevance_ids: paragraph_idx-topic_sentence1-word_idx1,paragraph_idx-t-topic_sentence2-word_idx2
+'''
+class Link(db.Model):
+    __tablename__ = 'link'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    created_user = db.Column(db.Text())
+    article_id = db.Column(db.Integer)
+    thesis_statement_idx = db.Column(db.Text())
+    topic_sentence_idx = db.Column(db.Text())
+    thesis_statement_relevance_ids = db.Column(db.Text())
+    topic_sentence_relevance_ids = db.Column(db.Text())
+    common_idea = db.Column(db.Text())
+    irrelevance_check = db.Column(db.Integer)
+    created_time = db.Column(db.DateTime())
 
+    def __init__(self, created_user, article_id, thesis_statement_idx, topic_sentence_idx,
+                 thesis_statement_relevance_ids, topic_sentence_relevance_ids, common_idea, irrelevance_check):
+        self.created_user = created_user
+        self.article_id = article_id
+        self.thesis_statement_idx = thesis_statement_idx
+        self.topic_sentence_idx = topic_sentence_idx
+        self.thesis_statement_relevance_ids = thesis_statement_relevance_ids
+        self.topic_sentence_relevance_ids = topic_sentence_relevance_ids
+        self.common_idea = common_idea
+        self.irrelevance_check = irrelevance_check
+        self.created_time = datetime.utcnow()
+
+    def __repr__(self):
+        return '<Link %r>' % self.created_user
 
 class Workflow(db.Model):
     __tablename__ = 'workflow'

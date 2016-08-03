@@ -330,6 +330,10 @@ nav a:hover {
    ========================================================================== */
 nav{
     height: auto;
+
+}
+nav ul{
+    overflow: hidden;
 }
 .example-area{
     -webkit-box-shadow: 0 0 5px #888;
@@ -386,6 +390,30 @@ nav{
 .success-area p{
     font-size: 1.2em;
 }
+
+.problem-area{
+    margin-top: 15px;
+}
+
+/* ====================
+    Link Task
+   ====================
+*/
+.problem-title{ font-weight: bold; }
+.paragraph-title { font-weight: bold; }
+.content-area{ margin: 0 17px; }
+.gray-text{ color: #afafaf; }
+.problem-block{ 
+    border: #c1c1c1 solid 1px;
+    padding: 1%;
+    margin-top: 2px;
+}
+.common-idea{
+    overflow: hidden;
+}
+.item{
+/*    border: #ff0000 solid 1px;*/
+}
 /* ==========================================================================
    Media Queries
    ========================================================================== */
@@ -395,12 +423,12 @@ nav{
 /* ====================
     INTERMEDIATE: Menu
    ==================== */
-
+    
     nav a {
         float: left;
-        width: 27%;
+        width: 22%;
         margin: 0 1.6%;
-        padding: 16px 2%;
+        padding: 7px 2%;
         margin-bottom: 0;
     }
 
@@ -437,7 +465,6 @@ nav{
            -moz-box-shadow: 0 2px 7px #aaa;
                 box-shadow: 0 2px 7px #aaa;
         
-        
     }
 
 /* ============
@@ -447,13 +474,19 @@ nav{
     .title {
         float: left;
     }
-
-    nav {
-        float: right;
-        width: 40%;
-
+    
+    nav a {
+        width: 22%;
+        margin: 0 1%;
+        padding: 10px 1%;
+        margin-bottom: 0;
     }
 
+    nav{
+        float: right;
+        width: 60%;
+    }
+    
 /* ============
     WIDE: Main
    ============ */

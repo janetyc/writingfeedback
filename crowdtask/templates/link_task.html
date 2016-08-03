@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+{% block content %}
+<header>Task: Linking Ideas between Two Topic Sentences</header>
+<section>
+
+    <div class="example-area">
+        <div><i class="newspaper icon"></i><span class="block-title">Example</span></div>
+        <div>Title: Qualities of a good neighbor</div>
+        <div class="content-area">
+            <div class="ui two column grid">
+                <div class="column">
+                    <div class="ui segment">
+                        <span class="paragraph-title">Introduction Paragraph</span>
+                        <p><span class="highlight"><span class="relevance">Neighbors</span> are the people who live near us, and <span class="relevance">their behavior</span> influences our daily life.</span> <span class="gray-text">Good neighbors can make us feel comfortable and give us many help, and everyone will benefit from a good relationship among neighbors. In my point of view, these are three conspicuous aspects of the qualities of a good neighbor.<span></p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui segment">
+                        <span class="paragraph-title">Body Paragraph</span>
+                        <p><span class="highlight">One of the most important characteristics of good <span class="relevance">neighbors</span> is that they have a <span class="relevance">good living habit</span> and are friendly to others.</span> <span class="gray-text">A person with bad habit will affect your daily life. For example, children are most likely to be influenced by bad neighbors and carry on bad habits. On the other hand, being friendly is also an important nature of good neighbors. If neighbors are unfriendly, they are hard to approach and difficult to get along with.</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="problem-area">
+        <div><i class="help circle icon"></i><span class="block-title">Please Describe and Highlight the Relevant Keywords Between Two Topic Sentences</span></div>
+        <div class="problem">
+            <div>Title: {{ data.title }}</div>
+            <div id="working-area">
+                {% for topic_paragraph_idx in range(data.all_topic_sentences|length) %}
+                <div id="problem-{{topic_paragraph_idx+1}}" class="problem-block">
+                    <span class="problem-title">Problem {{topic_paragraph_idx+1}}</span>
+                    <div class="common-idea item">
+                        <div class="ui input">
+                            <div>(a) Please describe the common idea between two highlighted sentences.</div>
+                            <input type="text" placeholder="Please describe...">
+                        </div>
+                    </div>
+                    <div class="link-idea item">
+                        <span>(b) Please highlight the relevant keywords between two sentencess.</span>
+                        <div class="ui two column grid">
+                            <div class="column">
+                                <div class="ui segment intro-paragraph">
+                                    <span class="paragraph-title">Introduction Paragraph</span>
+                                    <p class="paragraph" id="paragraph_{{ data.thesis_statement[0] }}">
+                                    {% for sentence_idx in range(data.paragraph_map[data.thesis_statement[0]]|length) %}
+                                        <span id="sentence_{{sentence_idx}}" class="sentence">
+                                        {% if sentence_idx == data.thesis_statement[1] %}
+                                            <span class="highlight topic_sentence intro_topic">
+                                            {% for word in data.paragraph_map[data.thesis_statement[0]][sentence_idx].strip().split(" ") %}
+                                                {% if word %}
+                                                    <span class="word" id="word_{{loop.index-1}}">{{word}}</span>
+                                                {% endif %}    
+                                            {% endfor %}.
+                                            </span>
+
+                                        {% else %}
+                                            <span class="gray-text">{{ data.paragraph_map[data.thesis_statement[0]][sentence_idx] }}.</span>
+                                        {% endif %}
+                                        </span>
+                                    {% endfor %}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="ui segment body-paragraph">
+                                    <span class="paragraph-title">Body Paragraph</span>
+                                    <p class="paragraph" id="paragraph_{{ data.all_topic_sentences[topic_paragraph_idx][0] }}">
+                                    {% for sentence_idx in range(data.paragraph_map[data.all_topic_sentences[topic_paragraph_idx][0]]|length) %}
+                                        <span id="sentence_{{sentence_idx}}" class="sentence">
+                                        {% if sentence_idx == data.all_topic_sentences[topic_paragraph_idx][1] %}
+                                            <span class="highlight topic_sentence body_topic">
+                                            {% for word in data.paragraph_map[data.all_topic_sentences[topic_paragraph_idx][0]][sentence_idx].strip().split(" ") %}
+                                                {% if word %}
+                                                    <span class="word" id="word_{{loop.index-1}}">{{word}}</span>
+                                                {% endif %}    
+                                            {% endfor %}.
+                                            </span>
+                                        {% else %}
+                                            <span class="gray-text">{{ data.paragraph_map[data.all_topic_sentences[topic_paragraph_idx][0]][sentence_idx] }}.</span>
+                                        {% endif %}
+                                        </span>
+                                    {% endfor %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="check-empty item">
+                        <div class="ui checkbox" id="checkEmpty-{{topic_paragraph_idx+1}}">
+                            <input type="checkbox" name="example">
+                            <label>No relevance area corresponding to the topic sentence</label>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="answer-area">
+        <div class="ui segment" id="loading-image">
+            <div class="ui active loader">
+                <div class="ui indeterminate large loader"></div>
+            </div>
+            <p></p>
+        </div>
+        <div class="submit-area" id="submitTask">
+            <div id="submitAnswer" class="ui button green">Submit</div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function checkAllAnswers(){
+        var checked_length = $('.check-empty input:checked').length;
+        var disabled_length = $('.check-empty input:disabled').length;
+        var answered_length = checked_length + disabled_length;
+        if($('.check-empty input').length == answered_length)
+            $('#submitAnswer').removeClass("disabled");
+        else
+            $('#submitAnswer').addClass("disabled");
+    }
+    $(function() {
+        
+        var worker_id = "{{ data.worker_id }}";
+        var assignment_id = "{{ data.assignment_id }}"
+        var hit_id = "{{ data.hit_id }}"
+
+        if(assignment_id != "" && hit_id !=""){
+            $("#navBar").css("display", "none");
+        }
+
+        //preview
+        var preview_flag = "{{ data.preview_flag }}";
+        if (preview_flag != ""){
+            $("#submitTask").css("display", "none");
+        }
+
+        //hide loader
+        $('#loading-image').hide();
+
+        //disable submit button
+        $('#submitAnswer').addClass("disabled");
+
+        //highlight selection
+        $('.word').click(function(){
+            $(this).toggleClass('relevance');
+
+            var intro_len = $(this).closest('.link-idea').find('.intro-paragraph .relevance').length;
+            var body_len = $(this).closest('.link-idea').find('.body-paragraph .relevance').length;
+            var check_empty = $(this).closest('.problem-block').find('.check-empty input');
+
+            if(intro_len && body_len){
+                check_empty.removeAttr("checked");
+                check_empty.attr("disabled", true);
+            }
+            else{
+                check_empty.removeAttr("checked");
+                check_empty.removeAttr("disabled");
+                
+            }
+
+            //check if all problems are done
+            checkAllAnswers();
+        });
+        
+        $('.check-empty input').click(function(){
+            var relevance_words = $(this).closest('.problem-block').find('.link-idea .paragraph .relevance');
+            
+            if (relevance_words.length)
+                relevance_words.removeClass('relevance');
+
+            checkAllAnswers();
+        });
+
+        /****************************** 
+        *     require to modify       *
+        *******************************/
+        
+        //submit answer to server
+        $("#submitAnswer").click(function(event){
+            var ttsTopic = new Array();
+            var tsTopic = new Array();
+            var introTopic = new Array();
+            var bodyTopic = new Array();
+            var commonIdea = new Array();
+            var checkArray = new Array();
+
+            var ttsTopicStr = "";
+            var tsTopicStr = "";
+            var commonIdeaStr = "";
+
+
+            // retrieve all problems
+            $(".problem-block").each(function(i){
+
+                ttsTopicStr = "";
+                tsTopicStr = "";
+                commonIdeaStr="";
+                ttsTopic.splice(0,ttsTopic.length);
+                tsTopic.splice(0,tsTopic.length);
+
+                $(this).find('.link-idea .intro_topic .relevance').each(function(j){
+                    var word_id = this.id.split("_");
+                    var sentence_id = $(this).closest('.sentence').attr('id').split("_");
+                    var paragraph_id = $(this).closest('.paragraph').attr('id').split("_");
+                    ttsTopic.push(paragraph_id[1]+"-"+sentence_id[1]+"-"+word_id[1]);
+                });
+                ttsTopicStr = ttsTopic.join(",");
+                
+
+                $(this).find('.link-idea .body_topic .relevance').each(function(i){
+                    var word_id = this.id.split("_");
+                    var sentence_id = $(this).closest('.sentence').attr('id').split("_");
+                    var paragraph_id = $(this).closest('.paragraph').attr('id').split("_");
+                    tsTopic.push(paragraph_id[1]+"-"+sentence_id[1]+"-"+word_id[1]); 
+                });
+                tsTopicStr = tsTopic.join(",");
+                
+
+                //retrieve ideas
+                commonIdeaStr = $(this).find('.common-idea .input input').val();
+
+                //skip item when checkempty is checked
+                var emptyCheck = $(this).find('.check-empty .checkbox input');
+
+                if(emptyCheck.is(':checked')){
+                    introTopic.push("");
+                    bodyTopic.push("");
+                    commonIdea.push("");
+                    checkArray.push("1");
+                }else
+                {
+                    introTopic.push(ttsTopicStr);
+                    bodyTopic.push(tsTopicStr); 
+                    commonIdea.push(commonIdeaStr);
+                    checkArray.push("0");
+                }
+                
+            });
+
+
+            var resultCommonIdea = "";
+            resultCommonIdea = commonIdea.join("|")
+
+            var resultIntroRelevance = "";
+            resultIntroRelevance = introTopic.join("|");
+            
+            var resultBodyRelevance = "";
+            resultBodyRelevance = bodyTopic.join("|");
+            
+            var irrelevanceCheck = "";
+            irrelevanceCheck = checkArray.join("|")
+            
+            $.ajax({
+                type: "GET",
+                url: "/api/add_link",
+
+                data: {
+                    "article_id": "{{ data.article_id }}",
+                    "worker_id": worker_id,
+                    "thesis_statement_idx": "{{ data.thesis_statement_idx }}",
+                    "topic_sentence_ids": "{{ data.topic_sentence_ids }}",
+                    "thesis_statement_relevance_ids": resultIntroRelevance,
+                    "topic_sentence_relevance_ids": resultBodyRelevance,
+                    "common_idea": resultCommonIdea,
+                    "irrelevance_check": irrelevanceCheck,
+
+                    "verified_string": "{{ data.verified_string }}",
+                    "assignment_id": "{{ data.assignment_id }}",
+                    "hit_id": "{{ data.hit_id }}"
+                },
+
+                dataType: 'json', 
+
+                success: function(data) {
+                    if(data['success'] == 1){
+                        if(assignment_id==""){
+                            window.location = "/success?verified_string={{data.verified_string}}";
+                        }
+                        else{
+                            window.location = "/closepopup?hitId={{ data.hit_id }}&assignmentId={{ data.assignment_id}}&workerId={{data.worker_id}}&verified_string={{data.verified_string}}";
+                        }
+                    }else{
+                        window.location = "/success";
+                    }
+                },
+                beforeSend: function(){
+                    $('#loading-image').show();
+                },
+                complete: function(){
+                    $('#loading-image').hide();
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert("Error");    
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
