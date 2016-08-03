@@ -11,7 +11,7 @@
 > python manage.py db upgrade
 
 - push migrations folder to server
- > git add migration/*
+ > git add migrations/*
 > git push origin master
 
 - only run db upgrade at remote server
