@@ -102,6 +102,16 @@ class DBQuery(object):
             hit_ids.append(hit_id)
             updated_workflow.update({"relation_hit_ids": ",".join(hit_ids)})
 
+        elif task_type == TaskType.LINK:
+            if workflow.link_hit_ids and workflow.link_hit_ids != "":
+                hit_ids = workflow.link_hit_ids.split(',')
+
+            print workflow.link_hit_ids
+            hit_ids.append(hit_id)
+            print hit_ids
+            
+            updated_workflow.update({"link_hit_ids": ",".join(hit_ids)})
+
         db.session.commit()
 
         return updated_workflow
@@ -225,6 +235,7 @@ class DBQuery(object):
 
         return answers_list
 
+    # return relevance: [(article_id, paragraph_idx, relevance_word1, topic_sentence_idx), (article_id, paragraph_idx, relevance_word2, topic_sentence_idx)]
     def get_relevance_by_id(self, relevance_id):
         relevance_list = []
         relevance = Relevance.query.filter_by(id=relevance_id).first()

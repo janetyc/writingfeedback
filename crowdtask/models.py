@@ -192,13 +192,14 @@ class Link(db.Model):
 class Workflow(db.Model):
     __tablename__ = 'workflow'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    article_id = db.Column(db.Integer)
     created_time = db.Column(db.DateTime())
     finished_time = db.Column(db.DateTime())
     workflow_type = db.Column(db.Text())
     topic_hit_ids = db.Column(db.Text())
     relevance_hit_ids = db.Column(db.Text())
     relation_hit_ids = db.Column(db.Text())
-    article_id = db.Column(db.Integer)
+    link_hit_ids = db.Column(db.Text())
 
     def __init__(self, workflow_type, article_id):
         self.workflow_type = workflow_type

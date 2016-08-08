@@ -24,23 +24,27 @@ title_set = dict({
     TaskType.TOPIC: "Find topic sentences in the paragraph",
     TaskType.RELEVANCE: "Highlight relevance ideas between two sentence",
     TaskType.RELATION: "Classify relation between two sentence",
+    TaskType.LINK: "Find common ideas between two topic sentences",
 })
 
 description_set = dict({
     TaskType.TOPIC: "Please find the topic sentence in the article",
     TaskType.RELEVANCE: "Please highlight relevant ideas between two sentence",
-    TaskType.RELATION: "Please classify relation between two sentences"
+    TaskType.RELATION: "Please classify relation between two sentences",
+    TaskType.LINK: "Please find common ideas between two two topic sentences"
 })
 price_set = dict({
     TaskType.TOPIC : 0.05,
     TaskType.RELEVANCE : 0.05,
     TaskType.RELATION : 0.04,
+    TaskType.LINK : 0.07
 })
 
 keywords_set = dict({
     TaskType.TOPIC: ["annotation", "feedback", "topic", "topic sentence", "topic identification"],
     TaskType.RELEVANCE: ["annotation", "feedback", "relevance", "sentence relevance", "relevance identification"],
     TaskType.RELATION: ["annotation", "feedback", "relation", "sentence relation", "relation classification"],
+    TaskType.LINK: ["annotation", "common idea", "relevance", "topic sentence", "thesis statement identification"]
 })
 
 
@@ -58,6 +62,16 @@ def create_topic_hit(article_id, num_of_assignments=max_assignments):
     print URL
     hit_id = create_hit(task_type, URL, num_of_assignments)
 
+    return hit_id
+
+def create_link_hit(article_id, thesis_statement_idx, topic_sentence_ids, num_of_assignments=max_assignments):
+    task_type = TaskType.LINK
+    URL = '%s/mturk?task_type=%s&article_id=%s&thesis_statement_idx=%s&topic_sentence_ids=%s&using_sandbox=%s' % (HOST_SERVER, task_type, article_id,
+                                                                                                                  thesis_statement_idx, topic_sentence_ids,
+                                                                                                                 str.lower(str(SANDBOX)))
+    print URL
+
+    hit_id = create_hit(task_type, URL, num_of_assignments)
     return hit_id
 
 def create_relevance_hit(article_id, paragraph_idx, num_of_assignments=max_assignments, **kwargs):
@@ -80,6 +94,7 @@ def create_relation_hit(article_id, paragraph_idx, num_of_assignments=max_assign
 
     hit_id = create_hit(task_type, URL, num_of_assignments)
     return hit_id
+
 
 def create_hit(task_type, URL, num_of_assignments):
     title = title_set[task_type]
@@ -123,5 +138,6 @@ def create_hit(task_type, URL, num_of_assignments):
 if __name__ == "__main__":
     print "test create hit"
     #topic_hit = create_topic_hit(article_id="1")
-    relevance_hit = create_relevance_hit(article_id="13", paragraph_idx="3", topic_sentence_idx="0")
+    #relevance_hit = create_relevance_hit(article_id="13", paragraph_idx="3", topic_sentence_idx="0")
     #relation_hit = create_relation_hit(article_id="3", paragraph_idx="2")
+    link_hit = create_link_hit(article_id="3", thesis_statement_idx="0-0", topic_sentence_ids="1-1|2-0")

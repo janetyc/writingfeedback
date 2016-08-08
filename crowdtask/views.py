@@ -249,11 +249,14 @@ def relation_task():
 
     return render_template('relation_task.html', data=data)
 
+'''
+Link Task's Input format:
+/link?article_id=2&thesis_statement_idx=0-0&topic_sentence_ids=1-0|2-1|3-0
+'''
 @views.route('/link', methods=('GET','POST'))
 def link_task():
     article_id = None
     article = None
-
 
     worker_id = request.args.get('workerId',u'tester')
     verified_string = generate_verified_str(6)
