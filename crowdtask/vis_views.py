@@ -20,12 +20,15 @@ def topic_vis():
     if workflow.topic_hit_ids != "":
         topic_hits = workflow.topic_hit_ids.split(",")
         for hit_id in topic_hits:
-            topic_list = DBQuery().get_topics_by_hit_id(hit_id)
-            
+            topic_list_w_worker = DBQuery().get_topics_by_hit_id(hit_id)
+            topic_list = [(t[0], t[1]) for t in topic_list_w_worker]
+
             for par_topic in set(topic_list):
                 article_ids.append(par_topic[0].split("-")[0])
                 key = "-".join(par_topic)
                 topic_map[key] = topic_list.count(par_topic)
+
+    print topic_map
 
     if workflow.relevance_hit_ids != "":
         relevance_hits = workflow.relevance_hit_ids.split(",")

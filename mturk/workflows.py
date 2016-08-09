@@ -497,19 +497,22 @@ if __name__ == "__main__":
 
     print "Topic Task..."
     assignment_num = 2
-    article_list = ["5"]
-    #for article_id in article_list:
-    #    u_workflow = unity_workflow(article_id=article_id, task_type=TaskType.TOPIC, num_of_task=1, num_of_assignments=assignment_num)
-    #    print "workflow_id: %d" % u_workflow
+    article_list = ["1","2"]
+    for article_id in article_list:
+        u_workflow = unity_workflow(article_id=article_id, task_type=TaskType.TOPIC, num_of_task=1, num_of_assignments=assignment_num)
+        print "workflow_id: %d" % u_workflow
     
     #get all workflows
+    workflow_ids=[]
     for article_id in article_list:
         article_id = int(article_id)
         workflows = DBQuery().get_workflows_by_article_id(article_id)
+        workflow_ids.extend([workflow.id for workflow in workflows])
+        
+    print workflow_ids
 
-    workflow_ids = [workflow.id for workflow in workflows]
+    '''
     print "Link Task..."
-
     for workflow in workflows:
         workflow_id = workflow.id
         u = UnityWorkflow(workflow_id, article_id=article_id)
@@ -539,3 +542,4 @@ if __name__ == "__main__":
 
         else:
             print "cannot do link stage"
+    '''
