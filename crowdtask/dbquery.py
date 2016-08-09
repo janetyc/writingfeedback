@@ -69,8 +69,8 @@ class DBQuery(object):
         return link.id
 
     # crowd workflow - manage task
-    def add_workflow(self, workflow_type, article_id):
-        workflow = Workflow(workflow_type, article_id)
+    def add_workflow(self, workflow_type, article_id, source=None, server=None):
+        workflow = Workflow(workflow_type, article_id, source, server)
         db.session.add(workflow)
         db.session.commit()
 
@@ -109,7 +109,7 @@ class DBQuery(object):
             print workflow.link_hit_ids
             hit_ids.append(hit_id)
             print hit_ids
-            
+
             updated_workflow.update({"link_hit_ids": ",".join(hit_ids)})
 
         db.session.commit()
@@ -211,7 +211,7 @@ class DBQuery(object):
         topic_list = []
         topic = Topic.query.filter_by(id=topic_id).first()
         for topic_sentence in topic.topic_sentence_ids.split(","):
-            topic_list.append(("%d-%d" % (topic.article_id, topic.paragraph_idx), topic_sentence))
+            topic_list.append(("%d-%d" % (topic.article_id, topic.paragraph_idx), topic_sentence, topic.created_user))
 
         return topic_list
 
@@ -235,7 +235,7 @@ class DBQuery(object):
 
         return answers_list
 
-    # return relevance: [(article_id, paragraph_idx, relevance_word1, topic_sentence_idx), (article_id, paragraph_idx, relevance_word2, topic_sentence_idx)]
+    # return relevance: [(article_id, paragraph_idx, relevance_word1, topic_sentence_idx, created_user), ...]
     def get_relevance_by_id(self, relevance_id):
         relevance_list = []
         relevance = Relevance.query.filter_by(id=relevance_id).first()
@@ -245,10 +245,11 @@ class DBQuery(object):
         topic_sentence_idx = relevance.topic_sentence_idx
         paragraph_idx = relevance.paragraph_idx
         article_id = relevance.article_id
+        created_user = relevance.created_user
 
         if relevance.relevance_ids and relevance.relevance_ids != "":
             for relevance_word in relevance.relevance_ids.split(","):
-                relevance_list.append((article_id, paragraph_idx, relevance_word, topic_sentence_idx))
+                relevance_list.append((article_id, paragraph_idx, relevance_word, topic_sentence_idx, created_user))
 
         return relevance_list
 

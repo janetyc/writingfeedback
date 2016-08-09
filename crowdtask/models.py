@@ -200,14 +200,18 @@ class Workflow(db.Model):
     relevance_hit_ids = db.Column(db.Text())
     relation_hit_ids = db.Column(db.Text())
     link_hit_ids = db.Column(db.Text())
+    source = db.Column(db.Text())
+    server = db.Column(db.Text())
 
-    def __init__(self, workflow_type, article_id):
+    def __init__(self, workflow_type, article_id, source, server):
         self.workflow_type = workflow_type
         self.topic_hit_ids = ""
         self.relevance_hit_ids = ""
         self.relation_hit_ids = ""
         self.created_time = datetime.utcnow()
         self.article_id = article_id
+        self.source = source
+        self.server = server
 
     def __repr__(self):
         return '<Workflow %r>' % self.id
