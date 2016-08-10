@@ -252,7 +252,7 @@ body {
 .relevance-weight-3{ background-color: #67BDAC; }
 .relevance-weight-4{ background-color: #3AA590; }
 .relevance-weight-5{ background-color: #158F7F; }
-.irrelevant-sentence{ padding: 1px; border: 1px dashed #ff0000 !important;}
+.irrelevant-sentence{ padding: 1px; border-bottom: 1px dashed #ff0000 !important;}
 
 .small-block {
     border: 1px solid #000000;
