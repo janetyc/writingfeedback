@@ -562,7 +562,7 @@ if __name__ == "__main__":
 
     #        print u_workflow
     #        print "workflow_id: %d" % u_workflow
-
+    #
     #    else:
     #        print "Cannot do link stage"
 
@@ -579,10 +579,10 @@ if __name__ == "__main__":
     #                                num_of_task=1, num_of_assignments=assignment_num, workflow_id=workflow_id, topic_list=topic_list)
     #    print "workflow_id: %d" % u_workflow
 
+    print "all HITs status"
     for workflow in workflows:
         workflow_id = workflow.id
         article_id = workflow.article_id
         u = UnityWorkflow(workflow_id, article_id=article_id)
         u.show_all_hits_status()
 
-    print "----- end ------"

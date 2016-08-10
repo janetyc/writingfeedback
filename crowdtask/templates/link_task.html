@@ -134,7 +134,11 @@
                 </div>
                 {% endfor %}
             </div>
+            <div id="error-area" class="ui error-area error message">
+            <div>Please answer all questions!!! <span id="error-count"></span></div>
         </div>
+        </div>
+
     </div>
     <div class="answer-area">
         <div class="ui segment" id="loading-image">
@@ -147,7 +151,7 @@
             <div id="submitAnswer" class="ui button green">Submit</div>
         </div>
     </div>
-
+    
     
 </section>
 {% endblock %}
@@ -221,7 +225,7 @@
             checkAllAnswers();
         });
 
-
+        $("#error-area").hide();
 
 
         /****************************** 
@@ -290,11 +294,11 @@
                 }else
                 {
                     
-                    if(commonIdeaStr == "") $(this).find(".common-idea").addClass("ui error message");
-                    else $(this).find(".common-idea").removeClass("ui error message");
+                    if(commonIdeaStr == "") $(this).find(".common-idea").addClass("ui error message empty-error");
+                    else $(this).find(".common-idea").removeClass("ui error message empty-error");
                     
-                    if(ratingStr == "" || ratingStr == undefined) $(this).find(".relevance-rating").addClass("ui error message");
-                    else $(this).find(".relevance-rating").removeClass("ui error message");
+                    if(ratingStr == "" || ratingStr == undefined) $(this).find(".relevance-rating").addClass("ui error message empty-error");
+                    else $(this).find(".relevance-rating").removeClass("ui error message empty-error");
 
                     introTopic.push(ttsTopicStr);
                     bodyTopic.push(tsTopicStr); 
@@ -328,8 +332,13 @@
             console.log(irrelevanceCheck);
 
 
-            var errorCount = $('.ui.error.message').length;
-            if(errorCount == 0){
+            var errorCount = $('.empty-error').length;
+            if(errorCount != 0){
+                if(errorCount == 1)  $("#error-count").text("There is 1 empty answer.");
+                else  $("#error-count").text("There is "+errorCount+" empty answers.");
+                $("#error-area").show();
+            }else{
+                $("#error-area").hide();
                 $.ajax({
                     type: "GET",
                     url: "/api/add_link",
