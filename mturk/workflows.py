@@ -31,6 +31,28 @@ class UnityWorkflow:
         self.relevance_accuracy_list = []   #relevance accuracy per article
         self.link_accuracy_list = []
 
+    def show_hit_status_by_id(self, hit_ids, stage):
+        for hit_id in hit_ids.split(","):
+            print "%s HIT: %s" % (stage, hit_id)
+            hit = get_hit(hit_id)
+            show_hit(hit)
+            assignments = get_assignments(hit_id)
+            print "------------------------"
+
+    def show_all_hits_status(self):
+        workflow = DBQuery().get_workflow_by_id(self.workflow_id)
+        print "==================== Topic Stage ===================="
+        if workflow.topic_hit_ids and workflow.topic_hit_ids != "":
+            self.show_hit_status_by_id(workflow.topic_hit_ids, TaskType.TOPIC)
+
+        print "==================== Link Stage ===================="
+        if workflow.link_hit_ids and workflow.link_hit_ids != "":
+            self.show_hit_status_by_id(workflow.link_hit_ids, TaskType.LINK)
+
+        print "==================== Relevance Stage ===================="
+        if workflow.relevance_hit_ids and workflow.relevance_hit_ids != "":
+            self.show_hit_status_by_id(workflow.relevance_hit_ids, TaskType.RELEVANCE)
+
     def show_hit_status_at_topic_stage(self):
         workflow = DBQuery().get_workflow_by_id(self.workflow_id)
         self.topic_worker_list = []
@@ -413,7 +435,8 @@ def unity_workflow(article_id, task_type, num_of_task, num_of_assignments, **kwa
         items = thesis_statement.split("-")
         article_id = items[0]
         paragraph_idx = items[1]
-        thesis_statement_idx = "%s-%s" % (paragraph_idx, items[2])
+        sentence_idx = items[2]
+        thesis_statement_idx = "%s-%s" % (paragraph_idx, sentence_idx)
 
         topic_sentence_list = []
         for i in topic_list:
@@ -444,7 +467,7 @@ def coherence_workflow(article_id, paragraph_length, task_type, num_of_task, num
 
 
 if __name__ == "__main__":
-    print "Topic Task ..."
+    #print "Topic Task ..."
     #article_list = ["10","11","12","13","14","15","16","17","18","19"]
 #    article_list = ["20","21","22","23","24","25","26"]
 #    article_list = ["24"]
@@ -453,7 +476,7 @@ if __name__ == "__main__":
 #        u_workflow = unity_workflow(article_id=article_id, task_type=TaskType.TOPIC, num_of_task=1, num_of_assignments=assignment_num)
 #        print "workflow_id: %d" % u_workflow
 
-    print "Relation Task ..."
+    #print "Relation Task ..."
 #    article_list = ["4","6","8"]
 #    paragraph_length_list = [4, 5, 5]
 #    assignment_num = 3
@@ -487,7 +510,7 @@ if __name__ == "__main__":
 #        56: ['27-0-1','27-1-0','27-2-0','27-3-0','27-4-0']
 #    }
 #
-    print "Relevance Task..."
+    #print "Relevance Task..."
     #for workflow_id in workflow_article_topic_map:
     #    topic_list = workflow_article_topic_map[workflow_id]
     #    article_id = topic_list[0].split("-")[0]
@@ -495,51 +518,71 @@ if __name__ == "__main__":
     #                                num_of_task=1, num_of_assignments=assignment_num, workflow_id=workflow_id, topic_list=topic_list)
     #    print "workflow_id: %d" % u_workflow
 
-    print "Topic Task..."
+    #print "Topic Task..."
     assignment_num = 2
     article_list = ["1","2"]
-    for article_id in article_list:
-        u_workflow = unity_workflow(article_id=article_id, task_type=TaskType.TOPIC, num_of_task=1, num_of_assignments=assignment_num)
-        print "workflow_id: %d" % u_workflow
+    #for article_id in article_list:
+    #    u_workflow = unity_workflow(article_id=article_id, task_type=TaskType.TOPIC, num_of_task=1, num_of_assignments=assignment_num)
+    #    print "workflow_id: %d" % u_workflow
     
     #get all workflows
     workflow_ids=[]
     for article_id in article_list:
         article_id = int(article_id)
         workflows = DBQuery().get_workflows_by_article_id(article_id)
-        workflow_ids.extend([workflow.id for workflow in workflows])
-        
-    print workflow_ids
 
-    '''
-    print "Link Task..."
+
+    #print "Link Task..."
+    #for workflow in workflows:
+    #    workflow_id = workflow.id
+    #    article_id = workflow.article_id
+    #    u = UnityWorkflow(workflow_id, article_id=article_id)
+    #    u.show_hit_status_at_topic_stage()
+    #    topic_rank_list = u.get_topic_rank_list(weight=2)
+    #    print "-------------------------------------------------------------"
+    #    print "article %d at workflow %d" % (article_id, workflow_id)
+    #    print "topic:"
+    #    print topic_rank_list
+    #    print "topic map:"
+    #    print u.get_topic_map()
+
+    #    topic_sentence_map = u.check_do_link_stage()
+    #    if topic_sentence_map:
+    #        print "do link task..."
+    #        intro_key = "%s-0" % article_id
+    #        tts_input = topic_sentence_map[intro_key][0][0]
+    #        ts_input = [topic_sentence_map[key][0][0] for key in topic_sentence_map if key != intro_key]
+    #        print "thesis statement: %s" % tts_input
+    #        print "topic setence input: %s" % ",".join(ts_input)
+
+    #        u_workflow = unity_workflow(article_id=article_id, task_type=TaskType.LINK,
+    #                                    num_of_task=1, num_of_assignments=assignment_num,
+    #                                    workflow_id=workflow_id, topic_list=ts_input,
+    #                                    thesis_statement=tts_input)
+
+    #        print u_workflow
+    #        print "workflow_id: %d" % u_workflow
+
+    #    else:
+    #        print "Cannot do link stage"
+
+
+    #print "Relevance Task..."
+    #for workflow in workflows:
+    #    workflow_id = workflow.id
+    #    u = UnityWorkflow(workflow_id, article_id=article_id)
+    #    u.show_hit_status_at_topic_stage()
+    #    topic_rank_list = u.get_topic_rank_list(weight=2)
+    #    topic_list = [topic[0] for topic in topic_rank_list]
+
+    #    u_workflow = unity_workflow(article_id=article_id, task_type=TaskType.RELEVANCE,
+    #                                num_of_task=1, num_of_assignments=assignment_num, workflow_id=workflow_id, topic_list=topic_list)
+    #    print "workflow_id: %d" % u_workflow
+
     for workflow in workflows:
         workflow_id = workflow.id
+        article_id = workflow.article_id
         u = UnityWorkflow(workflow_id, article_id=article_id)
-        u.show_hit_status_at_topic_stage()
-        topic_rank_list = u.get_topic_rank_list(weight=2)
-        print "-------------------------------------------------------------"
-        print "article %d at workflow %d" % (article_id, workflow_id)
-        print "topic:"
-        print topic_rank_list
-        print "topic map:"
-        print u.get_topic_map()
+        u.show_all_hits_status()
 
-        topic_sentence_map = u.check_do_link_stage()
-        if topic_sentence_map:
-            print "do link task..."
-            print "link_input:"
-            link_input = [topic_sentence_map[key][0][0] for key in topic_sentence_map]
-            print link_input
-
-            #u_workflow = unity_workflow(article_id=article_id, task_type=TaskType.LINK,
-            #                            num_of_task=1, num_of_assignments=assignment_num,
-            #                            workflow_id=workflow_id, topic_list=link_input[1:],
-            #                            thesis_statement=link_input[0])
-
-            #print u_workflow
-            #print "workflow_id: %d" % u_workflow
-
-        else:
-            print "cannot do link stage"
-    '''
+    print "----- end ------"

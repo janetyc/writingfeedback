@@ -10,14 +10,18 @@ def topic_vis():
     data = {}
     topic_map = {}
     relevance_map = {}
+    link_map = {}
+    article_ids = []
+
     if not (request.args.has_key('workflow_id')):
         data = {}
         return render_template('topic_vis.html', data)
     
     workflow_id = request.args.get('workflow_id')
     workflow = DBQuery().get_workflow_by_id(workflow_id)
-    article_ids = []
-    if workflow.topic_hit_ids != "":
+    
+    # topic
+    if workflow.topic_hit_ids and workflow.topic_hit_ids != "":
         topic_hits = workflow.topic_hit_ids.split(",")
         for hit_id in topic_hits:
             topic_list_w_worker = DBQuery().get_topics_by_hit_id(hit_id)
@@ -27,20 +31,38 @@ def topic_vis():
                 article_ids.append(par_topic[0].split("-")[0])
                 key = "-".join(par_topic)
                 topic_map[key] = topic_list.count(par_topic)
+    
+    # link
+    if workflow.link_hit_ids and workflow.link_hit_ids != "":
+        link_hits = workflow.link_hit_ids.split(",")
+        for hit_id in link_hits:
+            link_list_w_worker = DBQuery().get_links_by_hit_id(hit_id)
+            for link in link_list_w_worker:
+                link_key = "%d-%s,%d-%s" % (link[0],link[1],link[0],link[2])
+                if link_key in link_map:
+                    link_map[link_key]["thesis_statement_relevance"].extend(link[3])
+                    link_map[link_key]["topic_sentence_relevance"].extend(link[4])
+                else:
+                    link_map[link_key] = {
+                        "thesis_statement_relevance":[],
+                        "topic_sentence_relevance":[]
+                    }
+                    link_map[link_key]["thesis_statement_relevance"] = link[3]
+                    link_map[link_key]["topic_sentence_relevance"] = link[4]
+    #print link_map
 
-    print topic_map
-
-    if workflow.relevance_hit_ids != "":
+    # relevance
+    if workflow.relevance_hit_ids and workflow.relevance_hit_ids != "":
         relevance_hits = workflow.relevance_hit_ids.split(",")
         for hit_id in relevance_hits:
-            relevance_list = DBQuery().get_relevances_by_hit_id(hit_id)
+            relevance_list_w_worker = DBQuery().get_relevances_by_hit_id(hit_id)
+            relevance_list = [(r[0],r[1],r[2],r[3]) for r in relevance_list_w_worker]
             
             for par_relevance in set(relevance_list):
                 # paragraph_idx-sentence_idx-word_idx
                 
                 key = "%d-%d-%s" % (par_relevance[0],par_relevance[1],par_relevance[2])
                 relevance_map[key] = relevance_list.count(par_relevance)
-
 
     article_ids = set(article_ids)
     if not len(article_ids):
@@ -52,6 +74,7 @@ def topic_vis():
     article = DBQuery().get_article_by_id(article_id)
     content_map = {}
     issue_map={}
+
     topic_tip = 0
     for i, paragraph in enumerate(article.content.split("<BR>")):
         if paragraph:

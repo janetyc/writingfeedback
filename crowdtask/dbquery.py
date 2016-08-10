@@ -219,6 +219,31 @@ class DBQuery(object):
         all_topics = Topic.query.all()
         return all_topics
 
+    def get_links_by_hit_id(self, hit_id):
+        tasks = Task.query.filter_by(hitId=hit_id)
+
+        answers_list = []
+        for task in tasks:
+            link_ids = task.answer.split("|")
+            for link_id in link_ids:
+                link_list = self.get_link_by_id(int(link_id))
+                answers_list.extend(link_list)
+
+        return answers_list
+
+    def get_link_by_id(self, link_id):
+        link_list = []
+        link = Link.query.filter_by(id=link_id).first()
+        if not link:
+            return []
+
+        if link.topic_sentence_relevance_ids and link.topic_sentence_relevance_ids != "":
+            link_list.append((link.article_id, link.thesis_statement_idx, link.topic_sentence_idx,
+                              link.thesis_statement_relevance_ids.split(","), link.topic_sentence_relevance_ids.split(","),
+                              link.irrelevance_check, link.created_user))
+
+        return link_list
+
     # relevance
     def get_relevances_by_hit_id(self, hit_id):
         tasks = Task.query.filter_by(hitId=hit_id)
@@ -253,22 +278,4 @@ class DBQuery(object):
 
         return relevance_list
 
-    def get_link_by_id(self, link_id):
-        link_list = []
-        link = Link.query.filter_by(id=link_id).first()
-        if not link:
-            return []
-
-        article_id = link.article_id
-        thesis_statement_idx = link.thesis_statement_idx
-        topic_sentence_idx = link.topic_sentence_idx
-        irrelevance_check = link.irrelevance_check
-
-        tts_relevance_list = link.thesis_statement_relevance_ids.split(',')
-        ts_relevance_list = link.topic_sentence_relevance_ids.split(',')
-        if link.topic_sentence_relevance_ids and link.topic_sentence_relevance_ids != "":
-            for i in range(len()):
-                link_list.append((article_id, thesis_statement_idx, topic_sentence_idx, tts_relevance_list[i],
-                                  ts_relevance_list[i], irrelevance_check, link.created_user))
-
-        return link_list
+    
