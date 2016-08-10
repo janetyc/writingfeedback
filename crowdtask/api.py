@@ -149,6 +149,7 @@ def add_link():
     thesis_statement_relevance_ids = request.args.get('thesis_statement_relevance_ids')
     topic_sentence_relevance_ids = request.args.get('topic_sentence_relevance_ids')
     common_idea = request.args.get('common_idea')
+    rating = request.args.get('rating')
     irrelevance_check = request.args.get('irrelevance_check')
     verified_string = request.args.get('verified_string')
 
@@ -162,17 +163,19 @@ def add_link():
     tss_ideas_list = thesis_statement_relevance_ids.split('|')
     ts_ideas_list = topic_sentence_relevance_ids.split('|')
     common_idea_list = common_idea.split('|')
+    rating_list = rating.split('|')
     irrelevance_check_list = irrelevance_check.split('|')
     print ts_list
     print tss_ideas_list
     print ts_ideas_list
     print common_idea_list
-    
+    print rating_list
     print irrelevance_check_list
 
     for i in range(len(tss_ideas_list)):
         link_id = DBQuery().add_link(worker_id, int(article_id), thesis_statement_idx,
-                                     ts_list[i], tss_ideas_list[i], ts_ideas_list[i], common_idea_list[i], int(irrelevance_check_list[i]))
+                                     ts_list[i], tss_ideas_list[i], ts_ideas_list[i],
+                                     common_idea_list[i], rating_list[i], int(irrelevance_check_list[i]))
         link_list.append(str(link_id))
 
     problem = "|".join([ "%s,%s,%s" % (article_id, thesis_statement_idx, ts_idx) for ts_idx in ts_list ])

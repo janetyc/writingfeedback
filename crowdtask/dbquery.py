@@ -59,9 +59,9 @@ class DBQuery(object):
         return relevance.id
 
     def add_link(self, created_user, article_id, thesis_statement_idx, topic_sentence_idx,
-                 thesis_statement_relevance_ids, topic_sentence_relevance_ids, common_idea, irrelevance_check):
+                 thesis_statement_relevance_ids, topic_sentence_relevance_ids, common_idea, rating, irrelevance_check):
         link = Link(created_user, article_id, thesis_statement_idx, topic_sentence_idx,
-                    thesis_statement_relevance_ids, topic_sentence_relevance_ids, common_idea, irrelevance_check)
+                    thesis_statement_relevance_ids, topic_sentence_relevance_ids, common_idea, rating, irrelevance_check)
 
         db.session.add(link)
         db.session.commit()
@@ -240,7 +240,7 @@ class DBQuery(object):
         if link.topic_sentence_relevance_ids and link.topic_sentence_relevance_ids != "":
             link_list.append((link.article_id, link.thesis_statement_idx, link.topic_sentence_idx,
                               link.thesis_statement_relevance_ids.split(","), link.topic_sentence_relevance_ids.split(","),
-                              link.irrelevance_check, link.created_user))
+                              link.rating, link.irrelevance_check, link.created_user))
 
         return link_list
 

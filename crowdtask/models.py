@@ -171,11 +171,12 @@ class Link(db.Model):
     thesis_statement_relevance_ids = db.Column(db.Text())
     topic_sentence_relevance_ids = db.Column(db.Text())
     common_idea = db.Column(db.Text())
+    rating = db.Column(db.Text())
     irrelevance_check = db.Column(db.Integer)
     created_time = db.Column(db.DateTime())
 
     def __init__(self, created_user, article_id, thesis_statement_idx, topic_sentence_idx,
-                 thesis_statement_relevance_ids, topic_sentence_relevance_ids, common_idea, irrelevance_check):
+                 thesis_statement_relevance_ids, topic_sentence_relevance_ids, common_idea, rating, irrelevance_check):
         self.created_user = created_user
         self.article_id = article_id
         self.thesis_statement_idx = thesis_statement_idx
@@ -183,6 +184,7 @@ class Link(db.Model):
         self.thesis_statement_relevance_ids = thesis_statement_relevance_ids
         self.topic_sentence_relevance_ids = topic_sentence_relevance_ids
         self.common_idea = common_idea
+        self.rating = rating
         self.irrelevance_check = irrelevance_check
         self.created_time = datetime.utcnow()
 

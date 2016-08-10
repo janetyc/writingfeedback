@@ -6,9 +6,8 @@
         <div><i class="newspaper icon"></i><span class="block-title">Example</span></div>
         <div>Title: Qualities of a good neighbor</div>
         <div class="item">
-                <div>(a) What's the common idea of two highlighted sentences? <span class="word-box"><i class="write icon"></i>Neighbor, living behavior</span></div>
-                <div>(b) Please highlight the relevant keywords between two sentencess.</div>
-            </div>
+            <div>(a) Please highlight the relevant keywords between two sentencess.</div>
+        </div>
         <div class="content-area">
             <div class="item ui grid two column">
                 <div class="column">
@@ -25,6 +24,13 @@
                 </div>
             </div>
         </div>
+        <div class="item">
+            <div>(b) What's the common idea of two highlighted sentences? <span class="word-box"><i class="write icon"></i>Neighbor, living behavior</span></div>
+        </div>
+        <div class="item">
+            <div>(c) Please rate <b>"the level of relevance"</b> between the two highlighted sentences. <span class="word-box">2. Relevance</span></div>
+
+        </div>
     </div>
     <hr>
     <div class="problem-area">
@@ -35,15 +41,9 @@
                 {% for topic_paragraph_idx in range(data.all_topic_sentences|length) %}
                 <div id="problem-{{topic_paragraph_idx+1}}" class="problem-block">
                     <span class="problem-title">Problem {{topic_paragraph_idx+1}}</span>
-                    <div class="common-idea item">
-                        <div>(a) What's the <b>"common idea"</b> of two highlighted sentences?</div>
-                        <div class="ui fluid input left icon">
-                            <i class="write icon"></i>
-                            <input class="input-box" type="text" placeholder="Please describe...">
-                        </div>
-                    </div>
+                    
                     <div class="link-idea item">
-                        <div>(b) Please highlight the <b>"relevant keywords"</b> between two highlighted sentencess.</div>
+                        <div>(a) Please highlight the <b>"relevant keywords"</b> between two highlighted sentencess.</div>
                         <div class="ui two column grid">
                             <div class="column">
                                 <div class="ui segment intro-paragraph">
@@ -92,10 +92,43 @@
                             </div>
                         </div>
                     </div>
+                    <div class="common-idea item">
+                        <div>(b) What's the <b>"common idea"</b> of two highlighted sentences?</div>
+                        <div class="ui fluid input left icon">
+                            <i class="write icon"></i>
+                            <input class="input-box" type="text" name="idea" placeholder="Please describe...">
+                        </div>
+                    </div>
+                    <div class="relevance-rating item">
+                        <div>(c) Please rate <b>"the level of relevance"</b> between the two highlighted sentences.</div>
+                        <div class="ui form">
+                          <div class="inline fields">
+                            <div class="field">
+                              <div class="ui radio checkbox">
+                                <input type="radio" name="relevance{{topic_paragraph_idx+1}}" value="1">
+                                <label>1: Weak relevance</label>
+                              </div>
+                            </div>
+                            <div class="field">
+                              <div class="ui radio checkbox">
+                                <input type="radio" name="relevance{{topic_paragraph_idx+1}}" value="2">
+                                <label>2: Relevance</label>
+                              </div>
+                            </div>
+                            <div class="field">
+                              <div class="ui radio checkbox">
+                                <input type="radio" name="relevance{{topic_paragraph_idx+1}}" value="3">
+                                <label>3: Strong relevance</label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
                     <div class="check-empty item">
+                        <div>If <b>"no relevance"</b>, please add a check below.</div>
                         <div class="ui checkbox" id="checkEmpty-{{topic_paragraph_idx+1}}">
                             <input type="checkbox" name="example">
-                            <label>No relevance keywords corresponding to the two highlighted sentences</label>
+                            <label>No relevance between the two highlighted sentences</label>
                         </div>
                     </div>
                 </div>
@@ -114,11 +147,18 @@
             <div id="submitAnswer" class="ui button green">Submit</div>
         </div>
     </div>
+
+    
 </section>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+    function checkEmptyAnswers(){
+
+    }
+
+
     function checkAllAnswers(){
         var checked_length = $('.check-empty input:checked').length;
         var disabled_length = $('.check-empty input:disabled').length;
@@ -181,6 +221,9 @@
             checkAllAnswers();
         });
 
+
+
+
         /****************************** 
         *     require to modify       *
         *******************************/
@@ -193,10 +236,12 @@
             var bodyTopic = new Array();
             var commonIdea = new Array();
             var checkArray = new Array();
+            var ratingArray = new Array();
 
             var ttsTopicStr = "";
             var tsTopicStr = "";
             var commonIdeaStr = "";
+            var ratingStr = "";
 
 
             // retrieve all problems
@@ -205,6 +250,7 @@
                 ttsTopicStr = "";
                 tsTopicStr = "";
                 commonIdeaStr="";
+                ratingStr ="";
                 ttsTopic.splice(0,ttsTopic.length);
                 tsTopic.splice(0,tsTopic.length);
 
@@ -229,6 +275,9 @@
                 //retrieve ideas
                 commonIdeaStr = $(this).find('.common-idea .input input').val();
 
+                //retrieve rating
+                ratingStr = $(this).find('.relevance-rating .checkbox input[type="radio"]:checked').val();
+
                 //skip item when checkempty is checked
                 var emptyCheck = $(this).find('.check-empty .checkbox input');
 
@@ -236,12 +285,21 @@
                     introTopic.push("");
                     bodyTopic.push("");
                     commonIdea.push("");
+                    ratingArray.push("");
                     checkArray.push("1");
                 }else
                 {
+                    
+                    if(commonIdeaStr == "") $(this).find(".common-idea").addClass("ui error message");
+                    else $(this).find(".common-idea").removeClass("ui error message");
+                    
+                    if(ratingStr == "" || ratingStr == undefined) $(this).find(".relevance-rating").addClass("ui error message");
+                    else $(this).find(".relevance-rating").removeClass("ui error message");
+
                     introTopic.push(ttsTopicStr);
                     bodyTopic.push(tsTopicStr); 
                     commonIdea.push(commonIdeaStr);
+                    ratingArray.push(ratingStr);
                     checkArray.push("0");
                 }
                 
@@ -257,52 +315,68 @@
             var resultBodyRelevance = "";
             resultBodyRelevance = bodyTopic.join("|");
             
+            var resultRatingRelevance = "";
+            resultRatingRelevance = ratingArray.join("|");
+
             var irrelevanceCheck = "";
             irrelevanceCheck = checkArray.join("|")
-            
-            $.ajax({
-                type: "GET",
-                url: "/api/add_link",
 
-                data: {
-                    "article_id": "{{ data.article_id }}",
-                    "worker_id": worker_id,
-                    "thesis_statement_idx": "{{ data.thesis_statement_idx }}",
-                    "topic_sentence_ids": "{{ data.topic_sentence_ids }}",
-                    "thesis_statement_relevance_ids": resultIntroRelevance,
-                    "topic_sentence_relevance_ids": resultBodyRelevance,
-                    "common_idea": resultCommonIdea,
-                    "irrelevance_check": irrelevanceCheck,
 
-                    "verified_string": "{{ data.verified_string }}",
-                    "assignment_id": "{{ data.assignment_id }}",
-                    "hit_id": "{{ data.hit_id }}"
-                },
+            console.log(resultIntroRelevance);
+            console.log(resultBodyRelevance);
+            console.log(resultRatingRelevance);
+            console.log(irrelevanceCheck);
 
-                dataType: 'json', 
 
-                success: function(data) {
-                    if(data['success'] == 1){
-                        if(assignment_id==""){
-                            window.location = "/success?verified_string={{data.verified_string}}";
+            var errorCount = $('.ui.error.message').length;
+            if(errorCount == 0){
+                $.ajax({
+                    type: "GET",
+                    url: "/api/add_link",
+
+                    data: {
+                        "article_id": "{{ data.article_id }}",
+                        "worker_id": worker_id,
+                        "thesis_statement_idx": "{{ data.thesis_statement_idx }}",
+                        "topic_sentence_ids": "{{ data.topic_sentence_ids }}",
+                        "thesis_statement_relevance_ids": resultIntroRelevance,
+                        "topic_sentence_relevance_ids": resultBodyRelevance,
+                        "common_idea": resultCommonIdea,
+                        "irrelevance_check": irrelevanceCheck,
+                        "rating": resultRatingRelevance,
+
+                        "verified_string": "{{ data.verified_string }}",
+                        "assignment_id": "{{ data.assignment_id }}",
+                        "hit_id": "{{ data.hit_id }}"
+                    },
+
+                    dataType: 'json', 
+
+                    success: function(data) {
+                        if(data['success'] == 1){
+                            if(assignment_id==""){
+                                window.location = "/success?verified_string={{data.verified_string}}";
+                            }
+                            else{
+                                window.location = "/closepopup?hitId={{ data.hit_id }}&assignmentId={{ data.assignment_id}}&workerId={{data.worker_id}}&verified_string={{data.verified_string}}";
+                            }
+                        }else{
+                            window.location = "/success";
                         }
-                        else{
-                            window.location = "/closepopup?hitId={{ data.hit_id }}&assignmentId={{ data.assignment_id}}&workerId={{data.worker_id}}&verified_string={{data.verified_string}}";
-                        }
-                    }else{
-                        window.location = "/success";
+                    },
+                    beforeSend: function(){
+                        $('#loading-image').show();
+                    },
+                    complete: function(){
+                        $('#loading-image').hide();
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        alert("Error");    
                     }
-                },
-                beforeSend: function(){
-                    $('#loading-image').show();
-                },
-                complete: function(){
-                    $('#loading-image').hide();
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    alert("Error");    
-                }
-            });
+                });
+            }
+
+            
         });
     });
 </script>

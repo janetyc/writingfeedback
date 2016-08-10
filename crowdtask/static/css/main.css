@@ -427,7 +427,8 @@ nav ul{
 .common-idea{
     overflow: hidden;
 }
-/*.item{  border: #ff0000 solid 1px; }*/
+.item{  margin-top: 10px; }
+.checkbox > span{font-size:  1em !important; color:#ff0000 ;}
 .problem-block .item{
     /*border: #ff0000 solid 1px;*/
     margin-bottom: 1.5em;
@@ -439,6 +440,8 @@ nav ul{
     padding: 0.3em 1em !important;
     margin: 0  !important;
 }
+
+
 /* ==========================================================================
    Media Queries
    ========================================================================== */
