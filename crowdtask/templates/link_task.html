@@ -25,25 +25,32 @@
             </div>
         </div>
         <div class="item">
-            <div>(b) What's the common idea of two highlighted sentences? <span class="word-box"><i class="write icon"></i>Neighbor, living behavior</span></div>
+            <div>(b) What's the common idea of two topic sentences? <span class="word-box"><i class="write icon"></i>Neighbor, living behavior</span></div>
         </div>
         <div class="item">
-            <div>(c) Please rate <b>"the level of relevance"</b> between the two highlighted sentences. <span class="word-box">2. Relevance</span></div>
+            <div>(c) Please rate <b>"the level of relevance"</b> between the two topic sentences. <span class="word-box">2. Relevance</span></div>
 
         </div>
     </div>
     <hr>
     <div class="problem-area">
-        <div><i class="help circle icon"></i><span class="block-title">Please Describe and Highlight the Relevant Keywords Between Two Topic Sentences</span></div>
+        <div><i class="help circle icon"></i><span class="block-title">Please Examine Relevance Between Two Topic Sentences</span></div>
         <div class="problem">
-            <div>Title: {{ data.title }}</div>
+            <div class="problem-description">
+                <ul>
+                    <li>There are <u>{{data.all_topic_sentences|length}} problems</u> in this task. For each problem, you will see two paragraphs: <u>introduction paragraph (left) and body paragraph (right).</u></li>
+                    <li>The goal is to <u>explain how relevance between the two topic sentences (yellow highlighted).</u></li>
+                    <li>Please follow the instruction and complete the task.</li>
+                </ul>
+            </div>
+            
             <div id="working-area">
                 {% for topic_paragraph_idx in range(data.all_topic_sentences|length) %}
                 <div id="problem-{{topic_paragraph_idx+1}}" class="problem-block">
                     <span class="problem-title">Problem {{topic_paragraph_idx+1}}</span>
-                    
+                    <div>Article Title: {{ data.title }}</div>
                     <div class="link-idea item">
-                        <div>(a) Please highlight the <b>"relevant keywords"</b> between two highlighted sentencess.</div>
+                        <div>(a) Please pick up <b>"relevant keywords"</b> between two topic sentencess.</div>
                         <div class="ui two column grid">
                             <div class="column">
                                 <div class="ui segment intro-paragraph">
@@ -93,7 +100,7 @@
                         </div>
                     </div>
                     <div class="common-idea item">
-                        <div>(b) What's the <b>"common idea"</b> of two highlighted sentences?</div>
+                        <div>(b) Please explain <b>"HOW"</b> the two topic sentences are relevant to each other.</div>
                         <div class="ui fluid input left icon">
                             <i class="write icon"></i>
                             <input class="input-box" type="text" name="idea" placeholder="Please describe...">
