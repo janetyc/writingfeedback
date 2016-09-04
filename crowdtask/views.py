@@ -387,6 +387,8 @@ def show_all():
         }
         data_list.append(data)
 
+    data_list.sort(key=lambda tup: tup["article_id"])
+
     return render_template('show_all.html', data=data_list)
 
 @views.route('/article/<article_id>')

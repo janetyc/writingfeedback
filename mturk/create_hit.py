@@ -140,4 +140,4 @@ if __name__ == "__main__":
     #topic_hit = create_topic_hit(article_id="1")
     #relevance_hit = create_relevance_hit(article_id="13", paragraph_idx="3", topic_sentence_idx="0")
     #relation_hit = create_relation_hit(article_id="3", paragraph_idx="2")
-    link_hit = create_link_hit(article_id="3", thesis_statement_idx="0-0", topic_sentence_ids="1-1|2-0")
+    #link_hit = create_link_hit(article_id="3", thesis_statement_idx="0-0", topic_sentence_ids="1-1|2-0")
