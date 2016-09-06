@@ -200,7 +200,11 @@ class DBQuery(object):
 
         answers_list = []
         for task in tasks:
+            if task.answer == "":
+                continue
+
             topic_ids = task.answer.split("|")
+            
             for topic_id in topic_ids:
                 topic_list = self.get_topic_by_id(int(topic_id))
                 answers_list.extend(topic_list)
@@ -240,7 +244,7 @@ class DBQuery(object):
         if link.topic_sentence_relevance_ids and link.topic_sentence_relevance_ids != "":
             link_list.append((link.article_id, link.thesis_statement_idx, link.topic_sentence_idx,
                               link.thesis_statement_relevance_ids.split(","), link.topic_sentence_relevance_ids.split(","),
-                              link.rating, link.irrelevance_check, link.created_user))
+                              link.rating, link.irrelevance_check, link.created_user, link.common_idea))
 
         return link_list
 
