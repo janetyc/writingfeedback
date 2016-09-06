@@ -1,3 +1,4 @@
+import re
 import random
 import string
 from flask import Blueprint, Flask, request, render_template, redirect, url_for, jsonify
@@ -78,8 +79,7 @@ def topic_vis():
     topic_tip = 0
     for i, paragraph in enumerate(article.content.split("<BR>")):
         if paragraph:
-            sentence_list = paragraph.split(".")
-            sentence_list = sentence_list[:-1]
+            sentence_list = re.split(r'(?<=[^A-Z].[.?]) +(?=[A-Z])', paragraph)
 
             weight_sentence_list = []
             for j, sentence in enumerate(sentence_list):
@@ -99,6 +99,10 @@ def topic_vis():
                     weight_sentence_list.append((weight_word_list, topic_map[topic_key]))
                 else:
                     weight_sentence_list.append((weight_word_list, 0))
+
+            #print ">>%s<<" % paragraph
+            #print sentence_list
+            #print weight_sentence_list
 
             content_map[i] = weight_sentence_list
             issue_map[i] = create_issues(weight_sentence_list)

@@ -521,7 +521,7 @@ if __name__ == "__main__":
 
     #print "Topic Task..."
     assignment_num = 5
-    article_list = ["35","36","37","38","39"]
+    article_list = ["40"]
     #for article_id in article_list:
     #    u_workflow = unity_workflow(article_id=article_id, task_type=TaskType.TOPIC, num_of_task=1, num_of_assignments=assignment_num)
     #    print "workflow_id: %d" % u_workflow
@@ -561,18 +561,18 @@ if __name__ == "__main__":
     #    else:
     #        print "Cannot do link stage"
 
-    print "Relevance Task..."
-    for workflow in workflow_list:
-        workflow_id = workflow.id
-        article_id = workflow.article_id
-        u = UnityWorkflow(workflow_id, article_id=article_id)
-        u.show_hit_status_at_topic_stage()
-        topic_rank_list = u.get_topic_rank_list(weight=2)
-        topic_list = [topic[0] for topic in topic_rank_list]
-
-        u_workflow = unity_workflow(article_id=article_id, task_type=TaskType.RELEVANCE,
-                                    num_of_task=1, num_of_assignments=assignment_num, workflow_id=workflow_id, topic_list=topic_list)
-        print "workflow_id: %d" % u_workflow
+    #print "Relevance Task..."
+    #for workflow in workflow_list:
+    #    workflow_id = workflow.id
+    #    article_id = workflow.article_id
+    #    u = UnityWorkflow(workflow_id, article_id=article_id)
+    #    u.show_hit_status_at_topic_stage()
+    #    topic_rank_list = u.get_topic_rank_list(weight=2)
+    #    topic_list = [topic[0] for topic in topic_rank_list]
+    #    
+    #    u_workflow = unity_workflow(article_id=article_id, task_type=TaskType.RELEVANCE,
+    #                                num_of_task=1, num_of_assignments=assignment_num, workflow_id=workflow_id, topic_list=topic_list)
+    #    print "workflow_id: %d" % u_workflow
 
     #print "all HITs status"
     #for workflow in workflows:

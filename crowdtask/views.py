@@ -1,3 +1,4 @@
+import re
 import random
 import string
 from flask import Blueprint, Flask, request, render_template, redirect, url_for, jsonify
@@ -105,8 +106,7 @@ def relevance_task():
 
         #convert paragraph content to sentence list
         content = paragraph_map[paragraph_idx]
-        sentence_list = content.split(".")
-        sentence_list = sentence_list[:-1]
+        sentence_list = re.split(r'(?<=[^A-Z].[.?]) +(?=[A-Z])', content)
         par_length = len(sentence_list)
 
         #if no input, retrieve database
@@ -157,8 +157,7 @@ def relevance_task():
         sentence_list = []
         
         content = sample_article
-        sentence_list = content.split(".")
-        sentence_list = sentence_list[:-1]
+        sentence_list = re.split(r'(?<=[^A-Z].[.?]) +(?=[A-Z])', content)
         par_length = len(sentence_list)
         
         if paragraph_idx in topic_map:
@@ -213,8 +212,7 @@ def relation_task():
             paragraph_idx = 0
 
         content = paragraph_map[paragraph_idx]
-        sentence_list = content.split(".")
-        sentence_list = sentence_list[:-1]
+        sentence_list = re.split(r'(?<=[^A-Z].[.?]) +(?=[A-Z])', content)
 
             
         data = {
@@ -232,8 +230,7 @@ def relation_task():
         paragraph_idx = int(paragraph_idx)
 
         content = sample_article
-        sentence_list = content.split(".")
-        sentence_list = sentence_list[:-1]
+        sentence_list = re.split(r'(?<=[^A-Z].[.?]) +(?=[A-Z])', content)
 
         data = {
             'worker_id': worker_id,
@@ -300,8 +297,7 @@ def link_task():
     all_topic_sentences = []
     for i, paragraph in enumerate(content.split("<BR>")):
         if paragraph:
-            sentence_list = paragraph.split(".")
-            sentence_list = sentence_list[:-1]
+            sentence_list = re.split(r'(?<=[^A-Z].[.?]) +(?=[A-Z])', paragraph)
             paragraph_map[i] = sentence_list
 
 

@@ -1,3 +1,5 @@
+import re
+
 from flask import Blueprint, Flask, request, render_template, redirect, url_for, jsonify
 from enum import TaskType, Status
 from crowdtask.dbquery import DBQuery
@@ -89,8 +91,7 @@ def mturkroute():
                 #topic_map[paragraph_idx] = [topic_sentence_idx]
 
                 #count_list = []
-                sentence_list = content.split(".")
-                sentence_list = sentence_list[:-1]
+                sentence_list = re.split(r'(?<=[^A-Z].[.?]) +(?=[A-Z])', content)
                 par_length = len(sentence_list)
 
                 #if paragraph_idx in topic_map:
@@ -116,8 +117,7 @@ def mturkroute():
                 return render_template('relevance_task.html', data=data)
             elif(task_type == TaskType.RELATION):
 
-                sentence_list = content.split(".")
-                sentence_list = sentence_list[:-1]
+                sentence_list = re.split(r'(?<=[^A-Z].[.?]) +(?=[A-Z])', paragraph)
 
                 data = {
                     'worker_id': worker_id,
@@ -143,8 +143,7 @@ def mturkroute():
                 
                 for i, paragraph in enumerate(content.split("<BR>")):
                     if paragraph:
-                        sentence_list = paragraph.split(".")
-                        sentence_list = sentence_list[:-1]
+                        sentence_list = re.split(r'(?<=[^A-Z].[.?]) +(?=[A-Z])', paragraph)
                         paragraph_map[i] = sentence_list
 
                 thesis_statement = tuple(map(int, thesis_statement_idx.split("-")))
