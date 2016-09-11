@@ -14,6 +14,8 @@ sample_essay = {
 def index():
     return render_template('index.html')
 
+
+## should modify sentence split
 @views.route('/topic', methods=('GET','POST'))
 def topic_task():
 
@@ -390,13 +392,13 @@ def show_all():
 @views.route('/article/<article_id>')
 def show_article(article_id):
     article = DBQuery().get_article_by_id(article_id)
-    paragraphs = DBQuery().get_paragraphs_by_article_id(article_id)
+    paragraphs = article.content.split("<BR>")
     workflows = DBQuery().get_workflows_by_article_id(article_id)
     workflow_list = [str(workflow.id) for workflow in workflows]
 
     list = []
-    for par in paragraphs:
-        list.append((par.paragraph_idx, par.content))
+    for i, paragraph in enumerate(paragraphs):
+        list.append((i, paragraph))
 
     sorted(list)
     data = {

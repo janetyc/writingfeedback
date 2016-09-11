@@ -184,3 +184,20 @@ def add_link():
                         status=Status.WORKING, assignmentId=assignment_id, hitId=hit_id)
 
     return jsonify(success=1, data=link_list)
+
+@api.route('/api/add_golden_structure', methods=('GET','POST'))
+def add_golden_structure():
+    article_id = request.args.get('article_id')
+    golden_topic = request.args.get('golden_topic')
+    golden_relevance = request.args.get('golden_relevance')
+    created_user = request.args.get('created_user')
+
+    DBQuery().add_golden_structure(created_user=created_user, article_id=article_id, 
+                                    topic=golden_topic, relevance=golden_relevance)
+
+    data = {
+        "golden_topic": golden_topic,
+        "golden_relevance": golden_relevance
+    }
+
+    return jsonify(success=1, data=data)

@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block content %}
+<span><a href="{{ url_for('views.show_all')}}">All Articles</a> > Article {{ data.id }}</span>
+<div class="article-title">{{ data.title }}</div>
+
+<div class="ui buttons" id="annotate-type">
+  <button class="ui button active">Topic</button>
+  <button class="ui button">Relevance</button>
+</div>
+<div class="ui input right-block">
+  <input id="annotator-name" type="text" placeholder="Input the name...">
+</div>
+<div id="working-area" class="content">
+    {% for paragraph_idx in data.content_map %}
+    <p class="paragraph" id="paragraph_{{ paragraph_idx }}">
+        {% for sentence_idx in range(data.content_map[paragraph_idx]|length) %}
+        <span id="sentence_{{sentence_idx}}" class="sentence highlight-sentence">
+            {% for word in data.content_map[paragraph_idx][sentence_idx].strip().split(" ") %}
+                {% if word %}
+                <span class="basic-word" id="word_{{loop.index-1}}">{{word}}</span>
+                {% endif %}    
+            {% endfor %}
+            <!--{{data.content_map[paragraph_idx][sentence_idx]}}-->
+        </span>
+        {% endfor %}
+    </p>
+    {% endfor %}
+</div>
+<div class="submit-area" id="submitTask">
+    <div id="submitAnswer" class="ui button green">Submit</div>
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+    $(function() {
+        $currnt_type = $(".ui.button.active").text();
+        //hide loading image
+        $('#loading-image').hide();
+
+        //highlight selection
+        $('.highlight-sentence').click(function(){
+            if($currnt_type == "Topic"){
+                $(this).toggleClass('highlight');
+            }
+        });
+        $('.basic-word').click(function(){
+            if($currnt_type == "Relevance"){
+                $(this).toggleClass('relevance');
+            }
+        });
+        
+        $('#annotate-type .ui.button').click(function(){
+            $('#annotate-type .ui.button').removeClass('active');
+            $(this).addClass('active');
+            $currnt_type = $(this).text();
+            if($currnt_type == "Topic"){
+                console.log("Topic");
+                $(".sentence").addClass("highlight-sentence");
+                $(".basic-word").removeClass("word");
+            }
+
+            if($currnt_type == "Relevance"){
+                console.log("Relevance");
+                $(".sentence").removeClass("highlight-sentence");
+                $(".basic-word").addClass("word");
+            }
+            
+        });
+
+        //submit answer to server
+        $("#submitAnswer").click(function(event){
+
+            // retrieve all topic sentences
+            var topicArray = new Array();
+            $('.highlight').each(function(j){
+                var sentence_id = $(this).closest('.sentence').attr('id').split("_");
+                var paragraph_id = $(this).closest('.paragraph').attr('id').split("_");
+                topicArray.push(paragraph_id[1]+"-"+sentence_id[1]); 
+            });
+
+
+            // retrieve all relevance area
+            var relevanceArr = new Array();
+            $("#working-area .relevance").each(function(i){
+                var word_id = this.id.split("_");
+                var sentence_id = $(this).closest('.sentence').attr('id').split("_");
+                var paragraph_id = $(this).closest('.paragraph').attr('id').split("_");
+
+                relevanceArr.push(paragraph_id[1]+"-"+sentence_id[1]+"-"+word_id[1]);
+            });
+
+            
+            var resultTopic = "";
+            resultTopic = topicArray.join("|");
+            //console.log("topic-->"+resultTopic);
+
+            var resultRelevance = "";
+            resultRelevance = relevanceArr.join("|");
+            //console.log("relevance-->"+resultRelevance);
+
+            $.ajax({
+                type: "GET",
+                url: "/api/add_golden_structure",
+
+                data: {
+                    "article_id": "{{ data.article_id }}",
+                    "golden_topic": resultTopic,
+                    "golden_relevance": resultRelevance,
+                    "created_user": $("#annotator-name").val()
+                },
+                
+
+                dataType: 'json', 
+                beforeSend: function(){
+                    $('#loading-image').show();
+                },
+                complete: function(){
+                    $('#loading-image').hide();
+                },
+                success: function(data) {
+                    window.location = "/success";
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert("Error");    
+                }
+            });
+        });
+        
+    });
+</script>
+{% endblock %}

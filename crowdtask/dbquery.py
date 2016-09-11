@@ -1,6 +1,6 @@
 from crowdtask.models import Article, Paragraph
 from crowdtask.models import Task, Topic, Relation, Relevance, Link
-from crowdtask.models import Workflow, Structure
+from crowdtask.models import Workflow, Structure, GoldenStructure
 from crowdtask import db
 from enum import TaskType
 
@@ -67,6 +67,11 @@ class DBQuery(object):
         db.session.commit()
 
         return link.id
+
+    def add_golden_structure(self, created_user, article_id, topic, relevance, relation=None, others=None):
+        goldenstructure = GoldenStructure(created_user, article_id, topic, relevance, relation, others)
+        db.session.add(goldenstructure)
+        db.session.commit()
 
     # crowd workflow - manage task
     def add_workflow(self, workflow_type, article_id, source=None, server=None):
@@ -204,7 +209,7 @@ class DBQuery(object):
                 continue
 
             topic_ids = task.answer.split("|")
-            
+
             for topic_id in topic_ids:
                 topic_list = self.get_topic_by_id(int(topic_id))
                 answers_list.extend(topic_list)
@@ -282,4 +287,7 @@ class DBQuery(object):
 
         return relevance_list
 
+    def get_golden_structures_by_article_id(self, article_id):
+        all_goldenstructures = GoldenStructure.query.filter_by(article_id=article_id).all()
+        return all_goldenstructures
     

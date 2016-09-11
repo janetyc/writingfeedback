@@ -248,3 +248,26 @@ class Structure(db.Model):
 
     def __repr__(self):
         return '<Structure %r>' % self.article_id
+
+class GoldenStructure(db.Model):
+    __tablename__ = 'goldenstructure'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    created_user = db.Column(db.Text())
+    article_id = db.Column(db.Integer)
+    topic = db.Column(db.Text())
+    relevance = db.Column(db.Text())
+    relation = db.Column(db.Text())
+    others = db.Column(db.Text())
+    created_time = db.Column(db.DateTime())
+
+    def __init__(self, created_user, article_id, topic, relevance, relation, others):
+        self.created_user = created_user
+        self.article_id = article_id
+        self.topic = topic
+        self.relevance = relevance
+        self.relation = relation
+        self.others = others
+        self.created_time = datetime.utcnow()
+
+    def __repr__(self):
+        return '<GoldenStructure %r>' % self.article_id

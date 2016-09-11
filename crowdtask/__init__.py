@@ -27,12 +27,14 @@ def create_app():
     from crowdtask.api import api
     from crowdtask.task_views import task_views
     from crowdtask.vis_views import vis_views
-    
+    from crowdtask.admin_views import admin_views
+
 
     app.register_blueprint(views)
     app.register_blueprint(api)
     app.register_blueprint(task_views)
     app.register_blueprint(vis_views)
+    app.register_blueprint(admin_views)
 
     db.app = app
     db.init_app(app)
