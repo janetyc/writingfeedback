@@ -62,3 +62,20 @@ def groundtruth(article_id):
     }
 
     return render_template('groundtruth.html', data=data)
+
+@admin_views.route('/get_groundtruth_json/<article_id>', methods=('GET','POST'))
+def get_groundtruth_json(article_id):
+    golden_id = None
+    all_golden_structures = DBQuery().get_golden_structures_by_article_id(article_id)
+    
+    data = {}
+    for golden in all_golden_structures:
+      all_topics = ["%s-%s" % (article_id,i) for i in golden.topic.split("|")]
+      all_relevances = ["%s-%s" % (article_id,i) for i in golden.relevance.split("|")]
+      data[golden.id] = {
+        "article_id": article_id, 
+        "golden_topics": all_topics,
+        "golden_relevance": all_relevances
+      }
+
+    return jsonify(success=1, data=data)

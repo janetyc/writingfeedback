@@ -6,6 +6,7 @@
     {% for golden in data.all_goldens %}
         <a href="{{ url_for('admin_views.groundtruth', article_id=data.article_id)}}?golden_id={{golden}}">{{golden}}</a>
     {% endfor %}
+    (<a href="{{ url_for('admin_views.get_groundtruth_json', article_id=data.article_id)}}">json</a>)
 </div>
 
 <div class="ui buttons" id="annotate-type">
