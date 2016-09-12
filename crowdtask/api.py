@@ -190,14 +190,16 @@ def add_golden_structure():
     article_id = request.args.get('article_id')
     golden_topic = request.args.get('golden_topic')
     golden_relevance = request.args.get('golden_relevance')
+    golden_irrelevance = request.args.get('golden_irrelevance')
     created_user = request.args.get('created_user')
 
     DBQuery().add_golden_structure(created_user=created_user, article_id=article_id, 
-                                    topic=golden_topic, relevance=golden_relevance)
+                                    topic=golden_topic, irrelevance=golden_irrelevance, relevance=golden_relevance)
 
     data = {
         "golden_topic": golden_topic,
-        "golden_relevance": golden_relevance
+        "golden_relevance": golden_relevance,
+        "golden_irrelevance": golden_irrelevance
     }
 
     return jsonify(success=1, data=data)

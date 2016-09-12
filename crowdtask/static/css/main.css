@@ -103,6 +103,11 @@ body {
     color: #ffffff;
     padding: 2px;
 }
+.irrelevance{
+    background-color: #F77875;
+    color: #ffffff;
+    padding: 2px;    
+}
 .word:hover{
     background-color: #1fa67a;
     color: #ffffff;

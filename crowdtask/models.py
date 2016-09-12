@@ -255,15 +255,17 @@ class GoldenStructure(db.Model):
     created_user = db.Column(db.Text())
     article_id = db.Column(db.Integer)
     topic = db.Column(db.Text())
+    irrelevance = db.Column(db.Text())
     relevance = db.Column(db.Text())
     relation = db.Column(db.Text())
     others = db.Column(db.Text())
     created_time = db.Column(db.DateTime())
 
-    def __init__(self, created_user, article_id, topic, relevance, relation, others):
+    def __init__(self, created_user, article_id, topic, irrelevance, relevance, relation, others):
         self.created_user = created_user
         self.article_id = article_id
         self.topic = topic
+        self.irrelevance = irrelevance
         self.relevance = relevance
         self.relation = relation
         self.others = others

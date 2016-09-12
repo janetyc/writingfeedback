@@ -11,6 +11,7 @@
 
 <div class="ui buttons" id="annotate-type">
   <button class="ui button active">Topic</button>
+  <button class="ui button">Irrelevance</button>
   <button class="ui button">Relevance</button>
 </div>
 
@@ -23,6 +24,8 @@
         {% for sentence_idx in range(data.content_map[paragraph_idx]|length) %}
         {% if data.topic_map[paragraph_idx][sentence_idx] %}
         <span id="sentence_{{sentence_idx}}" class="sentence highlight-sentence highlight">
+        {% elif data.irrelevance_map[paragraph_idx][sentence_idx] %}
+        <span id="sentence_{{sentence_idx}}" class="sentence highlight-sentence irrelevance">
         {% else %}
         <span id="sentence_{{sentence_idx}}" class="sentence highlight-sentence">
         {% endif %}
@@ -50,33 +53,41 @@
 {% block extra_js %}
 <script>
     $(function() {
-        $currnt_type = $(".ui.button.active").text();
+        $current_type = $(".ui.button.active").text();
         //hide loading image
         $('#loading-image').hide();
 
         //highlight selection
         $('.highlight-sentence').click(function(){
-            if($currnt_type == "Topic"){
+            if($current_type == "Topic"){
                 $(this).toggleClass('highlight');
+            }
+            if($current_type == "Irrelevance"){
+                $(this).toggleClass('irrelevance');
             }
         });
         $('.basic-word').click(function(){
-            if($currnt_type == "Relevance"){
+            if($current_type == "Relevance"){
                 $(this).toggleClass('relevance');
             }
         });
         
+        
         $('#annotate-type .ui.button').click(function(){
             $('#annotate-type .ui.button').removeClass('active');
             $(this).addClass('active');
-            $currnt_type = $(this).text();
-            if($currnt_type == "Topic"){
+            $current_type = $(this).text();
+            if($current_type == "Topic"){
                 console.log("Topic");
                 $(".sentence").addClass("highlight-sentence");
                 $(".basic-word").removeClass("word");
             }
-
-            if($currnt_type == "Relevance"){
+            if($current_type == "Irrelevance"){
+                console.log("Irrelevance");
+                $(".sentence").addClass("highlight-sentence");
+                $(".basic-word").removeClass("word");
+            }
+            if($current_type == "Relevance"){
                 console.log("Relevance");
                 $(".sentence").removeClass("highlight-sentence");
                 $(".basic-word").addClass("word");
@@ -93,6 +104,13 @@
                 var sentence_id = $(this).closest('.sentence').attr('id').split("_");
                 var paragraph_id = $(this).closest('.paragraph').attr('id').split("_");
                 topicArray.push(paragraph_id[1]+"-"+sentence_id[1]); 
+            });
+
+            var irrelevanceArray = new Array();
+            $('.irrelevance').each(function(j){
+                var sentence_id = $(this).closest('.sentence').attr('id').split("_");
+                var paragraph_id = $(this).closest('.paragraph').attr('id').split("_");
+                irrelevanceArray.push(paragraph_id[1]+"-"+sentence_id[1]); 
             });
 
 
@@ -115,6 +133,9 @@
             resultRelevance = relevanceArr.join("|");
             //console.log("relevance-->"+resultRelevance);
 
+            var resultIrrelevance = "";
+            resultIrrelevance = irrelevanceArray.join("|");
+
             $.ajax({
                 type: "GET",
                 url: "/api/add_golden_structure",
@@ -123,6 +144,7 @@
                     "article_id": "{{ data.article_id }}",
                     "golden_topic": resultTopic,
                     "golden_relevance": resultRelevance,
+                    "golden_irrelevance": resultIrrelevance,
                     "created_user": $("#annotator-name").val()
                 },
                 

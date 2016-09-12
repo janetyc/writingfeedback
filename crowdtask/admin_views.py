@@ -19,16 +19,18 @@ def groundtruth(article_id):
     article = DBQuery().get_article_by_id(article_id)
     paragraphs = article.content.split("<BR>")
     
+    all_topics = None
+    all_relevances = None
+    all_irrelevances = None
     if golden_id:
       goldenstructure = DBQuery().get_golden_structure_by_id(golden_id)
       all_topics = goldenstructure.topic.split("|")
       all_relevances = goldenstructure.relevance.split("|")
-    else:
-      all_topics = None
-      all_relevances = None
+      if goldenstructure.irrelevance: all_irrelevances = goldenstructure.irrelevance.split("|")
 
     relevance_map = {}
     topic_map = {}
+    irrelevance_map = {}
     content_map = {}
     for i, paragraph in enumerate(paragraphs):
       sentence_list = re.split(r'(?<=[^A-Z].[.?]) +(?=[A-Z])', paragraph)
@@ -39,6 +41,14 @@ def groundtruth(article_id):
         topic_map[i] = [0]*len(sentence_list)
 
       #print topic_map[i]
+
+      if all_irrelevances:
+        irrelevance_map[i] = [1 if "%d-%d" % (i, j) in all_irrelevances else 0 for j in range(len(sentence_list))]
+      else:
+        irrelevance_map[i] = [0]*len(sentence_list)
+
+      #print irrelevance_map[i]
+
 
       relevance_map[i]=[]
       for j, sentence in enumerate(sentence_list):
@@ -58,7 +68,8 @@ def groundtruth(article_id):
        "content_map": content_map,
        "all_goldens": all_goldens,
        "topic_map": topic_map,
-       "relevance_map": relevance_map
+       "relevance_map": relevance_map,
+       "irrelevance_map": irrelevance_map
     }
 
     return render_template('groundtruth.html', data=data)
@@ -71,11 +82,16 @@ def get_groundtruth_json(article_id):
     data = {}
     for golden in all_golden_structures:
       all_topics = ["%s-%s" % (article_id,i) for i in golden.topic.split("|")]
+      if golden.irrelevance:
+        all_irrelevances = ["%s-%s" % (article_id,i) for i in golden.irrelevance.split("|")]
+      else:
+        all_irrelevances = []
       all_relevances = ["%s-%s" % (article_id,i) for i in golden.relevance.split("|")]
       data[golden.id] = {
         "article_id": article_id, 
         "golden_topics": all_topics,
-        "golden_relevance": all_relevances
+        "golden_irrelevances": all_irrelevances,
+        "golden_relevances": all_relevances
       }
 
     return jsonify(success=1, data=data)

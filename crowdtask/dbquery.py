@@ -68,8 +68,8 @@ class DBQuery(object):
 
         return link.id
 
-    def add_golden_structure(self, created_user, article_id, topic, relevance, relation=None, others=None):
-        goldenstructure = GoldenStructure(created_user, article_id, topic, relevance, relation, others)
+    def add_golden_structure(self, created_user, article_id, topic, irrelevance, relevance, relation=None, others=None):
+        goldenstructure = GoldenStructure(created_user, article_id, topic, irrelevance, relevance, relation, others)
         db.session.add(goldenstructure)
         db.session.commit()
 
