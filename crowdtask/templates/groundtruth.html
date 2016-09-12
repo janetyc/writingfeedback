@@ -1,12 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-<span><a href="{{ url_for('views.show_all')}}">All Articles</a> > Article {{ data.id }}</span>
+<span><a href="{{ url_for('views.show_all')}}">All Articles</a> > Article {{ data.article_id}}</span>
 <div class="article-title">{{ data.title }}</div>
+<div>
+    {% for golden in data.all_goldens %}
+        <a href="{{ url_for('admin_views.groundtruth', article_id=data.article_id)}}?golden_id={{golden}}">{{golden}}</a>
+    {% endfor %}
+</div>
 
 <div class="ui buttons" id="annotate-type">
   <button class="ui button active">Topic</button>
   <button class="ui button">Relevance</button>
 </div>
+
 <div class="ui input right-block">
   <input id="annotator-name" type="text" placeholder="Input the name...">
 </div>
@@ -14,10 +20,18 @@
     {% for paragraph_idx in data.content_map %}
     <p class="paragraph" id="paragraph_{{ paragraph_idx }}">
         {% for sentence_idx in range(data.content_map[paragraph_idx]|length) %}
+        {% if data.topic_map[paragraph_idx][sentence_idx] %}
+        <span id="sentence_{{sentence_idx}}" class="sentence highlight-sentence highlight">
+        {% else %}
         <span id="sentence_{{sentence_idx}}" class="sentence highlight-sentence">
+        {% endif %}
             {% for word in data.content_map[paragraph_idx][sentence_idx].strip().split(" ") %}
                 {% if word %}
-                <span class="basic-word" id="word_{{loop.index-1}}">{{word}}</span>
+                    {% if data.relevance_map[paragraph_idx][sentence_idx][loop.index-1] %}
+                    <span class="basic-word relevance" id="word_{{loop.index-1}}">{{word}}</span>
+                    {% else %}
+                    <span class="basic-word" id="word_{{loop.index-1}}">{{word}}</span>
+                    {% endif%}
                 {% endif %}    
             {% endfor %}
             <!--{{data.content_map[paragraph_idx][sentence_idx]}}-->

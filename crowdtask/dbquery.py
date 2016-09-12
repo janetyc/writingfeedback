@@ -287,6 +287,10 @@ class DBQuery(object):
 
         return relevance_list
 
+    def get_golden_structure_by_id(self, golden_id):
+        golden_structure = GoldenStructure.query.filter_by(id=int(golden_id)).first()
+        return golden_structure
+
     def get_golden_structures_by_article_id(self, article_id):
         all_goldenstructures = GoldenStructure.query.filter_by(article_id=article_id).all()
         return all_goldenstructures
