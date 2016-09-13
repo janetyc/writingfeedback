@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<header>Show Experiment Articles</header>
+<section>
+    <ul>
+    {% for subject in data %}
+    <li>{{subject}}: {{data[subject]["name"]}}
+        {% for version_id, article_id in data[subject]["data"] %}
+            [<a href="{{ url_for('views.show_article', article_id=article_id)}}">{{version_id}}:{{article_id}}</a>](<a href="{{ url_for('admin_views.groundtruth', article_id=article_id)}}">annotate</a>)(<a href="{{ url_for('admin_views.get_groundtruth_json', article_id=article_id)}}">json</a>)
+        {% endfor %}
+    </li>
+    {% endfor %}
+    </ul>
+</section>
+{% endblock %}
