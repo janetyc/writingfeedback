@@ -1,3 +1,6 @@
+#!/usr/bin/python
+ # -*- coding: utf-8 -*-
+
 import re
 import random
 import string
@@ -6,6 +9,86 @@ from crowdtask.dbquery import DBQuery
 
 admin_views = Blueprint('admin_views', __name__, template_folder='templates')
 
+#for remmote server
+exp_data = {
+  "P1": {
+    "name": u"劉縣璇",
+    "data": [("v3",41)]
+  },
+  "P2": {
+    "name": u"黃小菱",
+    "data": [("v2",34)]
+  },
+  "P3": {
+    "name": u"許佳汎",
+    "data": []
+  },
+  "P4": {
+    "name": u"蕭佳倩",
+    "data": [("v2",30)]
+  },
+  "P5": {
+    "name": u"尹紹安",
+    "data": [("v1",40)]
+  },
+  "P6": {
+    "name": u"彭寶賢",
+    "data": [("v1",31)]
+  },
+  "P7": {
+    "name": u"王昱丹",
+    "data": [("v3",46)]
+  },
+  "P8": {
+    "name": u"曾梓婷",
+    "data": [("v2",38)]
+  },
+  "P9": {
+    "name": u"詹穆彥",
+    "data": [("v3",43)]
+  },
+  "P10": {
+    "name": u"童安弘",
+    "data": [("v2",35)]
+  },
+  "P11": {
+    "name": u"陳昭碩",
+    "data": [("v1",44)]
+  },
+  "P12": {
+    "name": u"陳宗葆",
+    "data": [("v1",29)]
+  },
+  "P13": {
+    "name": u"黃琮仁",
+    "data": []
+  },
+  "P14": {
+    "name": u"Sean",
+    "data": [("v2",36)]
+  },
+  "P15": {
+    "name": u"李倧輔",
+    "data": []
+  },
+  "P16": {
+    "name": u"楊珮綺",
+    "data": [("v2",42)]
+  },
+  "P17": {
+    "name": u"林家興",
+    "data": [("v1",32)]
+  },
+  "P18": {
+    "name": u"黃鈺雯",
+    "data": [("v1",33)]
+  }
+}
+
+@admin_views.route('/experiment')
+def experiment():
+  data = exp_data
+  return render_template('experiment.html', data=data)
 
 @admin_views.route('/groundtruth/<article_id>', methods=('GET','POST'))
 def groundtruth(article_id):
@@ -87,7 +170,9 @@ def get_groundtruth_json(article_id):
       else:
         all_irrelevances = []
       all_relevances = ["%s-%s" % (article_id,i) for i in golden.relevance.split("|")]
+      
       data[golden.id] = {
+        "created_user": golden.created_user,
         "article_id": article_id, 
         "golden_topics": all_topics,
         "golden_irrelevances": all_irrelevances,

@@ -404,8 +404,10 @@ def show_article(article_id):
     data = {
        "id": article.id, 
        "title": article.title,
+       "authors": article.authors,
        "paragraphs": list,
        "workflow_list": workflow_list
+
     }
 
     return render_template('article.html', data=data)

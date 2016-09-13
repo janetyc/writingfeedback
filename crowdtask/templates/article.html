@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <span><a href="{{ url_for('views.show_all')}}">All Articles</a> > Article {{ data.id }}</span>
-<header>{{data.title}}</header>
+<header>{{data.title}}({{data.authors}})</header>
 <section>
     <div>Workflow: 
     {% for workflow_id in data.workflow_list %}
