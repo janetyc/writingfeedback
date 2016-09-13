@@ -148,6 +148,7 @@ def groundtruth(article_id):
     data = {
        "article_id": article.id, 
        "title": article.title,
+       "authors": article.authors,
        "content_map": content_map,
        "all_goldens": all_goldens,
        "topic_map": topic_map,

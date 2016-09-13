@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <span><a href="{{ url_for('views.show_all')}}">All Articles</a> > Article {{ data.article_id}}</span>
-<div class="article-title">{{ data.title }}</div>
+<div class="article-title">{{ data.title }} ({{data.authors}})</div>
 <div>
     {% for golden in data.all_goldens %}
         <a href="{{ url_for('admin_views.groundtruth', article_id=data.article_id)}}?golden_id={{golden}}">{{golden}}</a>
