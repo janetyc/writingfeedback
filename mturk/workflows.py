@@ -1,9 +1,11 @@
+import re
 import math
 from mturk.manage_hit import *
 from mturk.create_hit import *
 from crowdtask import create_app
 from crowdtask.dbquery import DBQuery
 from crowdtask.enum import TaskType, WorkflowType
+
 
 app=create_app()
 
@@ -26,10 +28,56 @@ class UnityWorkflow:
         self.relevance_rank_list = []
         self.link_rank_list = []
 
+        self.irrelevance_list = []
+
         self.topic_accuracy = []            #topic accuracy per article
         self.relevance_accuracy_all = []    #relevance accuracy per paragraph
         self.relevance_accuracy_list = []   #relevance accuracy per article
         self.link_accuracy_list = []
+        self.irrelevance_accuracy = []
+
+    def save_crowd_data_by_workflow_id(self):
+        workflow = DBQuery().get_workflow_by_id(self.workflow_id)
+
+        crowd_map = {}
+        topic_map = {}
+        relevance_map = {}
+
+        #topic
+        if workflow.topic_hit_ids and workflow.topic_hit_ids != "":
+            topic_hits = workflow.topic_hit_ids.split(",")
+            for hit_id in topic_hits:
+                topic_list_w_worker = DBQuery().get_topics_by_hit_id(hit_id)
+                for topic_item in topic_list_w_worker:
+                    topic_key  = "%s-%s" % (topic_item[0],topic_item[1])
+                    worker_id = topic_item[2]
+                    if worker_id in topic_map:
+                        topic_map[worker_id].append(topic_key)
+                    else:
+                        topic_map[worker_id] = [topic_key]
+
+        # relevance
+        # (article_id, paragraph_idx, relevance_word1, topic_sentence_idx, created_user)
+        if workflow.relevance_hit_ids and workflow.relevance_hit_ids != "":
+            relevance_hits = workflow.relevance_hit_ids.split(",")
+            for hit_id in relevance_hits:
+                relevance_list_w_worker = DBQuery().get_relevances_by_hit_id(hit_id)
+                for relevance_item in relevance_list_w_worker:
+                    topic_sentence_key = "%s-%s-%s" % (relevance_item[0],relevance_item[1], relevance_item[3])
+                    relevance_key  = "%s-%s-%s" % (relevance_item[0],relevance_item[1],relevance_item[2])
+                    worker_id = relevance_item[4]
+                    if worker_id in relevance_map:
+                        relevance_map[worker_id].append((relevance_key, topic_sentence_key))
+                    else:
+                        relevance_map[worker_id] = [(relevance_key, topic_sentence_key)]
+        
+        crowd_map = {
+            "article_id" : self.article_id,
+            "topic": topic_map,
+            "relevance": relevance_map
+        }
+
+        return crowd_map
 
     def show_hit_status_by_id(self, hit_ids, stage):
         for hit_id in hit_ids.split(","):
@@ -109,11 +157,6 @@ class UnityWorkflow:
             
             for hit_id in relevance_hits:
                 print hit_id
-                #hit = get_hit(hit_id)
-                #show_hit(hit)
-                #assignments = get_assignments(hit_id)
-                #self.relevance_worker_list.extend([a.WorkerId for a in assignments])
-
                 #relevance : (article_id, paragraph_idx, relevance_word1, topic_sentence_idx, created_user)
                 relevance_list = DBQuery().get_relevances_by_hit_id(hit_id)                
                 for i in relevance_list:
@@ -126,21 +169,25 @@ class UnityWorkflow:
                         continue
 
                     para_key = "%d-%d" % (i[0],i[1])
+                    new_relevance = (topic_sentence_key, relevance_sentence_key, created_user)
                     if para_key in self.relevance_map:
-                        self.relevance_map[para_key].extend([(topic_sentence_key, relevance_sentence_key)])
+                        if new_relevance not in self.relevance_map[para_key]:
+                            self.relevance_map[para_key].extend([new_relevance])
                     else:
-                        self.relevance_map[para_key] = [(topic_sentence_key, relevance_sentence_key)]
+                        self.relevance_map[para_key] = [new_relevance]
 
-                    list.append((topic_sentence_key, relevance_sentence_key))
+                    list.append(new_relevance)
+                    #print self.relevance_map[para_key]        
                     self.relevance_worker_list.append(created_user)
 
-            for i in set(list):
-                relevance_rank_list.append((i[0], i[1], list.count(i)))
+            unique_list = [(i[0], i[1]) for i in set(list)]
+            for i in set(unique_list):
+                relevance_rank_list.append((i[0], i[1], unique_list.count(i)))
 
             relevance_rank_list.sort(key=lambda tup: tup[2], reverse=True)
             self.relevance_rank_list = relevance_rank_list
 
-            print relevance_rank_list
+            #print relevance_rank_list
             
         else:
             print "no topic hit"
@@ -197,6 +244,9 @@ class UnityWorkflow:
     def get_relevance_worker_list(self):
         return self.relevance_worker_list
 
+    def get_irrelevance_list(self):
+        return self.irrelevance_list
+
     def get_link_rank_list(self):
         return self.link_worker_list
 
@@ -214,40 +264,148 @@ class UnityWorkflow:
 
 
     def get_topic_accuracy(self, golden_topic_all, weight=2):
-        
-        article_id = self.topic_rank_list[0][0][0].split("-")[0]
-        total_topics = len(self.topic_rank_list)
+        rank_list = self.get_topic_rank_list(weight=weight)
+        article_id = rank_list[0][0].split("-")[0]
+        self.article_id = article_id
+        total_topics = len(rank_list)
         correct=0
         incorrect=0
+        print rank_list
+        print "article_id:"
+        print article_id
+        #print "-----------------"
+        #print golden_topic_all
+        #print "--------------------"
         golden_topic = golden_topic_all[article_id]
+        #print "------------------------"
+        #print golden_topic
 
-        for item in self.topic_rank_list:
+        for item in rank_list:
+            topic_item = item[0].split("-")
             if item[1] >= weight:
-                annotation = "%s-%s" % (item[0][0],item[0][1])
-            else:
-                annotation = "%s-?" % (item[0][0])
+                annotation = item[0]
 
-            if annotation in golden_topic:
-                correct = correct + 1
-            else:
-                incorrect = incorrect + 1
+                print annotation
+                if annotation in golden_topic:
+                    correct = correct + 1
+                else:
+                    incorrect = incorrect + 1
 
         total = correct + incorrect
         precision = correct*1.0/total
-        recall = correct*1.0/len(golden_topic)
-        fmeasure = 2 * (precision*recall)/(precision+recall)
+        if len(golden_topic):
+            recall = correct*1.0/len(golden_topic)
+        else:
+            recall = 1.0
+
+        if precision+recall:
+            fmeasure = 2 * (precision*recall)/(precision+recall)
+        else:
+            fmeasure = None
         print "-------------------------"
         print "Precision: %f" % precision
         print "Recall: %f" % recall
-        print "F measure: %f" % fmeasure
+        if fmeasure:
+            print "F measure: %f" % fmeasure
+
         self.topic_accuracy_list = (precision, recall, fmeasure, total_topics, total)
 
         return self.topic_accuracy_list
 
-    def get_relevance_accuracy(self, golden_relevance_all, weight=2):
-        print self.relevance_rank_list
+    def get_irrelevance_accuracy(self, golden_relevance_all, golden_topic_all):
+        article_id = str(self.relevance_rank_list[0][0].split("-")[0])
+        article = DBQuery().get_article_by_id(article_id)
+        relevance_list = [i[1]for i in self.relevance_rank_list]
+        topic_list = self.get_topic_rank_list(weight=2)
+        #print "#################"
+        #print relevance_list
+        #print topic_list
+        #print "#################"
+        golden_relevance = golden_relevance_all[article_id]
+        golden_topic = golden_topic_all[article_id]
+        non_golden_irrelevance_list = []
+        non_golden_irrelevance_list.extend(golden_topic)
+        non_golden_irrelevance_list.extend(golden_relevance)
+        non_irrelevance_list = []
+        non_irrelevance_list.extend(topic_list)
+        non_irrelevance_list.extend(relevance_list)
+        TP = 0
+        FP = 0
+        TN = 0
+        FN = 0
 
-        article_id = str(self.relevance_rank_list[0][0][0])
+        correct = 0
+        incorrect = 0
+        irrelevance_list = []
+        golden_irrelevance = []
+        all_sentences = []
+        for i, paragraph in enumerate(article.content.split("<BR>")):
+            if paragraph:
+                sentence_list = re.split(r'(?<=[^A-Z].[.?]) +(?=[A-Z])', paragraph)
+                for j, sentence in enumerate(sentence_list):
+                    sentence_key = "%s-%d-%d" % (article_id, i, j)
+                    all_sentences.extend(sentence_key)
+
+                    if sentence_key not in non_golden_irrelevance_list:
+                        golden_irrelevance.append(sentence_key)
+
+                    if sentence_key not in non_irrelevance_list:
+                        irrelevance_list.append(sentence_key)
+
+        if len(golden_irrelevance):
+            for sentence_key in irrelevance_list:
+                if sentence_key in golden_irrelevance:
+                    correct = correct+1
+                    TP = TP+1
+                else:
+                    incorrect = incorrect+1
+                    FP = FP+1
+            
+            FN = len(set(golden_irrelevance) - set(irrelevance_list)) 
+        else:
+            TP = 0
+            TN = len(all_sentences) - len(non_irrelevance_list)
+            FP = len(non_irrelevance_list)
+            FN = 0
+
+        total_irrelevance = len(irrelevance_list)
+        total = correct + incorrect
+        if TP+FP:
+            precision = TP*1.0/(TP+FP)
+        else:
+            precision = 0.0
+
+        if TP+FN:
+            recall = TP*1.0/(TP+FN)
+        else:
+            recall = 1.0
+
+
+        if precision+recall:
+            fmeasure = 2 * (precision*recall)/(precision+recall)
+        else:
+            fmeasure = None
+
+        print "-------------------------"
+        print "Precision: %f" % precision
+        print "Recall: %f" % recall
+
+
+        if fmeasure:
+            print "F measure: %f" % fmeasure
+
+        self.irrelevance_accuracy = (precision, recall, fmeasure, total_irrelevance, total)
+        self.irrelevance_list = irrelevance_list
+        return self.irrelevance_accuracy
+        
+
+    def get_relevance_accuracy(self, golden_relevance_all, weight=2):
+        #print self.relevance_rank_list
+        #print "*******"
+        if len(self.relevance_rank_list) == 0:
+            return 
+
+        article_id = str(self.relevance_rank_list[0][0].split("-")[0])
         total_relevance = len(self.relevance_rank_list)
         
         golden_relevance = golden_relevance_all[article_id]
@@ -256,7 +414,6 @@ class UnityWorkflow:
         for i in golden_relevance:
             items = i.split("-")
             key = "%s-%s" % (items[0], items[1])
-            print key
             if key not in golden_relevance_map:
                 golden_relevance_map[key] = [i]
             else:
@@ -265,23 +422,26 @@ class UnityWorkflow:
         #by paragraph
         par_accuracy_list = []
         self.relevance_accuracy_all = []
-        for par_key in self.relevance_map:
+        
+        data_map = {}
+        for relevance in self.relevance_rank_list:
+            items = relevance[1].split("-")
+            par_key = "%s-%s" % (items[0],items[1])
+
+            if par_key in data_map:
+                data_map[par_key].append(relevance[1])
+            else:
+                data_map[par_key] = [relevance[1]]
+
+        for par_key in data_map:
             correct=0
             incorrect=0
-            relevance_list = self.relevance_map[par_key]
             if par_key in golden_relevance_map:
                 golden_list = golden_relevance_map[par_key]
+                relevance_list = data_map[par_key]
 
-                relevance_list = set(relevance_list)
-
-                print "paragraph key: %s" % par_key
-                print relevance_list
-                print golden_list
-                print set(relevance_list)
-
-                list = []
                 for relevance in relevance_list:
-                    if relevance[1] in golden_list:
+                    if relevance in golden_list:
                         correct = correct + 1
                     else:
                         incorrect = incorrect + 1
@@ -290,18 +450,18 @@ class UnityWorkflow:
                 print "incorrect: %d" % incorrect
                 total = correct + incorrect
                 precision = correct*1.0/total
-
                 recall = correct*1.0/len(golden_list)
+
                 if precision+recall == 0:
                     fmeasure = 0
                 else:
                     fmeasure = 2 * (precision*recall)/(precision+recall)
 
-                
                 par_accuracy_list.append((precision, recall, fmeasure, total_relevance, total, par_key))
                 
             else:
                 print "no"
+                par_accuracy_list.append((0.0, 0.0, 0.0, 0.0, 0.0, par_key))
 
             self.relevance_accuracy_all = par_accuracy_list
 

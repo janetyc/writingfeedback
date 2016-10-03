@@ -50,3 +50,8 @@
 > export DATABASE_URL=<db_URL>
 - run script in local site (use remote db and mturk config)
 > python mturk/workflows.py
+
+----------------------------------------------------------
+- python mturk/run_workflow_experiment.py (2016.06 Experiment)
+- python mturk/run_workflow_experiment2.py (2016.09 Experiment)
+- python mturk/analyze_crowd_data.py (2016.09 Experiment)
