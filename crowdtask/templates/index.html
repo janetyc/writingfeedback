@@ -1,41 +1,37 @@
-{% extends "base.html" %}
+{% extends "mturk_base.html" %}
 {% block content %}
-
 <section>
-    <div class="center-area">
-    <div class="ui three column grid stackable">
-        <div class="column">
-            <div class="ui fluid card">
-                <div class="image">
-                    <img src="/static/images/identify.png">
-                </div>
-                <div class="content">
-                    <a class="header">Identify Task</a>
-                </div>
-            </div>
-        </div>
-    
-        <div class="column">
-            <div class="ui fluid card">
-                <div class="image">
-                    <img src="/static/images/highlight.png">
-                </div>
-                <div class="content">
-                    <a class="header">Highlight Task</a>
-                </div>
-            </div>
-        </div>
-        <div class="column">
-            <div class="ui fluid card">
-                <div class="image">
-                    <img src="/static/images/classify.png">
-                </div>
-                <div class="content">
-                    <a class="header">Classify Task</a>
-                </div>
-            </div>
-        </div>
+    <div class="article-block">
+    <ul>
+    {% for article in paginated_articles.items %}
+    <li>
+        {% if article.created_time %}
+            <span class="created-time">{{ article.created_time|datetimeformat }} ></span>
+        {% endif %}
+        <a href="{{ url_for('views.show_article', article_id=article.id)}}">{{article.id}}. {{article.title}} ({{article.authors}})</a>
+    </li>
+    {% endfor %}
+    </ul>
     </div>
+
+    <div class="pagination">
+    {% if paginated_articles.page > 1 %}
+        <a href="{{ url_for_other_page(paginated_articles.page - 1)}}">&laquo; Back</a>
+    {% endif %}
+    {% for page in paginated_articles.iter_pages() %}
+        {% if page %}
+            {% if page != paginated_articles.page %}
+            <a href="{{ url_for_other_page(page) }}">{{ page }}</a>
+            {% else %}
+            <strong>{{ page }}</strong>
+            {% endif %}
+        {% else %}
+            <span class="ellipsis">…</span>
+        {% endif %}
+    {% endfor %}
+    {% if paginated_articles.has_next %}
+        <a href="{{ url_for_other_page(paginated_articles.page + 1)}}">Next &raquo;</a>
+    {% endif %}
     </div>
 </section>
 {% endblock %}

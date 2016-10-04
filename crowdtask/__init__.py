@@ -1,9 +1,18 @@
 import os
 import config
-from flask import Flask, url_for, redirect
+from flask import Flask, url_for, redirect, request
 from flask_sqlalchemy import SQLAlchemy
 
+
 db = SQLAlchemy()
+
+def datetimeformat(value, format='[%Y-%m-%d %H:%M]'):
+    return value.strftime(format)
+
+def url_for_other_page(page):
+    args = request.view_args.copy()
+    args['page'] = page
+    return url_for(request.endpoint, **args)
 
 def create_app():
 
@@ -20,7 +29,9 @@ def create_app():
         app.config.from_object('config.DebugConfig')
     else:
         app.config.from_object('config.Config')
-    
+
+    app.jinja_env.filters['datetimeformat'] = datetimeformat
+    app.jinja_env.globals['url_for_other_page'] = url_for_other_page
 
     #should put after app
     from crowdtask.views import views
@@ -28,7 +39,6 @@ def create_app():
     from crowdtask.task_views import task_views
     from crowdtask.vis_views import vis_views
     from crowdtask.admin_views import admin_views
-
 
     app.register_blueprint(views)
     app.register_blueprint(api)
@@ -45,4 +55,5 @@ def create_app():
         db.create_all()
 
     return app
+
 

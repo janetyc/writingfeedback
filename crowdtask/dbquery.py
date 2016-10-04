@@ -178,6 +178,13 @@ class DBQuery(object):
         all_articles = Article.query.all()
         return all_articles
 
+    def get_article_count(self):
+        return Article.query.count()
+
+    def get_article_paginate(self, page, per_page):
+        articles = Article.query.order_by(Article.created_time.desc()).paginate(page=page, per_page=per_page)
+        return articles
+
     # paragraph
     def get_paragraph_by_id(self, paragraph_id):
         paragraph = Paragraph.query.filter_by(id=paragraph_id).first()

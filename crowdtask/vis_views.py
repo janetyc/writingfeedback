@@ -6,6 +6,7 @@ from crowdtask.dbquery import DBQuery
 
 vis_views = Blueprint('vis_views', __name__, template_folder='templates')
 
+# for crowd task
 @vis_views.route('/topic_vis', methods=('GET','POST'))
 def topic_vis():
     data = {}

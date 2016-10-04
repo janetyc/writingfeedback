@@ -4,16 +4,24 @@ import string
 from flask import Blueprint, Flask, request, render_template, redirect, url_for, jsonify
 from crowdtask.dbquery import DBQuery
 
+per_page = 15
 views = Blueprint('views', __name__, template_folder='templates')
 sample_article = "Gold, a precious metal, is prized for two important characteristics. First of all, gold has a lustrous beauty that is resistant to corrosion. Therefore, it is suitable for jewelry, coins, and ornamental purposes. Gold never needs to be polished and will remain beautiful forever. For example, a Macedonian coin remains as untarnished today as the day it was made 25 centuries ago. Another important characteristic of gold is its usefulness to industry and science. For many years, it has been used in hundreds of industrial applications, such as photography and dentistry. The most recent use of gold is in astronauts' suits. Astronauts wear gold-plated heat shields for protection when they go outside spaceships in space. In conclusion, gold is treasured not only for its beauty but also for its utility."
 sample_essay = {
     "title":"Important qualities of a co-worker",
     "content": "We spend more time with our co-workers during weekdays than we do with our family. Thus, it's important for our co-workers to be the people we can get along with. In my opinion, there are certain characteristics that all good co-workers have in common. They are cooperative, considerate and humorous.<BR>We no longer observe now a time that worships individual merits with great enthusiasm. Everyone should cooperate with each other. Teamwork is curial to a business. A good co-worker is willing to contribute to the office community and not too stubborn to accept advice. He realizes the fact that if one's work is left not done in time, it may hold up everyone else.<BR>Besides, a good co-worker is very considerate. He may change his own schedule to accommodate another's emergency. He may be a sympathetic listener, comforting others when they are miserable.<BR>What is more, a good co-worker should have a sense of humor. His positive attitude may create a pleasant environment. When we are under the great stress of work, what we need most is not a delicious meal but merely a few good jokes to relax our nerve cells.<BR>What I have listed is not the complete set of characters of a good co-worker, however, we can feel how comfortable it is to get along with a good co-worker. Being a good co-worker is not difficult but really very necessary. Such ex- perience of being a good co-worker will definitely contribute to other aspects of life such as friendship and a healthy lifestyle."
 }
-@views.route('/')
-def index():
-    return render_template('index.html')
 
+@views.route('/', methods=['GET', 'POST'])
+@views.route('/index', methods=['GET', 'POST'])
+@views.route('/index/<int:page>', methods=['GET', 'POST'])
+def index(page=1):
+    paginated_articles = DBQuery().get_article_paginate(page, per_page)
+    return render_template('index.html', paginated_articles=paginated_articles)
+
+@views.route('/crowdtask')
+def crowdtask():
+    return render_template('crowd_index.html')
 
 ## should modify sentence split
 @views.route('/topic', methods=('GET','POST'))
@@ -389,8 +397,14 @@ def show_all():
 
     return render_template('show_all.html', data=data_list)
 
-@views.route('/article/<article_id>')
+@views.route('/article/<article_id>', methods=('GET','POST'))
 def show_article(article_id):
+
+    if request.args.has_key('show_workflow'):
+        show_workflow = request.args.get('show_workflow')
+    else:
+        show_workflow = 0
+
     article = DBQuery().get_article_by_id(article_id)
     paragraphs = article.content.split("<BR>")
     workflows = DBQuery().get_workflows_by_article_id(article_id)
@@ -406,8 +420,8 @@ def show_article(article_id):
        "title": article.title,
        "authors": article.authors,
        "paragraphs": list,
-       "workflow_list": workflow_list
-
+       "workflow_list": workflow_list,
+       "show_workflow": show_workflow
     }
 
     return render_template('article.html', data=data)
