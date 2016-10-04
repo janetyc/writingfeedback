@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<span><a href="{{ url_for('views.index')}}">All Articles</a> > Article {{ data.article_id}}</span>
+<span><a href="{{ url_for('views.index')}}">All Articles</a> > <a href="{{ url_for('views.show_article', article_id=data.article_id)}}">Back to Article</a> > Article {{ data.article_id }}</span>
 <div class="article-title">{{ data.title }} ({{data.authors}})</div>
 
 <div class="ui buttons" id="annotate-type">
@@ -121,7 +121,7 @@
                     $('#loading-image').hide();
                 },
                 success: function(data) {
-                    window.location = "/";
+                    window.location = "/article/{{data.article_id}}";
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     alert("Error");    

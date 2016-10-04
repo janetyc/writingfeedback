@@ -17,7 +17,6 @@ sample_essay = {
 @views.route('/index/<int:page>', methods=['GET', 'POST'])
 def index(page=1):
     paginated_articles = DBQuery().get_article_paginate(page, per_page)
-    
     return render_template('index.html', paginated_articles=paginated_articles)
 
 @views.route('/crowdtask')
@@ -409,6 +408,32 @@ def show_article(article_id):
     article = DBQuery().get_article_by_id(article_id)
     paragraphs = article.content.split("<BR>")
     workflows = DBQuery().get_workflows_by_article_id(article_id)
+    
+    complete_workflow_list = []
+    have_topic=False
+    have_relevance=False
+    for workflow in workflows:
+        if workflow.topic_hit_ids and workflow.topic_hit_ids != "":
+            have_topic = True
+
+        if workflow.relevance_hit_ids and workflow.relevance_hit_ids != "":
+            have_relevance = True
+        
+        if have_topic and have_relevance:
+            complete_workflow_list.append(str(workflow.id))
+
+    # crowd result
+    if len(complete_workflow_list):
+        crowd_result = (True, complete_workflow_list[0])
+    else:
+        crowd_result = (False, None)
+
+    peer_count = DBQuery().get_peer_count_by_article_id(article_id)
+    if peer_count:
+        peer_result = (True, peer_count)
+    else:
+        peer_result = (False, peer_count)
+
     workflow_list = [str(workflow.id) for workflow in workflows]
 
     list = []
@@ -422,7 +447,9 @@ def show_article(article_id):
        "authors": article.authors,
        "paragraphs": list,
        "workflow_list": workflow_list,
-       "show_workflow": show_workflow
+       "show_workflow": show_workflow,
+       "crowd_result": crowd_result,
+       "peer_result": peer_result
     }
 
     return render_template('article.html', data=data)
@@ -432,7 +459,6 @@ def show_article(article_id):
 def peer_annotation(article_id):
     article = DBQuery().get_article_by_id(article_id)
     paragraphs = article.content.split("<BR>")
-    
 
     content_map = {}
     for i, paragraph in enumerate(paragraphs):

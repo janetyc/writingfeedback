@@ -308,6 +308,9 @@ class DBQuery(object):
         all_peer_annotations = PeerAnnotation.query.filter_by(article_id=article_id).all()
         return all_peer_annotations
 
+    def get_peer_count_by_article_id(self, article_id):
+        return PeerAnnotation.query.filter_by(article_id=article_id).count()
+
     def get_golden_structure_by_id(self, golden_id):
         golden_structure = GoldenStructure.query.filter_by(id=int(golden_id)).first()
         return golden_structure
