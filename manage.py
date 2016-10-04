@@ -60,12 +60,16 @@ def import_articles(directory, filename):
             continue
 
         print "insert article to the database ..."
-        article_id = DBQuery().add_article(article_title, article_content, article_authors, article_source, int(article_year))
+        list = [i.strip() for i in article_paragraphs if i]
+        clear_content = "<BR>".join(list)
 
-        for idx, paragraph in enumerate(article_paragraphs):
-            paragraph = paragraph.strip()
-            paragraph_id = DBQuery().add_paragraph(article_id, idx, paragraph)
-            print "insert article %s - paragraph %s to the database ..." % (article_title, idx)
+        article_id = DBQuery().add_article(article_title, clear_content, article_authors, article_source, int(article_year))
+
+
+        #for idx, paragraph in enumerate(article_paragraphs):
+        #    paragraph = paragraph.strip()
+        #    paragraph_id = DBQuery().add_paragraph(article_id, idx, paragraph)
+        #    print "insert article %s - paragraph %s to the database ..." % (article_title, idx)
 
 
         print "move article to data-in-db folder ..."

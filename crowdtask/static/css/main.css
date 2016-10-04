@@ -485,25 +485,28 @@ nav ul{
    Pagination
    =================================
 */
-
-.article-block{
-    margin-top: 2em;
-    display:block;
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    background: #ffffff;
-    border: 1px solid #cfcfcf;
-    border-radius: 4px;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+.add-area{
+    display: block;
+    margin: 10px;
+    padding: 10px;
 }
+.article-block{
+    display: block;
+    margin: -0.5em;
+}
+
 .pagination{
     display:block;
     width: 100%;
     text-align: center;
-    margin-left: auto;
-    margin-right: auto;
+    margin-top: 0.5em;
+}
+
+#add-button{
+    position: fixed;
+    top: 90%;
+    right: 1%;
+    z-index: 100;
 }
 
 /* ==========================================================================

@@ -1,17 +1,20 @@
-{% extends "mturk_base.html" %}
+{% extends "clean_base.html" %}
 {% block content %}
 <section>
+    <button id="add-button" class="ui circular linkedin icon button ">
+        <i class="plus icon"></i>
+    </button>
     <div class="article-block">
-    <ul>
-    {% for article in paginated_articles.items %}
-    <li>
-        {% if article.created_time %}
-            <span class="created-time">{{ article.created_time|datetimeformat }} ></span>
-        {% endif %}
-        <a href="{{ url_for('views.show_article', article_id=article.id)}}">{{article.id}}. {{article.title}} ({{article.authors}})</a>
-    </li>
-    {% endfor %}
-    </ul>
+        <div class="ui segments">
+            {% for article in paginated_articles.items %}
+            <div class="ui segment">
+                {% if article.created_time %}
+                    <span class="created-time">{{ article.created_time|datetimeformat }} </span>&raquo;
+                {% endif %}
+                <a href="{{ url_for('views.show_article', article_id=article.id)}}">{{article.title}} ({{article.authors}})</a>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 
     <div class="pagination">
@@ -34,4 +37,119 @@
     {% endif %}
     </div>
 </section>
+
+<div id="popup-modal" class="ui modal">
+    <i class="close icon"></i>
+    <div class="header">
+        Add an Article
+    </div>
+    <div class="add-area">
+        <form class="ui form">
+            <div class="field">
+                <label>First Name</label>
+                <input type="text" name="username" placeholder="Username">
+            </div>
+            <div class="field">
+                <label>Title</lable>
+                <input type="text" name="title" placeholder="Title">
+            </div>
+            <div class="field">
+                <label>Content</label>
+                <textarea name="content" ></textarea>
+            </div>
+            <div class="ui error message"></div>
+        </form>
+    </div>
+    
+    <div class="actions">
+        <div class="ui black deny button">
+          Cancel
+        </div>
+        <div class="ui positive right labeled icon button">
+          Yep, I want to submit.
+          <i class="checkmark icon"></i>
+        </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(function() {
+        var author = "";
+        var title = "";
+        var content = "";
+
+        $('#add-button').click(function(){
+            //call ui modal
+            $('.ui.modal').modal({
+                onApprove : function() {
+                    author = $("input[name='username']").val();
+                    title = $("input[name='title']").val();
+                    content = $("textarea[name='content']").val();
+
+                    if (!$('.ui.form').form('is valid')) {
+                        return false;
+                    }
+                    
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/add_article",
+
+                        data: {
+                            "author": author,
+                            "title": title,
+                            "content": content,
+                        },
+                        dataType: 'json', 
+                        
+                        success: function(data) {
+                            $('form').form('clear');
+                            window.location = "/";
+                        },
+                        error: function(XMLHttpRequest, textStatus, errorThrown) {
+                            alert("Error");    
+                        }
+                    });
+                    
+                }
+            }).modal('show').modal('refresh');
+        });
+
+        //form validation
+        $('.ui.form').form({
+            inline: true,
+            fields: {
+                username: {
+                    identifier: 'username',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : 'Please input your name'
+                        }
+                    ]
+                },
+                title: {
+                    identifier: 'title',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : 'Please input title of article'
+                        }
+                    ]
+                },
+                content: {
+                    identifier: 'content',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : 'Please input content of article'
+                        }
+                    ]
+                }
+            }
+        });
+        
+    });
+</script>
 {% endblock %}

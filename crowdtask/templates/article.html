@@ -1,4 +1,4 @@
-{% extends "mturk_base.html" %}
+{% extends "clean_base.html" %}
 {% block content %}
 <span><a href="{{ url_for('views.index')}}">All Articles</a> > Article {{ data.id }}</span>
 <header>{{data.title}}({{data.authors}})</header>
