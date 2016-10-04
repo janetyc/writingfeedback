@@ -1,6 +1,7 @@
 from crowdtask.models import Article, Paragraph
 from crowdtask.models import Task, Topic, Relation, Relevance, Link
 from crowdtask.models import Workflow, Structure, GoldenStructure
+from crowdtask.models import PeerAnnotation
 from crowdtask import db
 from enum import TaskType
 
@@ -67,6 +68,11 @@ class DBQuery(object):
         db.session.commit()
 
         return link.id
+
+    def add_peer_annotation(self, created_user, article_id, topic, relevance):
+        peer_annotatio = PeerAnnotation(created_user, article_id, topic, relevance)
+        db.session.add(peer_annotatio)
+        db.session.commit()
 
     def add_golden_structure(self, created_user, article_id, topic, irrelevance, relevance, relation=None, others=None):
         goldenstructure = GoldenStructure(created_user, article_id, topic, irrelevance, relevance, relation, others)
@@ -293,6 +299,14 @@ class DBQuery(object):
                 relevance_list.append((article_id, paragraph_idx, relevance_word, topic_sentence_idx, created_user))
 
         return relevance_list
+
+    def get_peer_annotation_by_id(self, peer_annotation_id):
+        peer_annotation = PeerAnnotation.query.filter_by(id=int(peer_annotation_id)).first()
+        return peer_annotation
+
+    def get_peer_annotations_by_article_id(self, article_id):
+        all_peer_annotations = PeerAnnotation.query.filter_by(article_id=article_id).all()
+        return all_peer_annotations
 
     def get_golden_structure_by_id(self, golden_id):
         golden_structure = GoldenStructure.query.filter_by(id=int(golden_id)).first()

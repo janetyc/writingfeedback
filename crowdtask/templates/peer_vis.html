@@ -3,6 +3,7 @@
 {% block content %}
 <span><a href="{{ url_for('views.index')}}">All Articles</a> > <a href="{{ url_for('views.show_article', article_id=data.article_id)}}">Back to Article</a> > Article {{ data.article_id }}</span>
 <div class="vis-area ui piled segment">
+    <div class="peer-count">{{data.peer_count}} peer contributions</div>
     <div class="slider-area">
         <div class="ui range blue" id="topic-slider"></div>
         <div class="value-block">Topic weight: <span id="topic-value"></span></div>
@@ -11,7 +12,6 @@
         <div class="ui range black" id="relevance-slider"></div>
         <div class="value-block">Relevance weight: <span id="relevance-value"></span></div>
     </div>
-    
     {% if data.topic_tip %}
     <div class="ui info message teal">
         <i class="close icon"></i>

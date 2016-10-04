@@ -17,6 +17,7 @@ sample_essay = {
 @views.route('/index/<int:page>', methods=['GET', 'POST'])
 def index(page=1):
     paginated_articles = DBQuery().get_article_paginate(page, per_page)
+    
     return render_template('index.html', paginated_articles=paginated_articles)
 
 @views.route('/crowdtask')
@@ -425,6 +426,28 @@ def show_article(article_id):
     }
 
     return render_template('article.html', data=data)
+
+
+@views.route('/peer_annotation/<article_id>', methods=('GET','POST'))
+def peer_annotation(article_id):
+    article = DBQuery().get_article_by_id(article_id)
+    paragraphs = article.content.split("<BR>")
+    
+
+    content_map = {}
+    for i, paragraph in enumerate(paragraphs):
+        sentence_list = re.split(r'(?<=[^A-Z].[.?]) +(?=[A-Z])', paragraph)
+        content_map[i] = sentence_list
+
+    data = {
+        "article_id": article.id, 
+        "title": article.title,
+        "authors": article.authors,
+        "content_map": content_map
+    }
+
+    return render_template('peer_annotation.html', data=data)
+
 
 @views.route('/success')
 def success():

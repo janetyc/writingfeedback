@@ -205,6 +205,23 @@ def add_golden_structure():
 
     return jsonify(success=1, data=data)
 
+@api.route('/api/add_peer_annotation', methods=('GET','POST'))
+def add_peer_annotation():
+    article_id = request.args.get('article_id')
+    topic = request.args.get('topic')
+    relevance = request.args.get('relevance')
+    created_user = request.args.get('created_user')
+
+    DBQuery().add_peer_annotation(created_user=created_user, article_id=article_id, 
+                                    topic=topic, relevance=relevance)
+
+    data = {
+        "topic": topic,
+        "relevance": relevance,
+    }
+
+    return jsonify(success=1, data=data)
+
 @api.route('/api/add_article', methods=('GET','POST'))
 def add_article():
     if request.method == 'POST':

@@ -7,11 +7,17 @@
     <div class="article-block">
         <div class="ui segments">
             {% for article in paginated_articles.items %}
-            <div class="ui segment">
-                {% if article.created_time %}
-                    <span class="created-time">{{ article.created_time|datetimeformat }} </span>&raquo;
-                {% endif %}
-                <a href="{{ url_for('views.show_article', article_id=article.id)}}">{{article.title}} ({{article.authors}})</a>
+            <div class="ui segment item-block">
+                <div class="content-block">
+                    {% if article.created_time %}
+                        <span class="created-time">{{ article.created_time|datetimeformat }} </span>&raquo;
+                    {% endif %}
+                    <a href="{{ url_for('views.show_article', article_id=article.id)}}">{{article.title}} ({{article.authors}})</a>
+                </div>
+                <!--<div class="function-block">
+                    <a href="{{ url_for('views.peer_annotation', article_id=article.id)}}">Annotate</a> |
+                    <a href="{{ url_for('vis_views.peer_vis', article_id=article.id)}}">Peers</a> | <a href="{{ url_for('views.show_article', article_id=article.id)}}?show_workflow=1">Crowds</a> 
+                </div>-->
             </div>
             {% endfor %}
         </div>

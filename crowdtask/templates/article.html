@@ -1,6 +1,10 @@
 {% extends "clean_base.html" %}
 {% block content %}
 <span><a href="{{ url_for('views.index')}}">All Articles</a> > Article {{ data.id }}</span>
+<div class="block">
+    <a href="{{ url_for('views.peer_annotation', article_id=data.id)}}">Annotate</a> |
+    <a href="{{ url_for('vis_views.peer_vis', article_id=data.id)}}">Peers</a> | <a href="{{ url_for('views.show_article', article_id=data.id)}}?show_workflow=1">Crowds</a> 
+</div>
 <header>{{data.title}}({{data.authors}})</header>
 <section>
     {% if data.show_workflow %}
@@ -14,4 +18,5 @@
         <p>{{ paragraph[1] }}</p>
     {% endfor %}
 </section>
+
 {% endblock %}

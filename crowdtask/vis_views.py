@@ -158,6 +158,75 @@ def create_issues(weighted_list):
     }
     return issues
 
+
+@vis_views.route('/peer_vis/<article_id>', methods=('GET','POST'))
+def peer_vis(article_id):
+
+    all_peer_annotations = DBQuery().get_peer_annotations_by_article_id(article_id)
+    article = DBQuery().get_article_by_id(article_id)
+    paragraphs = article.content.split("<BR>")
+
+    topic_map = {}
+    relevance_map = {}
+    topic_list = []
+    relevance_list = []
+    for annotation in all_peer_annotations:
+        all_topics = annotation.topic.split("|")
+        topic_list.extend(all_topics)
+        all_relevances = annotation.relevance.split("|")
+        relevance_list.extend(all_relevances)
+
+    for par_topic in set(topic_list):
+        topic_map[par_topic] = topic_list.count(par_topic)
+
+    for par_relevance in set(relevance_list):
+        relevance_map[par_relevance] = relevance_list.count(par_relevance)
+      
+    article_id = int(article_id)
+    article = DBQuery().get_article_by_id(article_id)
+    content_map = {}
+    issue_map={}
+
+    topic_tip = 0
+    for i, paragraph in enumerate(article.content.split("<BR>")):
+        if paragraph:
+            sentence_list = re.split(r'(?<=[^A-Z].[.?]) +(?=[A-Z])', paragraph)
+
+            weight_sentence_list = []
+            for j, sentence in enumerate(sentence_list):
+                topic_key = "%d-%d" % (i, j)
+                sentence = sentence.strip()
+                word_list = sentence.split(" ")
+                weight_word_list = []
+                for k, word in enumerate(word_list):
+                    word = word.strip()
+                    relevance_key = "%d-%d-%d" % (i, j, k)
+                    if(relevance_key in relevance_map):
+                        weight_word_list.append((word, relevance_map[relevance_key]))
+                    else:
+                        weight_word_list.append((word, 0))
+
+                if(topic_key in topic_map):
+                    weight_sentence_list.append((weight_word_list, topic_map[topic_key]))
+                else:
+                    weight_sentence_list.append((weight_word_list, 0))
+
+            content_map[i] = weight_sentence_list
+            issue_map[i] = create_issues(weight_sentence_list)
+
+            if issue_map[i]['is_issue']: topic_tip = 1
+
+    data = {
+        "content_map": content_map,
+        "article_id": article_id,
+        "title": article.title,
+        "issue_map": issue_map,
+        "topic_tip": topic_tip,
+        "peer_count": len(all_peer_annotations)
+    }
+    return render_template('peer_vis.html', data=data)
+
+
 #@vis_views.route('/coherence_vis', methods=('GET','POST'))
 #def coherence_vis():
 #    data={}
