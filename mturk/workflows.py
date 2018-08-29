@@ -6,7 +6,6 @@ from crowdtask import create_app
 from crowdtask.dbquery import DBQuery
 from crowdtask.enum import TaskType, WorkflowType
 
-
 app=create_app()
 
 ''' 
@@ -628,16 +627,18 @@ def coherence_workflow(article_id, paragraph_length, task_type, num_of_task, num
 
 
 if __name__ == "__main__":
-    #print "Topic Task ..."
+    print "Topic Task ..."
     #article_list = ["10","11","12","13","14","15","16","17","18","19"]
 #    article_list = ["20","21","22","23","24","25","26"]
-#    article_list = ["24"]
+#    article_list = ["58"]
 #    assignment_num = 5
 #    for article_id in article_list:
 #        u_workflow = unity_workflow(article_id=article_id, task_type=TaskType.TOPIC, num_of_task=1, num_of_assignments=assignment_num)
 #        print "workflow_id: %d" % u_workflow
+#
+#    exit(0)
 
-    #print "Relation Task ..."
+#    print "Relation Task ..."
 #    article_list = ["4","6","8"]
 #    paragraph_length_list = [4, 5, 5]
 #    assignment_num = 3
@@ -670,7 +671,9 @@ if __name__ == "__main__":
 #        55: ['26-0-3','26-1-0','26-2-0','26-3-0','26-4-0'],
 #        56: ['27-0-1','27-1-0','27-2-0','27-3-0','27-4-0']
 #    }
-#
+
+    
+
     #print "Relevance Task..."
     #for workflow_id in workflow_article_topic_map:
     #    topic_list = workflow_article_topic_map[workflow_id]
@@ -680,19 +683,21 @@ if __name__ == "__main__":
     #    print "workflow_id: %d" % u_workflow
 
     #print "Topic Task..."
-    assignment_num = 5
-    article_list = ["48"]
-    #for article_id in article_list:
-    #    u_workflow = unity_workflow(article_id=article_id, task_type=TaskType.TOPIC, num_of_task=1, num_of_assignments=assignment_num)
-    #    print "workflow_id: %d" % u_workflow
+    assignment_num = 1
+    article_list = ["58"]
+    for article_id in article_list:
+        u_workflow = unity_workflow(article_id=article_id, task_type=TaskType.TOPIC, num_of_task=1, num_of_assignments=assignment_num)
+        print "workflow_id: %d" % u_workflow
     
     #get all workflows
-    workflow_list=[]
-    for article_id in article_list:
-        article_id = int(article_id)
-        workflows = DBQuery().get_workflows_by_article_id(article_id)
-        workflow_list.append(workflows[0])
+    #workflow_list=[]
+    #for article_id in article_list:
+    #    article_id = int(article_id)
+    #    workflows = DBQuery().get_workflows_by_article_id(article_id)
+    #    workflow_list.append(workflows[-1])
 
+    #print workflow_list
+    
     #print workflow_list
     #print "Link Task..."
     #for workflow in workflow_list:

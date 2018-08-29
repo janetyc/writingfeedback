@@ -227,8 +227,8 @@ def peer_vis(article_id):
     return render_template('peer_vis.html', data=data)
 
 
-#@vis_views.route('/coherence_vis', methods=('GET','POST'))
-#def coherence_vis():
-#    data={}
-#    return render_template('coherence_vis.html', data=data)
-#
+@vis_views.route('/coherence_vis', methods=('GET','POST'))
+def coherence_vis():
+    data={}
+    return render_template('coherence_vis.html', data=data)
+

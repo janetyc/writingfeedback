@@ -27,6 +27,7 @@ def crowdtask():
 @views.route('/topic', methods=('GET','POST'))
 def topic_task():
 
+
     paragraph_idx = None
     article_id = None
     article = None

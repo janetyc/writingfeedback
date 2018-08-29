@@ -254,7 +254,7 @@ if __name__ == "__main__":
 
         #topic
         u.show_hit_status_at_topic_stage()
-        topic_rank_list = u.get_topic_rank_list()        
+        topic_rank_list = u.get_topic_rank_list()      
 
         #worker
         topic_workers = u.get_topic_worker_list()
