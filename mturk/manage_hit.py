@@ -104,6 +104,13 @@ def expire_hit(hit_id):
     expire = mtc.expire_hit(hit_id)
     return expire
 
+def expire_all_hits():
+    hits = mtc.get_all_hits()
+    for i, hit in enumerate(hits):
+        hit_id = hit.HITId
+        mtc.expire_hit(hit_id)
+        print "expire hit %s" % hit_id
+
 def approve_rejected_assignment(assignment_id, feedback=None):
     approve = mtc.approve_rejected_assignment(assignment_id)
     print "approve rejected assignment - %s" % assignment_id
@@ -151,6 +158,7 @@ def save_data(hit_id):
 if __name__ == "__main__":
     if len(sys.argv) == 1:
         print "python manage_hit.py get_all_hits"
+        print "python manage_hit.py expire_all_hits"
         print "python manage_hit.py show_assignment assignment_id"
         print "python manage_hit.py unreject assignment_id"
         print "python manage_hit.py expire_hit hit_id"
@@ -159,6 +167,7 @@ if __name__ == "__main__":
         print "python manage_hit.py approve_hit hit_id"
         print "python manage_hit.py approve_assignment assignment_id"
         print "python manage_hit.py save_data hit_id"
+
         exit(0)
     else:
         function = sys.argv[1]
@@ -171,8 +180,13 @@ if __name__ == "__main__":
             if function == "get_all_reviewable_hits":
                 get_all_reviewable_hits()
                 exit(0)
+
+            if function == "expire_all_hits":
+                expire_all_hits()
+                exit(0)
                 
             print "python manage_hit.py get_all_hits"
+            print "python manage_hit.py expire_all_hits"
 
             print "python manage_hit.py show_assignment assignment_id"
             print "python manage_hit.py unreject assignment_id"
